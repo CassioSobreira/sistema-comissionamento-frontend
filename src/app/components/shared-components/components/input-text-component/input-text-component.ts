@@ -5,7 +5,7 @@ import { InputTextModule } from 'primeng/inputtext';
   selector: 'app-input-text-component',
   imports: [InputTextModule],
   templateUrl: './input-text-component.html',
-  styleUrl: './input-text-component.scss'
+  styleUrl: './input-text-component.css'
 })
 export class InputTextComponent {
 

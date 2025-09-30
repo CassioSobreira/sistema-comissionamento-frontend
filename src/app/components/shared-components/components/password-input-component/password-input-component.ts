@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-password-input-component',
   imports: [PasswordModule,FormsModule],
   templateUrl: './password-input-component.html',
-  styleUrl: './password-input-component.scss'
+  styleUrl: './password-input-component.css'
 })
 export class PasswordInputComponent {
   @Input() value: string = '';                  // valor vindo da página

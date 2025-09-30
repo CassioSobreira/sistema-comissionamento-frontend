@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
-import { PasswordInputComponent } from '../shared-components/password-input-component/password-input-component';
+import { PasswordInputComponent } from '../../../components/shared-components/components/password-input-component/password-input-component';
 import { Router } from '@angular/router'; 
 @Component({
   selector: 'app-redefinir-senha',
   imports: [PasswordInputComponent],
   templateUrl: './redefinir-senha.html',
-  styleUrls: ['./redefinir-senha.scss']
+  styleUrls: ['./redefinir-senha.css']
 })
 
 export class RedefinirSenha {

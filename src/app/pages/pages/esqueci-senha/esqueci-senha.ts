@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
   selector: 'app-esqueci-senha',
   imports: [],
   templateUrl: './esqueci-senha.html',
-  styleUrl: './esqueci-senha.scss'
+  styleUrl: './esqueci-senha.css'
 })
 export class EsqueciSenha {
   constructor(private router: Router) {}

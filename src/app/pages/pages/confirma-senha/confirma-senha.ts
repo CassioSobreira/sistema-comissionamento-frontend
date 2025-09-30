@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
   selector: 'app-confirma-senha',
   imports: [],
   templateUrl: './confirma-senha.html',
-  styleUrls: ['./confirma-senha.scss']
+  styleUrls: ['./confirma-senha.css']
 })
 export class ConfirmaSenha {
   constructor(private router: Router) {}
