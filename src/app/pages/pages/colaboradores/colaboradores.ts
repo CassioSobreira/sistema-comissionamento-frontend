@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
-import { ButtonModal } from './componentes/button-modal/button-modal';
+import { ButtonModal } from './components/button-modal/button-modal';
 
 @Component({
   selector: 'app-colaboradores',
