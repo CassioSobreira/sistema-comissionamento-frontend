@@ -1,1 +1,50 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+@plugin "tailwindcss-primeui";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "primeicons/primeicons.css";
+
+
+
+@font-face {
+  font-family: 'Coolvetica';
+  src: url('/assets/fonts/Coolvetica-Rg.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Coolvetica';
+  src: url('/assets/fonts/Coolvetica-Rg-It.otf') format('opentype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Coolvetica';
+  src: url('/assets/fonts/Coolvetica-Hv-Comp.otf') format('opentype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+html, body {
+  font-family: 'Coolvetica', sans-serif;
+  html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+  /* background global */
+  background: linear-gradient(to bottom, #202020, #000);
+}
+.p-toolbar.p-component.toolbar-borda-unica {
+  border: none;
+  border-bottom: 1px solid #3A404C;
+  border-radius: 0px;
+}
+
+}
+:root, app-root {
+  height: 100%;
+}

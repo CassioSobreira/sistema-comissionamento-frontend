@@ -1,0 +1,122 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+.container {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 380px;
+  transition: all 0.3s ease-in-out;
+  justify-content: center;
+  align-content: center;
+}
+
+.page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: hsl(0, 0%, 4%);
+}
+/* --- 2. CONTAINER PRINCIPAL DO LOGIN --- */
+
+.login-container {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px;
+    
+}
+
+/* --- 3. LOGO E TÍTULO --- */
+
+.logo {
+    text-align: center; /* Garante que o logo fique centralizado */
+    margin-bottom: 1.5rem;
+}
+
+.logo img {
+    max-width: 150px;
+    height: auto;
+}
+
+.login-title {
+    text-align: center; /* Garante que o título fique centralizado */
+    font-size: 1.75rem;
+    margin-bottom: 2rem;
+    color: #333;
+}
+
+/* --- 4. ESTILOS DO FORMULÁRIO --- */
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.login-form .flex-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: left;
+}
+
+.login-form label {
+    font-size: 0.9rem;
+    color: #555;
+    font-weight: bold;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 0.9rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+/* --- 5. AÇÕES DO FORMULÁRIO (LINK E BOTÃO) --- */
+
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.forgot-password {
+    font-size: 0.9rem;
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.botao-degrade {
+    padding: 0.8rem 2rem;
+    border: none;
+    border-radius: 8px;
+    background-image: linear-gradient(to right, #3b82f6, #2563eb);
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.botao-degrade:hover {
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    transform: translateY(-2px);
+}

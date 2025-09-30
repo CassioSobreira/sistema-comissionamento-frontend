@@ -1,0 +1,23 @@
+
+<div class="page">
+<div class="login-container">
+    <div class="logo">
+      <img src="/senai-logo.png" alt="SENAI CIMATEC">
+    </div>
+  <h2 class="login-title">Login</h2>
+  <form class="login-form">
+    <div class="flex flex-col gap-2">
+    <label for="username">Nome de Usuário</label>
+    <app-input-text-component></app-input-text-component>
+  </div>
+    <div class="flex flex-col gap-2">
+    <label for="username">Senha</label>
+    <app-password-input-component></app-password-input-component>
+  </div>
+    <div class="form-actions">
+      <a href="#" class="forgot-password" (click)="navegarPraEsqueciSenha($event)">Esqueci a senha</a>
+      <button type="button" class="botao-degrade" (click)="navegarParaHome()">Entrar</button>
+    </div>
+  </form>
+</div>
+</div>

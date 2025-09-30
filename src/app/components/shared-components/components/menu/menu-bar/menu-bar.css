@@ -1,0 +1,7 @@
+:host ::ng-deep .p-toolbar {
+  border: none !important;
+  box-shadow: none !important;
+  background-color: #181818 !important;
+  color: white !important;
+  border-bottom: 2px solid #ff0000; /* exemplo: só uma linha vermelha embaixo */
+}

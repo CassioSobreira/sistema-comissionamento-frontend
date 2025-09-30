@@ -1,0 +1,103 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+.page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: hsl(0, 0%, 4%);
+}
+
+.container {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 380px;
+    transition: all 0.3s ease-in-out;
+}
+
+.container h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.container p {
+    font-size: 0.9rem;
+    color: #666;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.2rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.4rem;
+    color: #333;
+    font-size: 0.9rem;
+}
+
+input[type="email"],
+input[type="password"] {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+button {
+    width: 100%;
+    padding: 0.9rem;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #1e40af;
+}
+
+.back-link {
+    display: block;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.success-message {
+    text-align: center;
+}
+
+.success-message h2 {
+    color: #22c55e;
+    margin-bottom: 1rem;
+}
+
+.success-message p {
+    line-height: 1.5;
+}
+
+.success-message strong {
+    color: #333;
+}

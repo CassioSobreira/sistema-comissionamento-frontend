@@ -1,0 +1,25 @@
+<div class="page">
+    <div class="container">
+        <h2>Crie uma Nova Senha</h2>
+        <p>Sua nova senha deve ser diferente da anterior.</p>
+
+        <form action="/seu-script-de-atualizacao-de-senha" method="POST">
+            
+            <input type="hidden" id="token" name="token" value="">
+
+            <div class="form-group">
+                <label for="new-password">Nova Senha</label>
+                <app-password-input-component></app-password-input-component>
+            </div>
+            
+            <div class="form-group">
+                <label for="confirm-password">Confirme a Nova Senha</label>
+                <app-password-input-component></app-password-input-component>
+            </div>
+            
+            <button type="submit" (click)="navegarParaConfirmarSenha($event)">Atualizar Senha</button>
+        </form>
+
+        <a href="" (click)="navegarParaLogin()" class="back-link">Voltar para o login</a>
+    </div>
+</div>
