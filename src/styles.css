@@ -23,23 +23,31 @@
   font-style: normal;
 }
 
+/* 4. Estilos Globais Base
+  - Define altura 100% para o layout da aplicação.
+  - Aplica sua fonte personalizada e o fundo gradiente como padrão.
+*/
 html, body {
-  font-family: 'Coolvetica', sans-serif;
-  html, body {
   height: 100%;
   margin: 0;
   padding: 0;
-
-  /* background global */
+  font-family: 'Coolvetica', sans-serif;
   background: linear-gradient(to bottom, #202020, #000);
 }
+
+/* 5. Componente Raiz do Angular
+  Garante que o componente principal do Angular ocupe toda a altura.
+*/
+app-root {
+  height: 100%;
+  display: block; /* Garante que o height: 100% funcione corretamente */
+}
+
+/* 6. Sobrescrita de Estilo para PrimeNG
+  Estilo customizado para um p-toolbar que tenha a classe 'toolbar-borda-unica'.
+*/
 .p-toolbar.p-component.toolbar-borda-unica {
   border: none;
   border-bottom: 1px solid #3A404C;
   border-radius: 0px;
-}
-
-}
-:root, app-root {
-  height: 100%;
 }

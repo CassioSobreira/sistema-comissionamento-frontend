@@ -1,13 +1,45 @@
-<div class="page">
-    <div class="container">
-        
-        <h2><i class="fa-solid fa-circle-check success-icon"></i> Senha Redefinida!</h2>
-        
-        <p class="success-details">
-            Sua senha foi alterada com sucesso. <br> Agora você já pode fazer login com sua nova senha.
-        </p>
+<!-- 
+  Container principal da página.
+  - flex: Ativa o layout flexbox.
+  - min-h-screen: Garante que o container ocupe no mínimo 100% da altura da tela.
+  - items-center: Centraliza o conteúdo verticalmente.
+  - justify-center: Centraliza o conteúdo horizontalmente.
+  - p-4: Adiciona um padding para espaçamento em telas pequenas.
+  O fundo gradiente já vem do seu styles.css global.
+-->
+<div class="flex min-h-screen items-center justify-center p-4">
 
-        <a href="#" class="back-link" (click)="navegarParaLogin()">Ir para o Login agora</a>
+  <!-- 
+    Card do formulário.
+    - bg-white: Fundo branco.
+    - rounded-xl: Bordas bem arredondadas.
+    - p-8: Padding interno generoso.
+    - shadow-2xl: Uma sombra forte para dar profundidade.
+    - w-full max-w-md: Ocupa 100% da largura, mas com um máximo de 'medium'.
+    - text-center: Centraliza o texto de todos os elementos filhos.
+    - text-gray-800: Cor de texto padrão para o card.
+  -->
+  <div class="bg-white rounded-xl p-8 shadow-2xl w-full max-w-md text-center text-gray-800">
+    
+    <!-- Título do Card -->
+    <h2 class="flex justify-center items-center gap-2 text-2xl font-bold mb-2">
+      <i class="pi pi-check-circle text-green-500 text-3xl"></i>
+      <span>Senha Redefinida!</span>
+    </h2>
 
-    </div>
+    <!-- Texto descritivo -->
+    <p class="text-gray-500 mb-8 leading-relaxed">
+      Sua senha foi redefinida com sucesso. Agora você já pode acessar sua conta com a nova senha.
+    </p>
+
+    <!-- Botão de Ação -->
+    <!-- 
+      - Adicionado (click)="navegarParaLogin()" para chamar a função de navegação do seu componente TS.
+    -->
+    <button (click)="navegarParaLogin()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors">
+      Ir para o Login
+    </button>
+
+  </div>
 </div>
+

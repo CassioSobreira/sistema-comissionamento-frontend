@@ -1,23 +1,61 @@
+<!-- 
+  Container principal da página, mantendo o padrão visual.
+  - Centraliza o conteúdo na tela.
+  - O fundo gradiente já é herdado do styles.css.
+-->
+<div class="flex min-h-screen items-center justify-center p-4">
 
-<div class="page">
-<div class="login-container">
-    <div class="logo">
-      <img src="/senai-logo.png" alt="SENAI CIMATEC">
+  <!-- 
+    Card do formulário de login.
+    - Sombra e padding generosos para um visual moderno.
+  -->
+  <div class="bg-white rounded-xl p-10 shadow-2xl w-full max-w-md">
+
+    <!-- Logo -->
+    <div class="text-center mb-6">
+      <!-- 
+        - mx-auto: Centraliza a imagem horizontalmente.
+        - max-w-[150px]: Limita a largura da imagem.
+        - O caminho da imagem foi atualizado para o novo logo.
+      -->
+      <img src="LDP NEGATIVO.png" alt="Logo LDP" class="mx-auto max-w-[150px] h-auto">
     </div>
-  <h2 class="login-title">Login</h2>
-  <form class="login-form">
-    <div class="flex flex-col gap-2">
-    <label for="username">Nome de Usuário</label>
-    <app-input-text-component></app-input-text-component>
-  </div>
-    <div class="flex flex-col gap-2">
-    <label for="username">Senha</label>
-    <app-password-input-component></app-password-input-component>
-  </div>
-    <div class="form-actions">
-      <a href="#" class="forgot-password" (click)="navegarPraEsqueciSenha($event)">Esqueci a senha</a>
-      <button type="button" class="botao-degrade" (click)="navegarParaHome()">Entrar</button>
+
+    <!-- Título -->
+    <h2 class="text-center text-2xl font-bold mb-8 text-gray-800">Login</h2>
+
+    <!-- Formulário -->
+    <div class="flex flex-col gap-6">
+      
+      <!-- Campo Nome de Usuário -->
+      <div class="flex flex-col gap-2 text-left">
+        <label for="username" class="text-sm font-bold text-gray-600">Nome de Usuário</label>
+        <app-input-text-component></app-input-text-component>
+      </div>
+
+      <!-- Campo Senha -->
+      <div class="flex flex-col gap-2 text-left">
+        <label for="password" class="text-sm font-bold text-gray-600">Senha</label>
+        <app-password-input-component></app-password-input-component>
+      </div>
+
+      <!-- Ações do Formulário -->
+      <div class="flex justify-between items-center mt-4">
+        <!-- Link "Esqueci a senha" -->
+        <a 
+          (click)="navegarPraEsqueciSenha($event)" 
+          class="text-sm font-bold text-blue-600 hover:underline cursor-pointer">
+          Esqueci a senha
+        </a>
+        
+        <!-- Botão de Entrar -->
+        <button 
+          (click)="navegarParaHome()" 
+          class="px-8 py-3 border-none rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+          Entrar
+        </button>
+      </div>
     </div>
-  </form>
+  </div>
 </div>
-</div>
+
