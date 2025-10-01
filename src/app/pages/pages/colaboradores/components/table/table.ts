@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Table } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
 import { Customer, Representative } from '../../../../../../domain/customer';
-import { CustomerService } from '../../../../../../service/customerService';
+import { CustomerService } from '../../../../../../services/customerService';
 import { TagModule } from 'primeng/tag';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';

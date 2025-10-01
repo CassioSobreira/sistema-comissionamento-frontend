@@ -1,1 +1,14 @@
-<menu-bar />
+<menu-bar></menu-bar>
+
+@if (mensagemBoasVindas) {
+  <div>
+    <h1>{{ mensagemBoasVindas }}</h1>
+    <p>Você está na área protegida da aplicação.</p>
+  </div>
+}
+
+@if (erro) {
+  <div>
+    <p style="color: red;">{{ erro }}</p>
+  </div>
+}

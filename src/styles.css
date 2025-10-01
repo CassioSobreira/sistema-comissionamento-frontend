@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "primeicons/primeicons.css";
 
-
 @font-face {
   font-family: 'Coolvetica';
   src: url('/assets/fonts/Coolvetica-Rg.otf') format('opentype');
