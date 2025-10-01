@@ -5,8 +5,7 @@ import { PasswordInputComponent } from '../../../components/shared-components/co
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthService } from '../../../../services/auth.service';
 import { CommonModule } from '@angular/common';
-
-import { MessageService } from 'primeng/api';
+import { MessageService } from 'primeng/api'; // Importa o MessageService diretamente
 
 @Component({
   selector: 'app-login-page',
@@ -29,27 +28,18 @@ export class LoginPageComponent {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private messageService: MessageService
+    private messageService: MessageService // Injeta o MessageService do PrimeNG
   ) {}
 
   onSubmit() {
     if (this.loginForm.invalid) {
-      this.messageService.add({ 
-        severity: 'warn', 
-        summary: 'Atenção', 
-        detail: 'Por favor, preencha o formulário corretamente.' 
-      });
+      this.showWarn('Por favor, preencha o formulário corretamente.');
       return;
     }
 
     this.authService.login(this.loginForm.value).subscribe({
       next: (response) => {
-        // 3. FAÇA A CHAMADA DIRETA
-        this.messageService.add({ 
-          severity: 'success', 
-          summary: 'Sucesso', 
-          detail: 'Login realizado com sucesso!' 
-        });
+        this.showSuccess('Login realizado com sucesso!');
         
         localStorage.setItem('token', response.token);
 
@@ -62,14 +52,8 @@ export class LoginPageComponent {
         }, 500);
       },
       error: (err) => {
-        console.error('Erro no login:', err);
         const erroMsg = err.error.error || 'Erro ao tentar fazer login. Tente novamente.';
-        
-        this.messageService.add({ 
-          severity: 'error', 
-          summary: 'Erro', 
-          detail: erroMsg 
-        });
+        this.showError(erroMsg);
       }
     });
   }
@@ -77,5 +61,32 @@ export class LoginPageComponent {
   navegarPraEsqueciSenha(event: Event) {
     event.preventDefault();
     this.router.navigate(['/esqueci-senha']);
+  }
+
+  // --- MÉTODOS PRIVADOS PARA FACILITAR AS NOTIFICAÇÕES ---
+  
+  private showSuccess(detail: string) {
+    this.messageService.add({ 
+      severity: 'success', 
+      summary: 'Sucesso', 
+      detail: detail,
+      life: 3000
+    });
+  }
+
+  private showError(detail: string) {
+    this.messageService.add({ 
+      severity: 'error', 
+      summary: 'Erro', 
+      detail: detail 
+    });
+  }
+
+  private showWarn(detail: string) {
+    this.messageService.add({ 
+      severity: 'warn', 
+      summary: 'Atenção', 
+      detail: detail 
+    });
   }
 }
