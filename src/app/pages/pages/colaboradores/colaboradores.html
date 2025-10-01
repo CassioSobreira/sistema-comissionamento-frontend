@@ -5,26 +5,12 @@
   - 'justify-end': Empurra o conteúdo flex (o botão) para a direita.
   - 'w-full py-6 px-8': Define a largura total e o espaçamento interno.
 -->
-<header class="relative flex w-full items-center justify-end py-6 px-8">
+
+<body>
   
-  <!-- 
-    Container do Título.
-    - 'absolute': Retira o título do fluxo normal do layout.
-    - 'left-1/2 top-1/2': Move o canto superior esquerdo do elemento para o centro da página.
-    - '-translate-x-1/2 -translate-y-1/2': Desloca o elemento para trás em 50% de sua própria largura e altura, centralizando-o perfeitamente.
-    - 'transform': Classe necessária para habilitar as transformações (translate).
-    - As outras classes recriam o painel cinza escuro com borda e texto claro.
-  -->
-  <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform rounded-lg border border-neutral-700 bg-neutral-800 px-6 py-3">
-    <h1 class="text-lg font-medium text-gray-200">
-      Colaboradores
-    </h1>
-  </div>
+    <div class="mt-4 mx-auto max-w-6xl">
+      <button-modal></button-modal>
+      <table-filter-basic-demo/>
+    </div>
 
-  <!-- 
-    Botão de Upload.
-    - Sua posição é controlada pelo 'justify-end' do container <header>.
-  -->
-  <button-modal></button-modal>
-
-</header>
+  </body>
