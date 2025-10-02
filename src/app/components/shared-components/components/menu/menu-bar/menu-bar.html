@@ -1,28 +1,36 @@
-
-<p-toolbar
-  [style]="{
+<p-toolbar [style]="{
     'background-color': '#181818',
     'color': 'white',
-  }"
-  styleClass="toolbar-borda-unica"
->
-<p-button icon="pi pi-bars" (click)="visible = true" text severity="secondary">
-            <p-drawer [(visible)]="visible" [showCloseIcon]="false" [style]="{ 'background-color': '#181818', 'color': 'white',border:'#181818' }">
-    <img src="/public/LDP NEGATIVO.png" alt="SENAI CIMATEC" style="width:85%; margin-bottom: 20px;" />      
-    <p>
+  }" styleClass="toolbar-borda-unica">
+  <p-button icon="pi pi-bars" (click)="visible = true" text severity="secondary">
+    <p-drawer [(visible)]="visible" [showCloseIcon]="false"
+      [style]="{ 'background-color': '#181818', 'color': 'white',border:'#181818' }">
+      <img src="/public/LDP NEGATIVO.png" alt="SENAI CIMATEC" style="width:85%; margin-bottom: 20px;" />
+      <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
         et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
         aliquip ex ea commodo consequat.
-    </p>
-</p-drawer>
-</p-button>
-      <ng-template #center>
-      <img src="/ldp-positivo.png" alt="SENAI CIMATEC" style="width: 150px; height: auto;" />
-      </ng-template>
-    <ng-template #end>  
-      <p-button icon="pi pi-question-circle" text severity="secondary" />
-      <p-button icon="pi pi-cog" text severity="secondary" />      
-      <p-button icon="pi pi-bell" class="mr-2" text severity="secondary" />
-      <p-button icon="pi pi-sign-out" (click)="logout()" text severity="secondary"></p-button>
-    </ng-template>
+      </p>
+    </p-drawer>
+  </p-button>
+  <ng-template #center>
+    <img src="/ldp-positivo.png" alt="SENAI CIMATEC" style="width: 150px; height: auto;" />
+  </ng-template>
+
+
+  <ng-template #end>
+    <p-button
+    icon="pi pi-question-circle"
+    text
+    [severity]="isDevActive ? 'primary' : 'secondary'"
+    [styleClass]="isDevActive ? 'active-btn' : ''"
+    [disabled]="isDevActive ? true : false"
+    (click)="goToDesenvolvedores()"
+    ariaLabel="Ir para Desenvolvedores">
+    </p-button>
+
+    <p-button icon="pi pi-cog" text severity="secondary" />
+    <p-button icon="pi pi-bell" class="mr-2" text severity="secondary" />
+    <p-button icon="pi pi-sign-out" (click)="logout()" text severity="secondary"></p-button>
+  </ng-template>
 </p-toolbar>

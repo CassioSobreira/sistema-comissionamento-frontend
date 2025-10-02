@@ -6,25 +6,31 @@ import { RedefinirSenha } from '../pages/pages/redefinir-senha/redefinir-senha';
 import { ConfirmaSenha } from '../pages/pages/confirma-senha/confirma-senha';
 import { Colaboradores } from '../pages/pages/colaboradores/colaboradores';
 import { authGuard } from '../../guards/auth-guard';
-export const routes: Routes = [
-    // { path: '', component: HomeComponent },
-    { path: '', component: LoginPageComponent},
-    { 
-        path: 'home', 
-        component: HomePage,
-        canActivate: [authGuard] // ROTE PROTEGIDA COM O GUARD
+import { InfoDevs } from '../pages/pages/info-devs/info-devs';
 
-    },
-    {path:'esqueci-senha', component: EsqueciSenha},
-    {
-        path:'redefinir-senha',
-        component: RedefinirSenha
-    },
-    { 
-        path: 'redefinir-senha-logado', 
-        component: RedefinirSenha, 
-        canActivate: [authGuard] // O usuário precisa estar logado para acessar
-    },
-    {path: 'confirma-senha', component: ConfirmaSenha},
-    {path: 'colaboradores', component: Colaboradores}
+export const routes: Routes = [
+  // { path: '', component: HomeComponent },
+  { path: '', component: LoginPageComponent },
+  {
+    path: 'home',
+    component: HomePage,
+    canActivate: [authGuard], // ROTE PROTEGIDA COM O GUARD
+  },
+  { path: 'esqueci-senha', component: EsqueciSenha },
+  {
+    path: 'redefinir-senha',
+    component: RedefinirSenha,
+  },
+  {
+    path: 'redefinir-senha-logado',
+    component: RedefinirSenha,
+    canActivate: [authGuard], // O usuário precisa estar logado para acessar
+  },
+  { path: 'confirma-senha', component: ConfirmaSenha },
+  { path: 'colaboradores', component: Colaboradores },
+  {
+    path: 'desenvolvedores',
+    component: InfoDevs,
+    canActivate: [authGuard], // O usuário precisa estar logado para acessar
+  },
 ];

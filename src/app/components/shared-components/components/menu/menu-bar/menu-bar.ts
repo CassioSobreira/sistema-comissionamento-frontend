@@ -12,37 +12,52 @@ import { IconField } from 'primeng/iconfield';
 import { InputIcon } from 'primeng/inputicon';
 import { DrawerModule } from 'primeng/drawer';
 import { AvatarModule } from 'primeng/avatar';
-import { AuthService } from '../../../../../../services/auth.service';  
+import { AuthService } from '../../../../../../services/auth.service';
+
 @Component({
-    selector: 'menu-bar',
-    templateUrl: './menu-bar.html',
-    standalone: true,
-    imports: [AvatarModule,DrawerModule,Menubar, ToastModule,RouterOutlet,ToolbarModule,Toolbar, ButtonModule, SplitButton, InputTextModule, IconField, InputIcon],
-    providers: [MessageService]
+  selector: 'menu-bar',
+  templateUrl: './menu-bar.html',
+  standalone: true,
+  imports: [
+    AvatarModule,
+    DrawerModule,
+    Menubar,
+    ToastModule,
+    RouterOutlet,
+    ToolbarModule,
+    Toolbar,
+    ButtonModule,
+    SplitButton,
+    InputTextModule,
+    IconField,
+    InputIcon,
+  ],
+  providers: [MessageService],
 })
 export class MenuBar implements OnInit {
-    visible: boolean = false;
-    items: MenuItem[] | undefined;
+  visible: boolean = false;
+  items: MenuItem[] | undefined;
 
-    constructor(private messageService: MessageService, private router: Router, private authService: AuthService) {}
-    
+  constructor(
+    private messageService: MessageService,
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
-    ngOnInit() {
-        this.items = [
-            {
-                label: 'Update',
-                icon: 'pi pi-refresh'
-            },
-            {
-                label: 'Delete',
-                icon: 'pi pi-times'
-            }
-        ];
-    }
+  isDevActive: boolean = false;
 
-    logout() {
-        this.authService.logout();
-    }
+  ngOnInit() {
+    this.isDevActive = this.router.url.startsWith('/desenvolvedores');
+    this.router.events.subscribe(() => {
+      this.isDevActive = this.router.url.startsWith('/desenvolvedores');
+    });
+  }
 
-    
+  logout() {
+    this.authService.logout();
+  }
+
+  goToDesenvolvedores() {
+    this.router.navigate(['/desenvolvedores']);
+  }
 }
