@@ -16,7 +16,15 @@ export const routes: Routes = [
 
     },
     {path:'esqueci-senha', component: EsqueciSenha},
-    {path:'redefinir-senha',component: RedefinirSenha},
+    {
+        path:'redefinir-senha',
+        component: RedefinirSenha
+    },
+    { 
+        path: 'redefinir-senha-logado', 
+        component: RedefinirSenha, 
+        canActivate: [authGuard] // O usuário precisa estar logado para acessar
+    },
     {path: 'confirma-senha', component: ConfirmaSenha},
     {path: 'colaboradores', component: Colaboradores}
 ];

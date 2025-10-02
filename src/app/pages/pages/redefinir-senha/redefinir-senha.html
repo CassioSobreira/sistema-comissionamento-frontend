@@ -1,49 +1,43 @@
-<!-- 
-  Container principal da página, mantendo o padrão visual.
-  - Centraliza o conteúdo na tela.
-  - O fundo gradiente já é herdado do styles.css.
--->
 <div class="flex min-h-screen items-center justify-center p-4">
 
-  <!-- 
-    Card do formulário.
-    - Estilo consistente com a tela anterior.
-  -->
   <div class="bg-white rounded-xl p-8 shadow-2xl w-full max-w-md text-gray-800">
 
-    <!-- Cabeçalho -->
     <div class="text-center">
-      <h2 class="text-2xl font-bold mb-2">Crie uma Nova Senha</h2>
-      <p class="text-gray-500 mb-8">Sua nova senha deve ser diferente da anterior.</p>
+      <h2 class="text-2xl font-bold mb-2">Crie sua Nova Senha</h2>
+      <p class="text-gray-500 mb-8">Digite e confirme sua nova senha de acesso.</p>
     </div>
 
-    <!-- Formulário -->
-    <div>
-      <!-- Campo Nova Senha -->
-      <div class="mb-5 text-left">
-        <label for="new-password" class="block mb-2 text-sm font-medium text-gray-700">Nova Senha</label>
-        <!-- Seu componente de input de senha -->
-        <app-password-input-component></app-password-input-component>
-      </div>
-      
-      <!-- Campo Confirme a Nova Senha -->
-      <div class="mb-6 text-left">
-        <label for="confirm-password" class="block mb-2 text-sm font-medium text-gray-700">Confirme a Nova Senha</label>
-        <!-- Seu componente de input de senha -->
-        <app-password-input-component></app-password-input-component>
-      </div>
-      
-      <!-- Botão de Ação Principal -->
-      <button 
-        (click)="navegarParaConfirmarSenha($event)"
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors duration-300">
-        Atualizar Senha
-      </button>
-    </div>
+    <form [formGroup]="redefinirSenhaForm" (ngSubmit)="onSubmit()">
+      <div class="flex flex-col gap-6">
 
-    <!-- Link de Voltar -->
-    <a (click)="navegarParaLogin()" class="block mt-6 text-center text-sm text-blue-600 hover:underline cursor-pointer">
-      Voltar para o login
-    </a>
+        <div class="flex flex-col gap-2 text-left">
+          <label for="novaSenha" class="text-sm font-bold text-gray-600">Nova Senha</label>
+          <app-password-input-component
+            formControlName="novaSenha"
+            id="novaSenha">
+          </app-password-input-component>
+        </div>
+
+        <div class="flex flex-col gap-2 text-left">
+          <label for="confirmarSenha" class="text-sm font-bold text-gray-600">Confirmar Nova Senha</label>
+          <app-password-input-component
+            formControlName="confirmarSenha"
+            id="confirmarSenha">
+          </app-password-input-component>
+        </div>
+      
+        <button 
+          type="submit"
+          [disabled]="redefinirSenhaForm.invalid || isLoading"
+          class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed">
+          @if (isLoading) {
+            <span>Salvando...</span>
+          } @else {
+            <span>Redefinir Senha</span>
+          }
+        </button>
+
+      </div>
+    </form>
   </div>
 </div>

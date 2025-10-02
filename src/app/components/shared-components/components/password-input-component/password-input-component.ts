@@ -23,11 +23,14 @@ export class PasswordInputComponent implements ControlValueAccessor {
   // Propriedades internas do componente
   value: string = '';
   isDisabled: boolean = false;
-
-  // Funções de "ponte" que o Angular usa para se comunicar com o formulário.
-  // Não é necessário alterar esta parte.
-  onChange: (value: any) => void = () => {};
+  onChange: (value:any) => void = () => {};
   onTouched: () => void = () => {};
+
+  isPasswordVisible: boolean = false;
+
+  togglePasswordVisibility(): void {
+    this.isPasswordVisible = !this.isPasswordVisible;
+  }
 
   /**
    * Método chamado pelo Angular Forms para escrever um valor no componente.

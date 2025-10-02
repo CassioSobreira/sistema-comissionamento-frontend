@@ -51,4 +51,30 @@ export class AuthService {
     }
     return null;
   }
+
+  /**
+   * Envia o e-mail do usuário para o endpoint de "esqueci a senha".
+   * @param email - O e-mail do usuário que esqueceu a senha.
+   */
+  esqueciSenha(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/usuarios/esqueci-senha`, { email });
+  }
+  /**
+   * Envia o e-mail do usuário para o endpoint de "esqueci a senha".
+   * @param token - O token de redefinição de senha.
+   * @param novaSenha - A nova senha que o usuário deseja definir.
+   */
+  redefinirSenha(token: string, novaSenha: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/usuarios/redefinir-senha`, { token, novaSenha });
+  }
+   /**
+   * Envia a nova senha para o endpoint protegido de redefinição para usuários logados.
+   * @param novaSenha - A nova senha escolhida pelo usuário.
+   */
+  redefinirSenhaLogado(novaSenha: string): Observable<any> {
+    // O token de login é enviado automaticamente pelo interceptor.
+    // Não precisamos passá-lo como argumento.
+    return this.http.post(`${this.apiUrl}/usuarios/redefinir-senha-logado`, { novaSenha });
+  }
+  
 }
