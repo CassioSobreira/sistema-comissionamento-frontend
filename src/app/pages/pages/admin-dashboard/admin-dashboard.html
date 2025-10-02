@@ -2,23 +2,55 @@
 <div class="admin-dashboard p-4 text-white">
   <h1 class="text-2xl font-bold mb-4">Painel de Administração</h1>
 
-  <p-tabs>
+  <p-tabs [(value)]="abaAtiva">
     <p-tablist>
-      <p-tab value="0">Gerenciar Usuários</p-tab>
-      <p-tab value="1">Gerenciar Templates</p-tab>
+      <p-tab [value]="0">Gerenciar Usuários</p-tab>
+      <p-tab [value]="1">Gerenciar Templates</p-tab>
     </p-tablist>
 
     <p-tabpanels>
-      <p-tabpanel value="0">
+      <p-tabpanel [value]="0">
         <div class="p-4 bg-gray-800 rounded-b-lg">
-          <p-table [value]="usuarios" styleClass="p-datatable-striped" [loading]="isLoadingUsuarios">
+
+          <p-table 
+            #dt1
+            [value]="usuarios" 
+            class="p-datatable-striped" 
+            [loading]="isLoadingUsuarios"
+            [globalFilterFields]="['nome', 'email', 'nome_perfil', 'status']"
+          >
             
             <ng-template pTemplate="caption">
-              <div class="flex justify-end">
-                <p-button label="Criar Novo Usuário" icon="pi pi-plus" (click)="abrirModalUsuario()" />
+              <div class="flex items-center justify-between">
+                
+                <span class="p-input-icon-left">
+
+                  <input 
+                    pInputText 
+                    type="text" 
+                    (input)="dt1.filterGlobal($any($event.target).value, 'contains')" 
+                    placeholder="Pesquisar..."
+                    class="
+                      text-base
+                      py-3 pl-10 pr-4
+                      w-full max-w-xs
+                      bg-gray-900 text-gray-200      
+                      border border-gray-600 rounded-lg 
+                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                      placeholder-gray-400
+                    "
+                  />
+                </span>
+
+                <p-button 
+                  label="Criar Novo Usuário" 
+                  icon="pi pi-plus" 
+                  (click)="abrirModalUsuario()" 
+                  class="p-button-sm">
+                </p-button>
+
               </div>
             </ng-template>
-
             <ng-template pTemplate="header">
               <tr>
                 <th>Nome</th>
@@ -28,6 +60,7 @@
                 <th style="width: 10rem">Ações</th>
               </tr>
             </ng-template>
+            
             <ng-template pTemplate="body" let-usuario>
               <tr>
                 <td>{{ usuario.nome }}</td>
@@ -40,12 +73,73 @@
                 </td>
               </tr>
             </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="5" class="text-center p-4">
+                  Nenhum usuário encontrado.
+                </td>
+              </tr>
+            </ng-template>
+
+          </p-table>
+        </div>  
+      </p-tabpanel>
+      <p-tabpanel [value]="1">
+        <div class="p-4 bg-gray-800 rounded-b-lg">
+          <p-table 
+            [value]="entradas" 
+            class="p-datatable-striped" 
+            [loading]="isLoadingEntradas">
+            
+            <ng-template pTemplate="caption">
+              <div class="flex justify-end">
+                <p-button 
+                  label="Criar Novo Template" 
+                  icon="pi pi-plus" 
+                  (click)="abrirModalEntrada()">
+                </p-button>
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+              <tr>
+                <th style="width: 10%">ID</th>
+                <th>Nome do Template</th>
+                <th style="width: 10rem" class="text-center">Ações</th>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-entrada>
+              <tr>
+                <td>{{ entrada.id_entrada }}</td>
+                <td>{{ entrada.nome_entrada }}</td>
+                <td class="text-center">
+                  <p-button 
+                    icon="pi pi-pencil" 
+                    styleClass="p-button-sm p-button-info mr-2" 
+                    (click)="abrirModalEntrada(entrada)">
+                  </p-button>
+                  <p-button 
+                    icon="pi pi-trash" 
+                    styleClass="p-button-sm p-button-danger" 
+                    (click)="deletarEntrada(entrada)">
+                  </p-button>
+                </td>
+              </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+              <tr>
+                <td colspan="3" class="text-center p-4">
+                  Nenhum template de entrada encontrado.
+                </td>
+              </tr>
+            </ng-template>
+
           </p-table>
         </div>
       </p-tabpanel>
-
-      <p-tabpanel value="1">
-        </p-tabpanel>
     </p-tabpanels>
   </p-tabs>
 </div>

@@ -49,6 +49,13 @@ export class UsuarioFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.carregarPerfis();
+  }
+  
+
+  carregarPerfis(): void {
+    this.adminService.getPerfis().subscribe(data => {
+      this.perfis = data.map(perfil => ({ label: perfil.nome_perfil, value: perfil.id_perfil }));
+    });
 
     // Verifica se estamos em modo de edição (se dados foram passados para o modal)
     if (this.config.data && this.config.data.usuario) {
@@ -59,15 +66,9 @@ export class UsuarioFormComponent implements OnInit {
       this.usuarioForm.patchValue({
         nome: usuario.nome,
         email: usuario.email,
-        id_perfil: this.config.data.usuario.id_perfil // Você precisará buscar o id_perfil
+        id_perfil: usuario.id_perfil
       });
     }
-  }
-
-  carregarPerfis(): void {
-    this.adminService.getPerfis().subscribe(data => {
-      this.perfis = data.map(perfil => ({ label: perfil.nome_perfil, value: perfil.id_perfil }));
-    });
   }
 
   onSubmit(): void {
@@ -84,7 +85,6 @@ export class UsuarioFormComponent implements OnInit {
       this.messageService.add({ severity: 'info', summary: 'Info', detail: 'Lógica de atualização a ser implementada.' });
 
     } else {
-      // Lógica de CRIAR (chama a função que já existe)
       this.adminService.registrarUsuario(formData).subscribe({
         next: () => this.ref.close(true), // Fecha o modal e retorna 'true' (sucesso)
         error: (err) => this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.error.error || 'Falha ao criar usuário.' })

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -37,8 +37,12 @@ export class AdminDashboard implements OnInit, OnDestroy {
 
   usuarios: Usuario[] = [];
   entradas: Entrada[] = [];
+  abaAtiva: number = 0;
   isLoadingUsuarios = false;
   isLoadingEntradas = false;
+
+  // controla a aba ativa do componente p-tabs; inicializado como '0' para abrir a primeira aba por padrão
+  
 
   private destroy$ = new Subject<void>();
   ref: DynamicDialogRef | undefined; // Para controlar os modais
@@ -47,7 +51,8 @@ export class AdminDashboard implements OnInit, OnDestroy {
     private adminService: AdminService,
     private messageService: MessageService,
     private dialogService: DialogService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -63,10 +68,12 @@ export class AdminDashboard implements OnInit, OnDestroy {
       next: (data) => {
         this.usuarios = data;
         this.isLoadingUsuarios = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.showError('Falha ao carregar a lista de usuários.');
         this.isLoadingUsuarios = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -77,10 +84,12 @@ export class AdminDashboard implements OnInit, OnDestroy {
       next: (data) => {
         this.entradas = data;
         this.isLoadingEntradas = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.showError('Falha ao carregar a lista de templates.');
         this.isLoadingEntradas = false;
+        this.cdr.detectChanges();
       }
     });
   }

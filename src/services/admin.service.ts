@@ -4,11 +4,11 @@ import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
 import { tap } from 'rxjs/operators';
 
-// Opcional, mas recomendado: Crie interfaces para tipar seus dados
 export interface Usuario {
   id_usuario: number;
   nome: string;
   email: string;
+  id_perfil: number;
   nome_perfil: string;
   status: 'ativo' | 'inativo' | 'pendente_ativacao';
 }
@@ -47,6 +47,12 @@ export class AdminService {
   registrarUsuario(usuarioData: { nome: string, email: string, id_perfil: number }): Observable<any> {
     return this.http.post(`${this.usuariosApiUrl}/registrar`, usuarioData);
   }
+
+   /**
+   * NOVO: Registra um novo usuário (chamado por um admin).
+   * Chama: POST /api/admin/usuarios/:id_usuario/perfil
+   */
+ 
 
   /**
    * Busca a lista completa de usuários.

@@ -52,6 +52,11 @@ export class AuthService {
     return null;
   }
 
+  public getPerfilUsuario(): string | null {
+    const token = this.getDecodedToken();
+    return token ? token.perfil : null;
+  }
+
   /**
    * Envia o e-mail do usuário para o endpoint de "esqueci a senha".
    * @param email - O e-mail do usuário que esqueceu a senha.
