@@ -1,28 +1,54 @@
-
 <p-toolbar
-  [style]="{
-    'background-color': '#181818',
-    'color': 'white',
-  }"
-  styleClass="toolbar-borda-unica"
+    [style]="{
+        'background-color': '#181818',
+        'color': 'white'
+    }"
+    styleClass="toolbar-borda-unica"
 >
-<p-button icon="pi pi-bars" (click)="visible = true" text severity="secondary">
-            <p-drawer [(visible)]="visible" [showCloseIcon]="false" [style]="{ 'background-color': '#181818', 'color': 'white',border:'#181818' }">
-    <img src="/public/LDP NEGATIVO.png" alt="SENAI CIMATEC" style="width:85%; margin-bottom: 20px;" />      
-    <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-        et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-        aliquip ex ea commodo consequat.
-    </p>
-</p-drawer>
-</p-button>
-      <ng-template #center>
-      <img src="/ldp-positivo.png" alt="SENAI CIMATEC" style="width: 150px; height: auto;" />
-      </ng-template>
-    <ng-template #end>  
-      <p-button icon="pi pi-question-circle" text severity="secondary" />
-      <p-button icon="pi pi-cog" text severity="secondary" />      
-      <p-button icon="pi pi-bell" class="mr-2" text severity="secondary" />
-      <p-button icon="pi pi-sign-out" (click)="logout()" text severity="secondary"></p-button>
+    <p-button icon="pi pi-bars" (click)="visible = true" text severity="secondary" styleClass="text-white">
+        <p-drawer
+            [(visible)]="visible"
+            [showCloseIcon]="false"
+            [baseZIndex]="1000"
+            [modal]="false"
+            [style]="{ 'background-color': '#181818', 'width': '20rem', 'border': 'none', 'color': 'white' }"
+            styleClass="p-0"
+        >
+            <div class="flex flex-col p-4 h-full text-white">
+                
+                <div class="mb-5 px-1 pt-2">
+                    <img src="/ldp-positivo.png" alt="SENAI CIMATEC" class="w-11/12" />
+                </div>
+
+                <ng-container *ngFor="let item of menuItems">
+                    <a 
+                        pRipple 
+                        class="flex items-center cursor-pointer p-4 mb-2 rounded-lg duration-150 transition-colors"
+                        
+                        (click)="selecionarPagina(item.route)" 
+                        
+                        [ngClass]="{
+                            'bg-[#C5CCD6] text-[#3A404C]': paginaAtiva === item.route,     
+                            'text-[#7A8B9A] hover:bg-white/10': paginaAtiva !== item.route 
+                        }"
+                    >
+                        <i [class]="'pi ' + item.icon + ' mr-3 text-2xl'"></i> 
+                        
+                        <span class="font-bold text-base uppercase">{{ item.label }}</span>
+                    </a>
+                </ng-container>
+                
+            </div>
+        </p-drawer>
+    </p-button>
+
+    <ng-template #center>
+        <img src="/LDP POSITIVO.png" alt="SENAI CIMATEC" style="width: 150px; height: auto" />
+    </ng-template>
+    
+    <ng-template #end>
+        <p-button icon="pi pi-question-circle" text severity="secondary" styleClass="text-white"/>
+        <p-button icon="pi pi-cog" text severity="secondary" styleClass="text-white"/>
+        <p-button icon="pi pi-bell" class="mr-2" text severity="secondary" styleClass="text-white"/>
     </ng-template>
 </p-toolbar>
