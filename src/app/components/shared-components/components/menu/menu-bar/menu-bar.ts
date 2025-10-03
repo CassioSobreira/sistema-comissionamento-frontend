@@ -44,5 +44,8 @@ export class MenuBar implements OnInit {
         this.authService.logout();
     }
 
+    goToAdmin() {
+        this.router.navigate(['/admin']);
+    }
     
 }
