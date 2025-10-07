@@ -7,7 +7,8 @@
 
     <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-10 mt-6 sm:mt-8">
     <p class="mx-auto md:mx-0 max-w-4xl mt-6 sm:mt-8 text-white/70 mb-6 text-center md:text-left">
-      Este sistema foi desenvolvido por uma equipe dedicada de alunos da Universidade SENAI CIMATEC, com o objetivo de
+      Este sistema foi desenvolvido por uma equipe de alunos de graduação da Universidade SENAI CIMATEC,
+      no âmbito da Trilha Técnico-Gestor, com o objetivo de
       facilitar a gestão de comissionamento. Abaixo, você encontrará informações sobre cada membro da equipe,
       incluindo suas especialidades e formas de contato.
     </p>
@@ -42,6 +43,7 @@
             </div>
 
             <div class="flex flex-wrap justify-center md:justify-start gap-2 mt-4">
+
               <a
                 pButton
                 class="p-button-text"
@@ -80,6 +82,66 @@
           class="text-white/80 italic px-4 py-3 rounded-xl border border-white/10 bg-neutral-900 text-center md:text-left"
         >
           Nenhum desenvolvedor cadastrado.
+        </div>
+      }
+    </div>
+
+    <h2 class="font-bold text-xl mt-18 mb-4 text-white text-center md:text-left">
+      Orientadores
+    </h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+      @for (o of orientadores; track o.nome) {
+        <article
+          class="group h-full flex flex-col md:flex-row items-center md:items-start gap-4 p-5 rounded-2xl border border-white/10 bg-neutral-900 text-white shadow-sm hover:shadow-md hover:border-white/20 hover:bg-neutral-900/95 transition"
+        >
+          <img
+            class="w-36 h-48 rounded-xl object-cover border border-white/20 ring-0 group-hover:ring-1 group-hover:ring-white/20 transition"
+            [src]="o.foto"
+            [alt]="'Foto de ' + o.nome"
+            loading="lazy"
+          />
+
+          <div class="min-w-0 flex-1 w-full text-center md:text-left">
+            <h3 class="text-lg font-semibold leading-tight truncate">
+              {{ o.nome }}
+            </h3>
+
+            <div class="inline-flex md:flex items-center gap-2 mt-1">
+              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-white/10 text-white/90">
+                {{ o.descricao }}
+              </span>
+            </div>
+
+            <div class="flex flex-wrap justify-center md:justify-start gap-2 mt-4">
+
+              <a
+                pButton
+                class="p-button-text"
+                icon="pi pi-linkedin"
+                label="LinkedIn"
+                [href]="o.linkedin"
+                target="_blank"
+                rel="noopener"
+                aria-label="Abrir LinkedIn de {{ o.nome }}"
+              ></a>
+
+              <a
+                pButton
+                class="p-button-text"
+                icon="pi pi-envelope"
+                label="Email"
+                [href]="'mailto:' + o.email"
+                aria-label="Enviar email para {{ o.nome }}"
+              ></a>
+            </div>
+          </div>
+        </article>
+      } @empty {
+        <div
+          class="text-white/80 italic px-4 py-3 rounded-xl border border-white/10 bg-neutral-900 text-center md:text-left"
+        >
+          Nenhum orientador cadastrado.
         </div>
       }
     </div>

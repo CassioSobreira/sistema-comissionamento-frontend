@@ -1,8 +1,9 @@
 // Update the path below to the correct relative path for AuthService
 import { AuthService } from '../../../../services/auth.service';
 import type { dev } from './data/devList';
+import type { orientador } from './data/orientList';
 import { devList } from './data/devList';
-
+import { orientList } from './data/orientList';
 import { Component } from '@angular/core';
 import {  ButtonModule } from "primeng/button";
 import { MenuBar } from "../../../components/shared-components/components/menu/menu-bar/menu-bar";
@@ -15,8 +16,11 @@ import { MenuBar } from "../../../components/shared-components/components/menu/m
 })
 
 export class InfoDevs {
-
-  constructor(private authService: AuthService) { };
   devs: dev[] = devList;
-  trackByNome = (_: number, d: dev) => d.nome;
+  orientadores: orientador[] = orientList;
+
+  constructor(private authService: AuthService) { }
+
+  trackByNomeDev = (_: number, d: dev) => d.nome;
+  trackByNomeOrient = (_: number, o: orientador) => o.nome;
 }
