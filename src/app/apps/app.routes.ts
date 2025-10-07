@@ -7,6 +7,7 @@ import { ConfirmaSenha } from '../pages/pages/confirma-senha/confirma-senha';
 import { Colaboradores } from '../pages/pages/colaboradores/colaboradores';
 import { authGuard } from '../../guards/auth-guard';
 import { AdminDashboard } from '../pages/pages/admin-dashboard/admin-dashboard';
+import { Info } from '../pages/pages/info-devs/info-devs';
 export const routes: Routes = [
     // { path: '', component: HomeComponent },
     { path: '', component: LoginPageComponent},
@@ -35,5 +36,7 @@ export const routes: Routes = [
         }
     },
     {path: 'confirma-senha', component: ConfirmaSenha},
-    {path: 'colaboradores', component: Colaboradores}
+    {path: 'colaboradores', component: Colaboradores},
+    {path: 'info', component: Info, canActivate: [authGuard]}
+
 ];

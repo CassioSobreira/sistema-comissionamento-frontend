@@ -131,6 +131,10 @@ export class MenuBar implements OnInit, OnDestroy {
         this.authService.logout();
     }
     
+    goToInfo() {
+        this.paginaAtiva = 'info';
+        this.router.navigate(['info']);
+    }
     private setActiveFromUrl(url: string) {
         const segment = url.split('/').filter(Boolean)[0] || 'home';
         this.paginaAtiva = segment;

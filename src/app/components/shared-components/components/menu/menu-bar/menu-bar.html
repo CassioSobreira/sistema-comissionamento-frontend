@@ -46,9 +46,8 @@
         <img src="/LDP POSITIVO.png" alt="SENAI CIMATEC" style="width: 150px; height: auto" />
     </ng-template>
     <ng-template #end>
-        @if (nomeUsuario) {
-                <div class="flex items-center gap-2">
-                    <p-avatar 
+        <div class="flex items-center gap-1"> @if (nomeUsuario) {
+                <div class="flex items-center gap-2 mr-2"> <p-avatar 
                         [label]="iniciaisUsuario" 
                         shape="circle" 
                         class="bg-blue-500 text-white font-bold">
@@ -56,10 +55,23 @@
                     <span class="font-bold hidden sm:block">{{ nomeUsuario }}</span>
                 </div>
             }
-        <p-button icon="pi pi-cog" text severity="secondary" styleClass="text-white" />
-        <p-button icon="pi pi-question-circle" text severity="secondary" styleClass="text-white"/>
-        <p-button icon="pi pi-bell" class="mr-2" text severity="secondary" styleClass="text-white"/>
-        <p-button icon="pi pi-sign-out" text severity="secondary" (click)="logout()" styleClass="text-white"/>
+            
+            <p-button icon="pi pi-cog" text severity="secondary" class="text-white" />
+            
+            <p-button 
+                icon="pi pi-question-circle" 
+                text 
+                severity="secondary" 
+                (click)="goToInfo()"
+                [ngClass]="{
+                    'bg-white/20 text-blue-300 rounded-md': paginaAtiva === 'info', 
+                    'text-white': paginaAtiva !== 'info'
+                }"
+            />
+
+            <p-button icon="pi pi-bell" text severity="secondary" class="text-white"/>
+            <p-button icon="pi pi-sign-out" text severity="secondary" (click)="logout()" class="text-white ml-2"/>
+        </div>
     </ng-template>
     
 </p-toolbar>
