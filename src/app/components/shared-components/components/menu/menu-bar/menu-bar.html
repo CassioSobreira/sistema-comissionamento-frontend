@@ -45,11 +45,21 @@
     <ng-template #center>
         <img src="/LDP POSITIVO.png" alt="SENAI CIMATEC" style="width: 150px; height: auto" />
     </ng-template>
-    
     <ng-template #end>
-        <p-button icon="pi pi-question-circle" text severity="secondary" styleClass="text-white"/>
+        @if (nomeUsuario) {
+                <div class="flex items-center gap-2">
+                    <p-avatar 
+                        [label]="iniciaisUsuario" 
+                        shape="circle" 
+                        class="bg-blue-500 text-white font-bold">
+                    </p-avatar>
+                    <span class="font-bold hidden sm:block">{{ nomeUsuario }}</span>
+                </div>
+            }
         <p-button icon="pi pi-cog" text severity="secondary" styleClass="text-white" />
+        <p-button icon="pi pi-question-circle" text severity="secondary" styleClass="text-white"/>
         <p-button icon="pi pi-bell" class="mr-2" text severity="secondary" styleClass="text-white"/>
         <p-button icon="pi pi-sign-out" text severity="secondary" (click)="logout()" styleClass="text-white"/>
     </ng-template>
+    
 </p-toolbar>

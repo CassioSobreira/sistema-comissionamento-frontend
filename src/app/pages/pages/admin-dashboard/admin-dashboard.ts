@@ -15,7 +15,7 @@ import { MessageService, ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 // Componentes de Modal (que você precisará criar no futuro)
-import { UsuarioFormComponent } from './forms/usuario-form/usuario-form';
+import { UsuarioForm } from './forms/usuario-form/usuario-form';
 // import { EntradaFormComponent } from './entrada-form/entrada-form.component';
 import { MenuBar } from '../../../components/shared-components/components/menu/menu-bar/menu-bar';
 @Component({
@@ -97,7 +97,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
   // --- AÇÕES DE CRUD (USUÁRIOS) ---
 
   abrirModalUsuario(usuario?: Usuario): void {
-    const dialogRef = this.dialogService.open(UsuarioFormComponent, {
+    const dialogRef = this.dialogService.open(UsuarioForm, {
       header: usuario ? `Editar Usuário: ${usuario.nome}` : 'Criar Novo Usuário',
       width: '40%',
       contentStyle: { "overflow": "auto" },

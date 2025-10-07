@@ -3,16 +3,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
+import { tap, Observable } from 'rxjs';
 
-// Imports do PrimeNG para o formulário e modal
+// Imports do PrimeNG
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
+import { ToggleSwitchModule } from 'primeng/toggleswitch';
 import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 
 // Nossos serviços e modelos
-import { AdminService, Usuario } from '../../../../../../services/admin.service';
+import { AdminService, Usuario, Perfil } from '../../../../../../services/admin.service'; // Ajuste o caminho se necessário
 
 @Component({
   selector: 'app-usuario-form',
@@ -22,53 +24,64 @@ import { AdminService, Usuario } from '../../../../../../services/admin.service'
     ReactiveFormsModule,
     InputTextModule,
     SelectModule,
-    ButtonModule
+    ButtonModule,
+    ToggleSwitchModule 
   ],
   templateUrl: './usuario-form.html',
 })
-export class UsuarioFormComponent implements OnInit {
+
+export class UsuarioForm implements OnInit {
 
   usuarioForm: FormGroup;
   isEditMode = false;
   currentUserId: number | null = null;
   perfis: any[] = []; // Para o dropdown
+  currentUserStatus: string | null = null;
 
   constructor(
     private adminService: AdminService,
-    public ref: DynamicDialogRef, // Para controlar o modal (ex: fechar)
-    public config: DynamicDialogConfig, // Para receber dados no modal
+    public ref: DynamicDialogRef,
+    public config: DynamicDialogConfig,
     private messageService: MessageService
   ) {
     // Inicializa o formulário no construtor
     this.usuarioForm = new FormGroup({
       nome: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
-      id_perfil: new FormControl(null, [Validators.required])
+      id_perfil: new FormControl(null, [Validators.required]),
+      ativo: new FormControl(true) // Controle para o status (ativo/inativo)
     });
   }
 
   ngOnInit(): void {
-    this.carregarPerfis();
+    this.carregarPerfis().subscribe(() => {
+      if (this.config.data && this.config.data.usuario) {
+        this.isEditMode = true;
+        const usuario: Usuario = this.config.data.usuario;
+        this.currentUserId = usuario.id_usuario;
+        
+        this.currentUserStatus = usuario.status;
+        
+        // Desabilita os campos no modo de edição
+        this.usuarioForm.get('nome')?.disable();
+        this.usuarioForm.get('email')?.disable();
+        
+        this.usuarioForm.patchValue({
+          nome: usuario.nome,
+          email: usuario.email,
+          id_perfil: usuario.id_perfil,
+          ativo: usuario.status === 'ativo'
+        });
+      }
+    });
   }
   
-
-  carregarPerfis(): void {
-    this.adminService.getPerfis().subscribe(data => {
-      this.perfis = data.map(perfil => ({ label: perfil.nome_perfil, value: perfil.id_perfil }));
-    });
-
-    // Verifica se estamos em modo de edição (se dados foram passados para o modal)
-    if (this.config.data && this.config.data.usuario) {
-      this.isEditMode = true;
-      const usuario: Usuario = this.config.data.usuario;
-      this.currentUserId = usuario.id_usuario;
-      // Preenche o formulário com os dados do usuário
-      this.usuarioForm.patchValue({
-        nome: usuario.nome,
-        email: usuario.email,
-        id_perfil: usuario.id_perfil
-      });
-    }
+  carregarPerfis(): Observable<Perfil[]> {
+    return this.adminService.getPerfis().pipe(
+      tap(data => {
+        this.perfis = data.map(perfil => ({ label: perfil.nome_perfil, value: perfil.id_perfil }));
+      })
+    );
   }
 
   onSubmit(): void {
@@ -77,22 +90,24 @@ export class UsuarioFormComponent implements OnInit {
       return;
     }
 
-    const formData = this.usuarioForm.value;
-
     if (this.isEditMode && this.currentUserId) {
-      // Lógica de ATUALIZAR (ainda a ser criada no AdminService)
-      // this.adminService.updateUsuario(this.currentUserId, formData).subscribe(...)
-      this.messageService.add({ severity: 'info', summary: 'Info', detail: 'Lógica de atualização a ser implementada.' });
+      const { id_perfil, ativo } = this.usuarioForm.value;
+      const status = ativo ? 'ativo' : 'inativo';
+
+      this.adminService.updateUsuario(this.currentUserId, { id_perfil, status }).subscribe({
+        next: () => this.ref.close(true),
+        error: (err) => this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.error.error || 'Falha ao atualizar usuário.' })
+      });
 
     } else {
-      this.adminService.registrarUsuario(formData).subscribe({
-        next: () => this.ref.close(true), // Fecha o modal e retorna 'true' (sucesso)
+      this.adminService.registrarUsuario(this.usuarioForm.value).subscribe({
+        next: () => this.ref.close(true),
         error: (err) => this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.error.error || 'Falha ao criar usuário.' })
       });
     }
   }
 
   closeDialog(): void {
-    this.ref.close(); // Fecha o modal sem retornar valor
+    this.ref.close(); 
   }
 }

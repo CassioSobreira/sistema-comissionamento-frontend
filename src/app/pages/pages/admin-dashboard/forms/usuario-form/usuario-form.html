@@ -3,12 +3,12 @@
     
     <div class="flex flex-col gap-2">
       <label for="nome">Nome</label>
-      <input id="nome" type="text" pInputText formControlName="nome" />
+      <input id="nome" type="text" pInputText formControlName="nome" [readonly]="isEditMode" />
     </div>
 
     <div class="flex flex-col gap-2">
       <label for="email">Email</label>
-      <input id="email" type="email" pInputText formControlName="email" />
+      <input id="email" type="email" pInputText formControlName="email" [readonly]="isEditMode" />
     </div>
 
     <div class="flex flex-col gap-2">
@@ -22,6 +22,17 @@
             optionValue="value">
         </p-select>
     </div>
+
+    @if (isEditMode && currentUserStatus !== 'pendente_ativacao') {
+      <div class="flex items-center justify-between mt-2">
+        <label for="status" class="font-bold">Status do Usuário</label>
+        <div class="flex items-center gap-3">
+            <span [class.text-gray-400]=" usuarioForm.get('ativo')?.value">Inativo</span>
+            <p-toggleSwitch formControlName="ativo" id="status"></p-toggleSwitch>
+            <span [class.text-gray-400]="!usuarioForm.get('ativo')?.value">Ativo</span>
+        </div>
+      </div>
+}
 
   </div>
 

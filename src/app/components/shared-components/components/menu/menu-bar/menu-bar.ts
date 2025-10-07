@@ -11,7 +11,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MenuModule } from 'primeng/menu';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
-import { AuthService } from '../../../../../../services/auth.service';
+import { AuthService, UserTokenPayload } from '../../../../../../services/auth.service';
 import { Subscription } from 'rxjs';
 
 interface MenuItem {
@@ -39,6 +39,11 @@ interface MenuItem {
 })
 export class MenuBar implements OnInit, OnDestroy {
     
+    nomeUsuario: string = '';
+    iniciaisUsuario: string = '';
+    
+    private userSubscription?: Subscription;
+
     visible: boolean = false;
     paginaAtiva: string = 'home';
 
@@ -62,6 +67,9 @@ export class MenuBar implements OnInit, OnDestroy {
 
     ngOnInit() {
 
+        this.userSubscription = this.authService.currentUser$.subscribe(user => {
+            this.atualizarDadosUsuario(user);
+        });
         this.filtrarMenuItems();
 
         this.setActiveFromUrl(this.router.url);
@@ -71,6 +79,27 @@ export class MenuBar implements OnInit, OnDestroy {
                 this.setActiveFromUrl(event.urlAfterRedirects);
             }
         });
+    }
+
+    private atualizarDadosUsuario(user: UserTokenPayload | null) {
+        if (user) {
+            this.nomeUsuario = user.nome.split(' ')[0]; // Pega só o primeiro nome
+            this.iniciaisUsuario = this.getIniciais(user.nome);
+        } else {
+            this.nomeUsuario = '';
+            this.iniciaisUsuario = '';
+        }
+        
+        // Filtra os itens de menu com base no novo estado do usuário
+        this.filtrarMenuItems();
+    }
+
+    private getIniciais(nome: string): string {
+        if (!nome) return '';
+        const nomes = nome.split(' ');
+        const primeiraInicial = nomes[0] ? nomes[0][0] : '';
+        const ultimaInicial = nomes.length > 1 ? nomes[nomes.length - 1][0] : '';
+        return (primeiraInicial + ultimaInicial).toUpperCase();
     }
 
     private filtrarMenuItems(): void {

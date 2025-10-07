@@ -65,14 +65,13 @@ export class AdminService {
   getPerfis(): Observable<Perfil[]> {
     return this.http.get<Perfil[]>(this.perfisApiUrl);
   }
-  /**
-   * Atualiza o perfil de um usuário específico.
-   * Chama: PATCH /api/admin/usuarios/:id_usuario/perfil
+ /**
+   * Atualiza os dados de um usuário (perfil e status).
+   * Chama: PUT /api/admin/usuarios/:id_usuario
    */
-  updateUsuarioPerfil(id_usuario: number, id_perfil: number): Observable<any> {
-    return this.http.patch(`${this.adminApiUrl}/usuarios/${id_usuario}/perfil`, { id_perfil });
+  updateUsuario(id_usuario: number, dadosUsuario: { id_perfil: number, status: string }): Observable<any> {
+    return this.http.put(`${this.adminApiUrl}/usuarios/${id_usuario}`, dadosUsuario);
   }
-
   /**
    * AJUSTADO: Inativa um usuário.
    * Chama: PATCH /api/admin/usuarios/:id_usuario/inativar
