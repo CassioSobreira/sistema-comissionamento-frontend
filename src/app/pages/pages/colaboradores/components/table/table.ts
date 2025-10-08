@@ -1,92 +1,40 @@
-import { Component, OnInit } from '@angular/core';
-import { Table } from 'primeng/table';
+import { Component, OnInit, Input } from '@angular/core';
+import { Table, TableModule } from 'primeng/table';
 import { FormsModule } from '@angular/forms';
-import { Customer, Representative } from '../../../../../../domain/customer';
-import { CustomerService } from '../../../../../../services/customerService';
-import { TagModule } from 'primeng/tag';
+import { CommonModule } from '@angular/common';
+import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { HttpClientModule } from '@angular/common/http';
-import { InputTextModule } from 'primeng/inputtext';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { SelectModule } from 'primeng/select';
-import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
+import { ButtonModal } from '../button-modal/button-modal';
+
+// Importando a interface Colaborador do arquivo customer.ts
+import { Colaborador } from '../../../../../../services/colaboradores.service';
 
 @Component({
     selector: 'table-filter-basic-demo',
     templateUrl: 'table.html',
     standalone: true,
-    imports: [TableModule, TagModule, IconFieldModule, InputTextModule, InputIconModule, MultiSelectModule, SelectModule, HttpClientModule, CommonModule, FormsModule],
-    providers: [CustomerService]
+    imports: [
+        CommonModule,
+        TableModule,
+        FormsModule,
+        InputTextModule,
+        IconFieldModule,
+        InputIconModule,
+        HttpClientModule,
+        ButtonModal
+    ],
 })
-export class TableFilterBasicDemo implements OnInit {
-    value: string = '';
-    customers!: Customer[];
+export class TableFilterBasicDemo{
 
-    representatives!: Representative[];
-
-    statuses!: any[];
-
-    loading: boolean = true;
-
-    activityValues: number[] = [0, 100];
-
-    constructor(private customerService: CustomerService) {}
-
-    ngOnInit() {
-        this.customerService.getCustomersLarge().then((customers) => {
-            this.customers = customers;
-            this.loading = false;
-
-            this.customers.forEach((customer) => (customer.date = new Date(<Date>customer.date)));
-        });
-
-        this.representatives = [
-            { name: 'Amy Elsner', image: 'amyelsner.png' },
-            { name: 'Anna Fali', image: 'annafali.png' },
-            { name: 'Asiya Javayant', image: 'asiyajavayant.png' },
-            { name: 'Bernardo Dominic', image: 'bernardodominic.png' },
-            { name: 'Elwin Sharvill', image: 'elwinsharvill.png' },
-            { name: 'Ioni Bowcher', image: 'ionibowcher.png' },
-            { name: 'Ivan Magalhaes', image: 'ivanmagalhaes.png' },
-            { name: 'Onyama Limba', image: 'onyamalimba.png' },
-            { name: 'Stephen Shaw', image: 'stephenshaw.png' },
-            { name: 'Xuxue Feng', image: 'xuxuefeng.png' }
-        ];
-
-        this.statuses = [
-            { label: 'Unqualified', value: 'unqualified' },
-            { label: 'Qualified', value: 'qualified' },
-            { label: 'New', value: 'new' },
-            { label: 'Negotiation', value: 'negotiation' },
-            { label: 'Renewal', value: 'renewal' },
-            { label: 'Proposal', value: 'proposal' }
-        ];
-    }
+    @Input() colaboradores: Colaborador[] = [];
+    @Input() loading: boolean = true;
+    // O CustomerService continua injetado com sua nomenclatura original
+    constructor() {}
 
     clear(table: Table) {
         table.clear();
     }
-
-    getSeverity(status: string) {
-        switch (status) {
-            case 'unqualified':
-                return 'danger';
-
-            case 'qualified':
-                return 'success';
-
-            case 'new':
-                return 'info';
-
-            case 'negotiation':
-                return 'warn';
-
-            case 'renewal':
-                return 'info';
-            default:
-                return null;
-        }
-    }
 }
+
