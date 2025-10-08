@@ -27,7 +27,7 @@
     <p-table
         #dt
         [value]="colaboradores"
-        dataKey="id"
+        dataKey="id_colaborador" 
         [rows]="5"
         [rowsPerPageOptions]="[5, 10, 25]"
         [loading]="loading"
@@ -37,7 +37,7 @@
     >
         <ng-template pTemplate="caption">
             <div class="flex justify-between items-center">
-                 <!-- Botão de Upload à esquerda da barra de pesquisa -->
+                <!-- Botão de Upload à esquerda da barra de pesquisa -->
                 <button-modal></button-modal>
 
                 <p-iconfield iconPosition="left">
@@ -107,4 +107,3 @@
         </ng-template>
     </p-table>
 </div>
-
