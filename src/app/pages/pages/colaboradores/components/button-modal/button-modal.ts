@@ -1,50 +1,75 @@
-import { Component } from '@angular/core';
+// Em: button-modal.ts
+
+import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-// Imports do PrimeNG necessários para o modal, botão, uploader e notificações
+// Imports do PrimeNG
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-// O tipo 'FileUploadEvent' é importado diretamente do PrimeNG
-import { FileUploadModule, FileUploadEvent } from 'primeng/fileupload';
+
+import { FileUploadModule, FileUploadEvent, FileUploadHandlerEvent } from 'primeng/fileupload';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+
+// Importe seu serviço
+import { ColaboradorService } from '../../../../../../services/colaboradores.service';
 
 @Component({
     selector: 'button-modal',
     templateUrl: './button-modal.html',
     standalone: true,
-    // Todos os módulos do PrimeNG foram unificados aqui
-    imports: [
-        CommonModule,
-        DialogModule,
-        ButtonModule,
-        FileUploadModule,
-        ToastModule
-    ]
-    // A linha 'providers' foi removida daqui, pois agora está no app.config.ts
+    imports: [ 
+            CommonModule,
+            DialogModule,
+            ButtonModule,
+            FileUploadModule,
+            ToastModule,
+        ],
 })
 export class ButtonModal {
-    // Controla a visibilidade do modal
     visible: boolean = false;
 
-    // Lógica do componente de upload
-    uploadedFiles: any[] = [];
+    // 1. Crie um evento para notificar o componente pai
+    @Output() uploadConcluido = new EventEmitter<void>();
 
-    // Injeta o serviço de mensagens para as notificações (toast)
-    constructor(private messageService: MessageService) {}
+    constructor(
+        private messageService: MessageService,
+        private colaboradorService: ColaboradorService // 2. Injete o serviço
+    ) {}
 
-    // Abre o modal
     showDialog() {
         this.visible = true;
     }
 
-    // Função chamada quando um arquivo é enviado com sucesso
-    // Agora usa o tipo correto 'FileUploadEvent' do PrimeNG
-    onUpload(event: FileUploadEvent) {
-        for (let file of event.files) {
-            this.uploadedFiles.push(file);
+    /**
+     * 3. Esta é a nova função que será chamada pelo p-fileupload.
+     * Ela substitui a antiga 'onUpload'.
+     */
+    onCustomUpload(event: FileUploadHandlerEvent) {
+        // Pega o primeiro (e único) arquivo selecionado
+        const file = event.files[0];
+        if (!file) {
+            return;
         }
-        this.messageService.add({ severity: 'info', summary: 'Sucesso', detail: 'Arquivo enviado.' });
+
+        this.colaboradorService.importColaboradores(file).subscribe({
+            next: (response) => {
+                this.messageService.add({ 
+                    severity: 'success', 
+                    summary: 'Sucesso', 
+                    detail: 'Colaboradores importados com sucesso!' 
+                });
+                this.visible = false; // Fecha o modal
+                this.uploadConcluido.emit(); // 4. Avisa o componente pai para atualizar a tabela
+            },
+            error: (err) => {
+                const erroMsg = err.error.error || 'Falha ao importar a planilha.';
+                this.messageService.add({ 
+                    severity: 'error', 
+                    summary: 'Erro', 
+                    detail: erroMsg
+                });
+            }
+        });
     }
 }
-

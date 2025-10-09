@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { Observable } from 'rxjs';
 
@@ -21,7 +21,13 @@ export class ColaboradorService {
     private colaboradoresApiUrl = `${environment.apiUrl}/colaboradores`;
 
     getColaboradores(): Observable<Colaborador[]> {
-        return this.http.get<Colaborador[]>(`${this.colaboradoresApiUrl}/colaboradores`);
+        const headers = new HttpHeaders({
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        });
+
+        return this.http.get<Colaborador[]>(this.colaboradoresApiUrl, { headers});
     }
 
     importColaboradores(file: File): Observable<any> {
