@@ -50,7 +50,7 @@ export class MenuBar implements OnInit, OnDestroy {
     readonly menuItems: MenuItem[] = [
         { label: 'HOME', icon: 'pi-home', route: 'home' },
         { label: 'PENDÊNCIAS', icon: 'pi-comment', route: 'pendencias' },
-        { label: 'CRIAR DOCUMENTO', icon: 'pi-plus-circle', route: 'criar-documento' },
+        { label: 'ESTATÍSCAS', icon: 'pi-plus-circle', route: 'estatiscas' },
         {label: 'COLABORADORES', icon: 'pi-users', route: 'colaboradores'},
         { label: 'PAINEL DE ADMINSTRAÇÃO', icon: 'pi-address-book', route: 'admin', perfisPermitidos: ['Administrador'] }
     ];
@@ -127,10 +127,20 @@ export class MenuBar implements OnInit, OnDestroy {
         this.router.navigate([rota]);
     }
 
+    backToHome(){
+        this.paginaAtiva = 'home';
+        this.router.navigate(['home']);
+    }
+
     logout() {
         this.authService.logout();
     }
     
+    goToConfig() {
+        this.paginaAtiva = 'configuracoes';
+        this.router.navigate(['configuracoes']);
+    }
+
     goToInfo() {
         this.paginaAtiva = 'info';
         this.router.navigate(['info']);
