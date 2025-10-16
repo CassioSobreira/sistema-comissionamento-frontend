@@ -1,14 +1,12 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ToastModule } from 'primeng/toast'; 
-import { MessageService } from 'primeng/api';
-
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, ToastModule],
+  imports: [RouterOutlet, ToastModule, ConfirmDialogModule],
   templateUrl: './app.html',
   styleUrl: './app.css',
-  providers: [MessageService]
 })
 export class App {
   protected readonly title = signal('projeto-comissionamento-frontend');
