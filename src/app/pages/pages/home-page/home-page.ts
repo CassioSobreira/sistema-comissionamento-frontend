@@ -4,6 +4,7 @@ import { MenuBar } from '../../../components/shared-components/components/menu/m
 import { ApiService } from '../../../../services/api';
 import { CommonModule } from '@angular/common'; // Importe o CommonModule
 import { ChangeDetectorRef } from '@angular/core';
+import { ModulosService, Modulo } from '../../../../services/modulos.service';
 
 @Component({
   selector: 'app-home-page',
@@ -16,10 +17,18 @@ export class HomePage implements OnInit {
   mensagemBoasVindas: string = '';
   erro: string = '';
 
-  constructor(private apiService: ApiService, private cdr: ChangeDetectorRef) {}
+  modulosDoUsuario: Modulo[] = [];
+  isLoadingModulos = false;
+
+  constructor(
+    private apiService: ApiService,
+    private cdr: ChangeDetectorRef, 
+    private modulosService: ModulosService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    // É AQUI que a rota do back-end é chamada
+    this.carregarModulos();
     this.apiService.getHomeData().subscribe({
       next: (response) => {
         // Em caso de sucesso, exibe a mensagem
@@ -35,5 +44,26 @@ export class HomePage implements OnInit {
     });
     this.cdr.detectChanges();
 
+  }
+
+  carregarModulos(): void {
+    this.isLoadingModulos = true;
+    this.modulosService.getModulosDoUsuario().subscribe({
+      next: (data) => {
+        this.modulosDoUsuario = data;
+        this.isLoadingModulos = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Falha ao carregar módulos:', err);
+        this.isLoadingModulos = false;
+        // Lógica para mostrar um toast de erro
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  navegarParaEntradas(idModulo: number): void {
+    this.router.navigate(['/modulos', idModulo, 'entradas']);
   }
 }

@@ -1,7 +1,7 @@
 <menu-bar></menu-bar>
 <div class="colaboradores-page-container p-4 sm:p-6">
     <div class="card border border-neutral-700 bg-neutral-800/20 p-4 sm:p-6 rounded-lg">
-        <div class="text-center mb-4">
+        <div class="mb-4">
             <h2 class="text-2xl font-semibold text-white">Colaboradores</h2>
         </div>
 
@@ -17,7 +17,7 @@
         >
             <ng-template pTemplate="caption">
                 <div class="flex justify-between items-center">
-                    <button-modal></button-modal>
+                    <button-modal (uploadConcluido)="carregarColaboradores()"></button-modal>
                     <p-iconfield iconPosition="left">
                         <p-inputicon><i class="pi pi-search"></i></p-inputicon>
                         <input  

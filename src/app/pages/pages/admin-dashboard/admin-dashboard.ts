@@ -14,10 +14,15 @@ import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
+import { InputTextModule } from 'primeng/inputtext'; // Módulo para o pInputText
+import { IconFieldModule } from 'primeng/iconfield'; // NOVO: Para o <p-iconfield>
+import { InputIconModule } from 'primeng/inputicon'; // NOVO: Para o <p-inputicon>
+
 // Componentes de Modal (que você precisará criar no futuro)
 import { UsuarioForm } from './forms/usuario-form/usuario-form';
 // import { EntradaFormComponent } from './entrada-form/entrada-form.component';
 import { MenuBar } from '../../../components/shared-components/components/menu/menu-bar/menu-bar';
+import { error } from 'console';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -27,11 +32,14 @@ import { MenuBar } from '../../../components/shared-components/components/menu/m
     TableModule,
     ButtonModule,
     ConfirmDialogModule,
-    MenuBar
+    MenuBar,
+    InputTextModule,
+    IconFieldModule,
+    InputIconModule
+    // EntradaFormComponent // Importe o componente de formulário de entrada quando criado
   ],
   templateUrl: './admin-dashboard.html',
   styleUrls: ['./admin-dashboard.css'],
-  providers: [DialogService, ConfirmationService, MessageService]
 })
 export class AdminDashboard implements OnInit, OnDestroy {
 
@@ -71,7 +79,8 @@ export class AdminDashboard implements OnInit, OnDestroy {
         this.cdr.detectChanges();
       },
       error: (err) => {
-        this.showError('Falha ao carregar a lista de usuários.');
+        const errorMsg = err.error.message || 'Falha ao carregar a lista de usuários.';
+        this.showError(errorMsg);
         this.isLoadingUsuarios = false;
         this.cdr.detectChanges();
       }
@@ -112,7 +121,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
         // Se o modal retornou 'true', significa que a operação foi um sucesso
         if (foiSalvo) {
           this.carregarUsuarios(); // Recarrega a lista
-          this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: 'Operação realizada com sucesso!' });
+          this.showSuccess('Usuário salvo com sucesso!');
         }
       });
     }
@@ -131,7 +140,10 @@ export class AdminDashboard implements OnInit, OnDestroy {
             this.showSuccess('Usuário deletado com sucesso!');
             this.carregarUsuarios(); // Recarrega a lista
           },
-          error: (err) => this.showError('Falha ao deletar usuário.')
+          error: (err) => {
+            const errorMsg = err.error.message || 'Falha ao deletar usuário.';
+            this.showError(errorMsg)
+          }
         });
       }
     });

@@ -86,7 +86,7 @@ export class UsuarioForm implements OnInit {
 
   onSubmit(): void {
     if (this.usuarioForm.invalid) {
-      this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: 'Preencha todos os campos obrigatórios.' });
+      this.showWarn('Preencha todos os campos obrigatórios.');
       return;
     }
 
@@ -96,18 +96,51 @@ export class UsuarioForm implements OnInit {
 
       this.adminService.updateUsuario(this.currentUserId, { id_perfil, status }).subscribe({
         next: () => this.ref.close(true),
-        error: (err) => this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.error.error || 'Falha ao atualizar usuário.' })
+        error: (err) => {
+          const errMsg = err.error.error || 'Falha ao atualizar usuário.';
+          this.showError(errMsg);
+        }
       });
 
     } else {
       this.adminService.registrarUsuario(this.usuarioForm.value).subscribe({
-        next: () => this.ref.close(true),
-        error: (err) => this.messageService.add({ severity: 'error', summary: 'Erro', detail: err.error.error || 'Falha ao criar usuário.' })
+        next: () => {
+          this.ref.close(true)
+          this.showSuccess('Usuário criado com sucesso!');},
+        error: (err) => {
+          const errMsg = err.error.error || 'Falha ao criar usuário.';
+          this.showError(errMsg);
+        }
       });
     }
   }
 
   closeDialog(): void {
     this.ref.close(); 
+  }
+
+    private showSuccess(detail: string) {
+    this.messageService.add({ 
+      severity: 'success', 
+      summary: 'Sucesso', 
+      detail: detail,
+      life: 3000
+    });
+  }
+
+  private showError(detail: string) {
+    this.messageService.add({ 
+      severity: 'error', 
+      summary: 'Erro', 
+      detail: detail 
+    });
+  }
+
+  private showWarn(detail: string) {
+    this.messageService.add({ 
+      severity: 'warn', 
+      summary: 'Atenção', 
+      detail: detail 
+    });
   }
 }

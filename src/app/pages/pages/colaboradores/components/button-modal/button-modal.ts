@@ -8,7 +8,6 @@ import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 
 import { FileUploadModule, FileUploadEvent, FileUploadHandlerEvent } from 'primeng/fileupload';
-import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 
 // Importe seu serviço
@@ -18,13 +17,7 @@ import { ColaboradorService } from '../../../../../../services/colaboradores.ser
     selector: 'button-modal',
     templateUrl: './button-modal.html',
     standalone: true,
-    imports: [ 
-            CommonModule,
-            DialogModule,
-            ButtonModule,
-            FileUploadModule,
-            ToastModule,
-        ],
+    imports: [CommonModule, DialogModule, ButtonModule, FileUploadModule],
 })
 export class ButtonModal {
     visible: boolean = false;
@@ -41,10 +34,6 @@ export class ButtonModal {
         this.visible = true;
     }
 
-    /**
-     * 3. Esta é a nova função que será chamada pelo p-fileupload.
-     * Ela substitui a antiga 'onUpload'.
-     */
     onCustomUpload(event: FileUploadHandlerEvent) {
         // Pega o primeiro (e único) arquivo selecionado
         const file = event.files[0];
@@ -54,22 +43,26 @@ export class ButtonModal {
 
         this.colaboradorService.importColaboradores(file).subscribe({
             next: (response) => {
-                this.messageService.add({ 
-                    severity: 'success', 
-                    summary: 'Sucesso', 
-                    detail: 'Colaboradores importados com sucesso!' 
-                });
+                this.showSuccess('Colaboradores importados com sucesso!');
                 this.visible = false; // Fecha o modal
                 this.uploadConcluido.emit(); // 4. Avisa o componente pai para atualizar a tabela
             },
             error: (err) => {
                 const erroMsg = err.error.error || 'Falha ao importar a planilha.';
-                this.messageService.add({ 
-                    severity: 'error', 
-                    summary: 'Erro', 
-                    detail: erroMsg
-                });
+                this.showError(erroMsg);
             }
         });
+    }
+
+    private showSuccess(detail: string) {
+        this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: detail, life: 3000 });
+    }
+
+    private showError(detail: string) {
+        this.messageService.add({ severity: 'error', summary: 'Erro', detail: detail });
+    }
+  
+    private showInfo(detail: string) {
+        this.messageService.add({ severity: 'info', summary: 'Info', detail: detail });
     }
 }

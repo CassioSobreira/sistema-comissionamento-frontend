@@ -24,7 +24,7 @@
     </div>
 
     @if (isEditMode && currentUserStatus !== 'pendente_ativacao') {
-      <div class="flex items-center justify-between mt-2">
+      <div claßss="flex items-center justify-between mt-2">
         <label for="status" class="font-bold">Status do Usuário</label>
         <div class="flex items-center gap-3">
             <span [class.text-gray-400]=" usuarioForm.get('ativo')?.value">Inativo</span>

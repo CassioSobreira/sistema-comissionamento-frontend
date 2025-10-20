@@ -9,6 +9,7 @@ import { authGuard } from '../../guards/auth-guard';
 import { AdminDashboard } from '../pages/pages/admin-dashboard/admin-dashboard';
 import { Info } from '../pages/pages/info-devs/info-devs';
 import { ConfigUser } from '../components/shared-components/components/config-user/config-user';
+import { Entradas } from '../pages/pages/entradas/entradas';
 export const routes: Routes = [
     // { path: '', component: HomeComponent },
     { path: '', component: LoginPageComponent},
@@ -51,6 +52,11 @@ export const routes: Routes = [
     {
         path: 'configuracoes',
         component: ConfigUser,
+        canActivate: [authGuard] // O usuário precisa estar logado para acessar
+    },
+    {
+        path: 'modulos/:id_modulo/entradas',
+        component: Entradas,
         canActivate: [authGuard] // O usuário precisa estar logado para acessar
     }
 
