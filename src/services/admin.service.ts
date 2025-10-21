@@ -24,6 +24,11 @@ export interface Perfil {
   nome_perfil: string;
 }
 
+export interface Modulo {
+  id_modulo: number;
+  nome_modulo: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -32,6 +37,7 @@ export class AdminService {
   private entradasApiUrl = `${environment.apiUrl}/entradas`;
   private usuariosApiUrl = `${environment.apiUrl}/usuarios`; // URL para o registro
   private perfisApiUrl = `${environment.apiUrl}/perfis`; 
+  private modulosApiUrl = `${environment.apiUrl}/modulos`; 
 
 
   constructor(private http: HttpClient) { }
@@ -44,16 +50,19 @@ export class AdminService {
    * NOVO: Registra um novo usuário (chamado por um admin).
    * Chama: POST /api/usuarios/registrar
    */
-  registrarUsuario(usuarioData: { nome: string, email: string, id_perfil: number }): Observable<any> {
+  registrarUsuario(usuarioData: { nome: string, email: string, id_perfil: number, id_modulos?: number[] }): Observable<any> {
     return this.http.post(`${this.usuariosApiUrl}/registrar`, usuarioData);
   }
 
-   /**
-   * NOVO: Registra um novo usuário (chamado por um admin).
-   * Chama: POST /api/admin/usuarios/:id_usuario/perfil
+ /**
+   * Busca os IDs dos módulos associados a um usuário específico.
+   * Chama: GET /api/admin/usuarios/:id_usuario/modulos
    */
- 
-
+  getUsuarioModulos(id_usuario: number): Observable<{ id_modulo: number }[]> {
+    // Retorna um array de objetos, cada um com a propriedade id_modulo
+    return this.http.get<{ id_modulo: number }[]>(`${this.adminApiUrl}/usuarios/${id_usuario}/modulos`);
+  }
+  
   /**
    * Busca a lista completa de usuários.
    * Chama: GET /api/admin/usuarios
@@ -69,7 +78,7 @@ export class AdminService {
    * Atualiza os dados de um usuário (perfil e status).
    * Chama: PUT /api/admin/usuarios/:id_usuario
    */
-  updateUsuario(id_usuario: number, dadosUsuario: { id_perfil: number, status: string }): Observable<any> {
+  updateUsuario(id_usuario: number, dadosUsuario: { id_perfil: number, status: string, id_modulos: number[] }): Observable<any> {
     return this.http.put(`${this.adminApiUrl}/usuarios/${id_usuario}`, dadosUsuario);
   }
   /**
@@ -130,5 +139,17 @@ export class AdminService {
    */
   deleteEntrada(id: number): Observable<any> {
     return this.http.delete(`${this.entradasApiUrl}/${id}`);
+  }
+
+    // =================================================================
+  // MÉTODOS PARA O CRUD DE MODULOS
+  // =================================================================
+
+  /**
+   * Busca a lista de TODOS os módulos disponíveis.
+   * Chama: GET /api/modulos/todos (AJUSTE A ROTA SE NECESSÁRIO)
+   */
+  getTodosModulos(): Observable<Modulo[]> {
+    return this.http.get<Modulo[]>(`${this.modulosApiUrl}/all`); 
   }
 }
