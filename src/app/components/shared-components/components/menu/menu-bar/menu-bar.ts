@@ -50,7 +50,7 @@ export class MenuBar implements OnInit, OnDestroy {
     readonly menuItems: MenuItem[] = [
         { label: 'HOME', icon: 'pi-home', route: 'home' },
         { label: 'PENDÊNCIAS', icon: 'pi-comment', route: 'pendencias' },
-        { label: 'ESTATÍSCAS', icon: 'pi-plus-circle', route: 'estatiscas' },
+        { label: 'ESTATÍSCAS', icon: 'pi-chart-line', route: 'estatiscas' },
         {label: 'COLABORADORES', icon: 'pi-users', route: 'colaboradores'},
         { label: 'PAINEL DE ADMINSTRAÇÃO', icon: 'pi-address-book', route: 'admin', perfisPermitidos: ['Administrador'] }
     ];
