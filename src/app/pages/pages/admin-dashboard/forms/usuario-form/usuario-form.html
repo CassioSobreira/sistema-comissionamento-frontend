@@ -1,4 +1,4 @@
-<form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()" class="p-4 bg-gray-900 text-white">
+<form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()" class="p-4 text-white">
   <div class="flex flex-col gap-4">
 
     <div class="flex flex-col gap-2">
@@ -41,10 +41,10 @@
       <div class="flex items-center justify-between mt-2">
         <label for="status" class="font-bold">Status do Usuário</label>
         <div class="flex items-center gap-3">
-            <span [class.text-gray-400]="usuarioForm.get('ativo')?.value"></span>
-            <!--<p-toggleSwitch formControlName="ativo" id="status"></p-toggleSwitch>-->
-            <p-togglebutton formControlName="ativo" onLabel="Ativo" offLabel="Inativo" class="w-24" />
-            <span [class.text-gray-400]="!usuarioForm.get('ativo')?.value"></span>
+            <span [class.text-gray-400]="usuarioForm.get('ativo')?.value">Inativo</span>
+            <p-toggleSwitch formControlName="ativo" id="status"></p-toggleSwitch>
+            <!--<p-togglebutton formControlName="ativo" onLabel="Ativo" offLabel="Inativo" class="w-24" />-->
+            <span [class.text-gray-400]="!usuarioForm.get('ativo')?.value">Ativo</span>
         </div>
       </div>
     }

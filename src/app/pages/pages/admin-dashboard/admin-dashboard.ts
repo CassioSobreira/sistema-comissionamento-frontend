@@ -121,7 +121,6 @@ export class AdminDashboard implements OnInit, OnDestroy {
         // Se o modal retornou 'true', significa que a operação foi um sucesso
         if (foiSalvo) {
           this.carregarUsuarios(); // Recarrega a lista
-          this.showSuccess('Usuário salvo com sucesso!');
         }
       });
     }
