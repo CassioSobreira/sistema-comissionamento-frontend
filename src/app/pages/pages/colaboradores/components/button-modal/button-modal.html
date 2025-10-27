@@ -1,57 +1,33 @@
-<!-- O componente p-toast precisa estar presente para exibir as notificações -->
-<p-toast />
 
-<!-- 
-  Botão principal que aciona o modal.
-  - O estilo dele pode ser customizado com classes do Tailwind.
--->
 <p-button 
   (click)="showDialog()" 
-  label="Fazer Upload" 
-  styleClass="bg-emerald-500 hover:bg-emerald-600 border-emerald-500 text-white font-bold rounded-md px-4 py-2 transition-colors"
+  label="Importar Colaboradores" 
+  icon="pi pi-upload"
 />
 
-<!-- 
-  Modal (p-dialog) do PrimeNG.
-  - Ele agora contém o componente de upload de arquivos.
--->
 <p-dialog 
-  header="Upload de Arquivos de Colaboradores" 
+  header="Importar Planilha de Colaboradores (.xlsx)" 
   [modal]="true" 
   [(visible)]="visible" 
   [style]="{ width: '45rem' }"
 >
-  <!-- Componente de File Upload do PrimeNG -->
   <p-fileupload 
-    name="demo[]" 
-    url="https://www.primefaces.org/cdn/api/upload.php" 
-    (onUpload)="onUpload($event)" 
-    [multiple]="true" 
-    accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" 
-    maxFileSize="1000000" 
+    name="file" 
+    [customUpload]="true"
+    (uploadHandler)="onCustomUpload($event)"
+    [multiple]="false" 
+    accept=".xlsx" 
+    maxFileSize="10000000" 
     mode="advanced"
-    chooseLabel="Escolher"
-    uploadLabel="Enviar"
+    chooseLabel="Escolher Arquivo"
+    uploadLabel="Importar"
     cancelLabel="Cancelar"
   >
-    <!-- Mensagem customizada quando nenhum arquivo foi selecionado -->
     <ng-template pTemplate="empty">
       <div class="flex items-center justify-center flex-col p-8">
         <i class="pi pi-cloud-upload border-2 border-dashed rounded-full text-gray-400 text-4xl p-4"></i>
-        <p class="mt-4 mb-0 text-gray-500">Arraste e solte arquivos aqui para fazer o upload.</p>
-        <p class="text-xs text-gray-400">(Apenas arquivos .csv e .xlsx)</p>
+        <p class="mt-4 mb-0 text-gray-500">Arraste e solte o arquivo .xlsx aqui.</p>
       </div>
     </ng-template>
   </p-fileupload>
-
-  <!-- Botão para fechar o modal -->
-  <div class="flex justify-end gap-2 mt-6">
-    <p-button 
-      label="Fechar" 
-      severity="secondary" 
-      (click)="visible = false" 
-    />
-  </div>
 </p-dialog>
-
-

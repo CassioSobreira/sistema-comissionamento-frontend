@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TableFilterBasicDemo } from './table';
+import { EntradaForms } from './entrada-forms';
 
-describe('TableFilterBasicDemo', () => {
-  let component: TableFilterBasicDemo;
-  let fixture: ComponentFixture<TableFilterBasicDemo>;
+describe('EntradaForms', () => {
+  let component: EntradaForms;
+  let fixture: ComponentFixture<EntradaForms>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TableFilterBasicDemo]
+      imports: [EntradaForms]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TableFilterBasicDemo);
+    fixture = TestBed.createComponent(EntradaForms);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

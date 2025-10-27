@@ -1,0 +1,58 @@
+<form [formGroup]="usuarioForm" (ngSubmit)="onSubmit()" class="p-4 text-white">
+  <div class="flex flex-col gap-4">
+
+    <div class="flex flex-col gap-2">
+      <label for="nome">Nome</label>
+      <input id="nome" type="text" pInputText formControlName="nome" [readonly]="isEditMode" />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="email">Email</label>
+      <input id="email" type="email" pInputText formControlName="email" [readonly]="isEditMode" />
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="modulos">Módulos Associados</label>
+      <p-multiSelect
+        id="modulos"
+        [options]="todosModulos"
+        formControlName="id_modulos"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecione os módulos"
+        display="chip"
+        [style]="{'width': '100%'}">
+      </p-multiSelect>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="perfil">Perfil</label>
+        <p-select
+            id="perfil"
+            [options]="perfis"
+            formControlName="id_perfil"
+            placeholder="Selecione um perfil"
+            optionLabel="label"
+            optionValue="value">
+        </p-select>
+    </div>
+
+    @if (isEditMode && currentUserStatus !== 'pendente_ativacao') {
+      <div class="flex items-center justify-between mt-2">
+        <label for="status" class="font-bold">Status do Usuário</label>
+        <div class="flex items-center gap-3">
+            <span [class.text-gray-400]="usuarioForm.get('ativo')?.value">Inativo</span>
+            <p-toggleSwitch formControlName="ativo" id="status"></p-toggleSwitch>
+            <!--<p-togglebutton formControlName="ativo" onLabel="Ativo" offLabel="Inativo" class="w-24" />-->
+            <span [class.text-gray-400]="!usuarioForm.get('ativo')?.value">Ativo</span>
+        </div>
+      </div>
+    }
+
+  </div>
+
+  <div class="flex justify-end gap-2 mt-6">
+    <p-button label="Cancelar" severity="secondary" (click)="closeDialog()" />
+    <p-button type="submit" label="Salvar" [disabled]="usuarioForm.invalid" />
+  </div>
+</form>

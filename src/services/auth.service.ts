@@ -1,15 +1,24 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environments/environment';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 import { Router } from '@angular/router';
+
+export interface UserTokenPayload {
+  id: number;
+  nome: string;
+  perfil: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
   private apiUrl = environment.apiUrl;
+
+  private currentUserSubject = new BehaviorSubject<UserTokenPayload | null>(this.getDecodedToken());
+  public currentUser$ = this.currentUserSubject.asObservable();
 
   // BehaviorSubject para guardar e emitir o estado de autenticação
   private loggedIn = new BehaviorSubject<boolean>(this.hasToken());
@@ -22,7 +31,13 @@ export class AuthService {
   }
 
   login(credentials: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/usuarios/login`, credentials);
+    return this.http.post(`${this.apiUrl}/usuarios/login`, credentials).pipe(
+      tap((response: any) => {
+        localStorage.setItem('token', response.token);
+        const user = this.getDecodedToken();
+        this.currentUserSubject.next(user);
+      })
+    );
   }
 
   // Salva o token e atualiza o estado de login
@@ -33,6 +48,7 @@ export class AuthService {
 
   // Método de Logout
   logout() {
+    this.currentUserSubject.next(null);
     localStorage.removeItem('token');
     this.loggedIn.next(false); // Emite 'false' para os 'ouvintes'
     this.router.navigate(['/']);
@@ -43,13 +59,18 @@ export class AuthService {
     const token = localStorage.getItem('token');
     if (token) {
       try {
-        return jwtDecode(token);
+        return jwtDecode<UserTokenPayload>(token);
       } catch (error) {
-        console.error('Erro ao decodificar token:', error);
+        // Se o token for inválido, limpa
+        localStorage.removeItem('token');
         return null;
       }
     }
-    return null;
+    return null;  
+  }
+
+  public getPerfilUsuario(): string | null {
+    return this.currentUserSubject.value?.perfil ?? null;
   }
 
   /**

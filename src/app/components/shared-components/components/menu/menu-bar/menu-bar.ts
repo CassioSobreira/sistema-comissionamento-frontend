@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 // PrimeNG Imports
@@ -11,11 +11,14 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MenuModule } from 'primeng/menu';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+import { AuthService, UserTokenPayload } from '../../../../../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 interface MenuItem {
     label: string;
     icon: string; 
     route: string;
+    perfisPermitidos?: string[]; 
 }
 
 @Component({
@@ -24,9 +27,6 @@ interface MenuItem {
     standalone: true,
     imports: [
         CommonModule,
-        RouterOutlet,
-        
-        // Módulos PrimeNG
         AvatarModule,
         ButtonModule,
         DrawerModule,
@@ -37,26 +37,117 @@ interface MenuItem {
     ],
     providers: [MessageService]
 })
-export class MenuBar implements OnInit {
+export class MenuBar implements OnInit, OnDestroy {
     
+    nomeUsuario: string = '';
+    iniciaisUsuario: string = '';
+    
+    private userSubscription?: Subscription;
+
     visible: boolean = false;
     paginaAtiva: string = 'home';
 
-    menuItems: MenuItem[] = [
+    readonly menuItems: MenuItem[] = [
         { label: 'HOME', icon: 'pi-home', route: 'home' },
         { label: 'PENDÊNCIAS', icon: 'pi-comment', route: 'pendencias' },
-        { label: 'CRIAR DOCUMENTO', icon: 'pi-plus-circle', route: 'criar-documento' },
+        { label: 'ESTATÍSCAS', icon: 'pi-chart-line', route: 'estatiscas' },
+        {label: 'COLABORADORES', icon: 'pi-users', route: 'colaboradores'},
+        { label: 'PAINEL DE ADMINSTRAÇÃO', icon: 'pi-address-book', route: 'admin', perfisPermitidos: ['Administrador'] }
     ];
+
+    menuItemsVisiveis: MenuItem[] = [];
+
+    private routerSubscription?: Subscription;
     
     constructor(
         private messageService: MessageService,
-        private router: Router
+        private router: Router,
+        private authService: AuthService
     ) {}
 
-    ngOnInit() { }
+    ngOnInit() {
 
+        this.userSubscription = this.authService.currentUser$.subscribe(user => {
+            this.atualizarDadosUsuario(user);
+        });
+        this.filtrarMenuItems();
+
+        this.setActiveFromUrl(this.router.url);
+
+        this.routerSubscription = this.router.events.subscribe((event) => {
+            if (event instanceof NavigationEnd) {
+                this.setActiveFromUrl(event.urlAfterRedirects);
+            }
+        });
+    }
+
+    private atualizarDadosUsuario(user: UserTokenPayload | null) {
+        if (user) {
+            this.nomeUsuario = user.nome.split(' ')[0]; // Pega só o primeiro nome
+            this.iniciaisUsuario = this.getIniciais(user.nome);
+        } else {
+            this.nomeUsuario = '';
+            this.iniciaisUsuario = '';
+        }
+        
+        // Filtra os itens de menu com base no novo estado do usuário
+        this.filtrarMenuItems();
+    }
+
+    private getIniciais(nome: string): string {
+        if (!nome) return '';
+        const nomes = nome.split(' ');
+        const primeiraInicial = nomes[0] ? nomes[0][0] : '';
+        const ultimaInicial = nomes.length > 1 ? nomes[nomes.length - 1][0] : '';
+        return (primeiraInicial + ultimaInicial).toUpperCase();
+    }
+
+    private filtrarMenuItems(): void {
+        const perfilUsuario = this.authService.getPerfilUsuario();
+
+        if (!perfilUsuario) {
+            this.menuItemsVisiveis = [];
+            return;
+        }
+        this.menuItemsVisiveis = this.menuItems.filter(item => 
+            // Um item é visível se:
+            // 1. Ele NÃO TEM uma lista de perfis definidos (é público para logados)
+            !item.perfisPermitidos || 
+            // OU
+            // 2. A lista de perfis permitidos INCLUI o perfil do usuário
+            item.perfisPermitidos.includes(perfilUsuario)
+        );
+    }
+    ngOnDestroy() {
+        this.routerSubscription?.unsubscribe();
+    }
     selecionarPagina(rota: string) {
         this.paginaAtiva = rota;
-        this.router.navigate([rota]); 
+        this.visible = false;
+        this.router.navigate([rota]);
     }
+
+    backToHome(){
+        this.paginaAtiva = 'home';
+        this.router.navigate(['home']);
+    }
+
+    logout() {
+        this.authService.logout();
+    }
+    
+    goToConfig() {
+        this.paginaAtiva = 'configuracoes';
+        this.router.navigate(['configuracoes']);
+    }
+
+    goToInfo() {
+        this.paginaAtiva = 'info';
+        this.router.navigate(['info']);
+    }
+    private setActiveFromUrl(url: string) {
+        const segment = url.split('/').filter(Boolean)[0] || 'home';
+        this.paginaAtiva = segment;
+    }
+ 
 }

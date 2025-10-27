@@ -1,14 +1,23 @@
 <menu-bar></menu-bar>
 
-@if (mensagemBoasVindas) {
-  <div>
-    <h1>{{ mensagemBoasVindas }}</h1>
-    <p>Você está na área protegida da aplicação.</p>
-  </div>
-}
+<div class="p-4">
+  <h2 class="text-xl font-bold text-white mb-4">Meus Módulos</h2>
 
-@if (erro) {
-  <div>
-    <p style="color: red;">{{ erro }}</p>
-  </div>
-}
+  @if (isLoadingModulos) {
+    <p class="text-gray-400">Carregando módulos...</p>
+  } @else {
+    @if (modulosDoUsuario.length > 0) {
+      <div class="flex flex-col items-center gap-4">
+        @for (modulo of modulosDoUsuario; track modulo.id_modulo) {
+          <div
+            (click)="navegarParaEntradas(modulo.id_modulo)"
+            class="w-full max-w-xl bg-gray-800 p-4 rounded-lg shadow-md cursor-pointer hover:bg-gray-700 transition-colors text-center">
+            <h3 class="font-bold text-lg text-white">{{ modulo.nome_modulo }}</h3>
+          </div>
+    } 
+      </div>
+    } @else {
+      <p class="text-gray-500">Você ainda não tem acesso a nenhum módulo.</p>
+    }
+  }
+</div>
