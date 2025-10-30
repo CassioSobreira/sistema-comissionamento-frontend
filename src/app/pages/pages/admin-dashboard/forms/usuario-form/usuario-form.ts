@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { tap, Observable, forkJoin, of } from 'rxjs'; // Import forkJoin and of
-import { switchMap } from 'rxjs/operators';
+import { switchMap, finalize } from 'rxjs/operators';
 
 // Imports do PrimeNG
 import { InputTextModule } from 'primeng/inputtext';
@@ -44,6 +44,7 @@ export class UsuarioForm implements OnInit {
   perfis: any[] = []; // Para o dropdown
   currentUserStatus: string | null = null;
   todosModulos: any[] = []; // Array for MultiSelect options
+  isSaving = false;
 
   constructor(
     private adminService: AdminService,
@@ -164,9 +165,12 @@ ngOnInit(): void {
       return;
     }
 
+    this.isSaving = true;
     const formValue = this.usuarioForm.getRawValue(); 
     const status = formValue.ativo ? 'ativo' : 'inativo';
     const id_modulos = formValue.id_modulos || []; 
+
+    let saveObservable$: Observable<any>; // Variável para guardar o observable
 
     if (this.isEditMode && this.currentUserId) {
       //Logica de update
@@ -175,14 +179,7 @@ ngOnInit(): void {
           status: status,
           id_modulos: id_modulos
       };
-      this.adminService.updateUsuario(this.currentUserId, payload).subscribe({
-        next: () => this.ref.close(true),
-        error: (err) => {
-          const errMsg = err.error.error || 'Erro ao atualizar usuário.';
-          this.showError(errMsg);
-        }
-      });
-
+      saveObservable$ = this.adminService.updateUsuario(this.currentUserId, payload);
     } 
     else {
       //Logica de create
@@ -192,17 +189,31 @@ ngOnInit(): void {
         id_perfil: formValue.id_perfil,
         id_modulos: id_modulos // Pass selected module IDs
       };
-      this.adminService.registrarUsuario(payload).subscribe({
+      saveObservable$ = this.adminService.registrarUsuario(payload);
+    }
+    
+    saveObservable$
+      .pipe(
+        finalize(() => {
+          // 4. Garante que o loading DESATIVA ao final, SEMPRE
+          this.isSaving = false; 
+        })
+      )
+      .subscribe({
         next: () => {
-          this.ref.close(true);
-          this.showSuccess('Usuário criado com sucesso!');
+          // A mensagem de sucesso depende do modo
+          const successMessage = this.isEditMode ? 'Usuário atualizado com sucesso!' : 'Usuário criado com sucesso!';
+          this.showSuccess(successMessage);
+          this.ref.close(true); // Fecha o modal indicando sucesso
         },
         error: (err) => {
-          const errMsg = err.error.error || 'Falha ao criar usuário.';
+          // A mensagem de erro também pode depender do modo
+          const baseMsg = this.isEditMode ? 'Erro ao atualizar usuário.' : 'Falha ao criar usuário.';
+          const errMsg = err.error.error || baseMsg;
           this.showError(errMsg);
+          // O 'finalize' já cuidou de desativar o 'isSaving'
         }
       });
-    }
   }
 
   closeDialog(): void {
