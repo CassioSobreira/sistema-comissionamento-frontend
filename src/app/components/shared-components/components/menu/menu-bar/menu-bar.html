@@ -43,7 +43,13 @@
     </p-button>
 
     <ng-template #center>
-        <img src="/LDP POSITIVO.png" (click)="backToHome()" alt="SENAI CIMATEC" style="width: 150px; height: auto" />
+        <img
+         src="/LDP POSITIVO.png" 
+         (click)="backToHome()" 
+         alt="SENAI CIMATEC" 
+         style="width: 150px; height: auto" 
+         class="absolute left-1/2  -translate-x-1/2 cursor-pointer"
+         />
     </ng-template>
     <ng-template #end>
     <div class="flex items-center gap-1"> @if (nomeUsuario) {
