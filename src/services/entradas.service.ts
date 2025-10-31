@@ -27,4 +27,6 @@ import { Observable } from 'rxjs';  import { environment } from '../environments
     
       return this.http.get<Entrada[]>(url);
   }
+
+  
   }
