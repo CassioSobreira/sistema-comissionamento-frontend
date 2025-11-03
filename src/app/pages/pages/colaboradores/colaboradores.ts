@@ -10,6 +10,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ButtonModal } from './components/button-modal/button-modal';
+import { ModalUsuario } from "./components/modal-usuario/modal-usuario";
 @Component({
   selector: 'app-colaboradores',
   standalone: true,
@@ -21,8 +22,9 @@ import { ButtonModal } from './components/button-modal/button-modal';
     InputTextModule,
     IconFieldModule,
     InputIconModule,
-    ButtonModal
-  ],
+    ButtonModal,
+    ModalUsuario
+],
   templateUrl: './colaboradores.html',
   styleUrls: ['./colaboradores.css']
 })

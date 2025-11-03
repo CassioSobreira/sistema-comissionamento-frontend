@@ -1,0 +1,62 @@
+<div class="card flex justify-center">
+    <p-button (click)="showDialog()" icon="pi pi-user-edit" label="Adicionar Colaborador" />
+    <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '30rem' }">
+        <ng-template pTemplate="header">
+            <div class="inline-flex items-center justify-center gap-2">
+                <i class="pi pi-user text-xl"></i>
+                <span class="font-bold whitespace-nowrap">Informações do Colaborador</span>
+            </div>
+        </ng-template>
+
+        <div class="flex flex-col gap-4 mt-4">
+            <div class="flex items-center gap-4">
+                <label for="nome" class="font-semibold w-24">Nome</label>
+                <input pInputText id="nome" class="flex-auto" [(ngModel)]="nome" />
+            </div>
+
+            <div class="flex items-center gap-4">
+                <label for="cargo" class="font-semibold w-24">Cargo</label>
+                <p-multiselect id="cargo" 
+                               [options]="cargosOptions" 
+                               [(ngModel)]="selectedCargos" 
+                               optionLabel="name" 
+                               placeholder="Selecione o(s) cargo(s)" 
+                               class="flex-auto">
+                </p-multiselect>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <label for="sexo" class="font-semibold w-24">Sexo</label>
+                <p-multiselect id="sexo"
+                               [options]="sexoOptions"
+                               [(ngModel)]="selectedSexos"
+                               optionLabel="name"
+                               placeholder="Selecione o sexo"
+                               class="flex-auto"
+                               [selectionLimit]="1">
+                </p-multiselect>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <label for="email" class="font-semibold w-24">Email</label>
+                <input pInputText id="email" class="flex-auto" [(ngModel)]="email" />
+            </div>
+
+            <div class="flex items-center gap-4">
+                <label for="modulo" class="font-semibold w-24">Módulo</label>
+                <p-multiselect id="modulo" 
+                               [options]="modulosOptions" 
+                               [(ngModel)]="selectedModulos" 
+                               optionLabel="name" 
+                               placeholder="Selecione o(s) módulo(s)" 
+                               class="flex-auto">
+                </p-multiselect>
+            </div>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Cancelar" [text]="true" severity="secondary" (click)="visible = false" />
+            <p-button label="Salvar" severity="primary" (click)="save()" />
+        </ng-template>
+    </p-dialog>
+</div>

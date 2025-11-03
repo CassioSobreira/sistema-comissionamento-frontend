@@ -17,7 +17,17 @@
         >
             <ng-template pTemplate="caption">
                 <div class="flex justify-between items-center">
-                    <button-modal (uploadConcluido)="carregarColaboradores()"></button-modal>
+                    
+                    <!-- INÍCIO DA ALTERAÇÃO: Agrupando os botões -->
+                    <div class="flex items-center gap-2">
+                        <!-- Botão Adicionar (esquerdo) -->
+                        <modal-usuario (usuarioAdicionado)="carregarColaboradores()"></modal-usuario>
+
+                        <!-- Botão Importar (direito) -->
+                        <button-modal (uploadConcluido)="carregarColaboradores()"></button-modal>
+                    </div>
+                    <!-- FIM DA ALTERAÇÃO -->
+
                     <p-iconfield iconPosition="left">
                         <p-inputicon><i class="pi pi-search"></i></p-inputicon>
                         <input  
