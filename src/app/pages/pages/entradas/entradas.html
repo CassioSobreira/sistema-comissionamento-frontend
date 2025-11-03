@@ -1,16 +1,19 @@
 <menu-bar></menu-bar>
 
 <div class="p-4 sm:p-6 text-white">
-  <div class="flex items-center justify-between mb-8">
-    <h1 class="text-2xl font-bold">Selecione um Documento</h1>
-    <p-button 
-      label="Voltar para Módulos" 
-      icon="pi pi-arrow-left" 
-      (click)="voltarParaModulos()" 
-      [outlined]="true" 
-      styleClass="p-button-sm">
-    </p-button>
-  </div>
+<div class="flex items-center justify-center relative mb-8">
+  
+  <h1 class="text-xl font-bold text-white">Selecione um Documento</h1>
+
+  <p-button 
+    label="Voltar para Módulos" 
+    icon="pi pi-arrow-left" 
+    (click)="voltarParaModulos()" 
+    [outlined]="true" 
+    styleClass="p-button-sm"
+    class="absolute left-0 top-1/2 -translate-y-1/2">
+  </p-button>
+</div>
 
   <div class="content-container">
 

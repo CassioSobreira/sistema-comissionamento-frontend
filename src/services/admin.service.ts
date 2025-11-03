@@ -150,6 +150,6 @@ export class AdminService {
    * Chama: GET /api/modulos/todos (AJUSTE A ROTA SE NECESSÁRIO)
    */
   getTodosModulos(): Observable<Modulo[]> {
-    return this.http.get<Modulo[]>(`${this.modulosApiUrl}/all`); 
+    return this.http.get<Modulo[]>(`${this.modulosApiUrl}/todos`); 
   }
 }

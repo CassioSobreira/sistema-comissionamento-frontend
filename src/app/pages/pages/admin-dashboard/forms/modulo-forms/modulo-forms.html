@@ -1,1 +1,45 @@
-<p>modulo-forms works!</p>
+<form [formGroup]="moduloForm" (ngSubmit)="onSubmit()" class="p-4 dark:text-white">
+  <div class="flex flex-col gap-4">
+
+    <div class="flex flex-col gap-2">
+      <label for="nome_modulo" class="font-semibold">Nome do Módulo</label>
+      <input 
+        id="nome_modulo" 
+        type="text" 
+        pInputText 
+        formControlName="nome_modulo" 
+        class="w-full" 
+        placeholder="Digite o nome do módulo"
+      />
+      @if (moduloForm.get('nome_modulo')?.invalid && moduloForm.get('nome_modulo')?.touched) {
+        <small class="text-red-400 mt-1">O nome do módulo é obrigatório.</small>
+      }
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="entradas" class="font-semibold">Templates Associados</label>
+      <p-multiSelect 
+        id="entradas"
+        [options]="todasEntradas" 
+        formControlName="id_entradas" 
+        optionLabel="label" 
+        optionValue="value"
+        placeholder="Selecione os templates"
+        display="chip" 
+        [style]="{'width': '100%'}"
+        [loading]="isLoadingEntradas" 
+        scrollHeight="250px"> 
+        </p-multiSelect>
+      </div>
+
+  </div>
+
+  <div class="flex justify-end gap-2 mt-6">
+    <p-button label="Cancelar" severity="secondary" (click)="closeDialog()" />
+    <p-button 
+      type="submit" 
+      label="Salvar" 
+      [disabled]="moduloForm.invalid" 
+      [loading]="isSaving" />
+  </div>
+</form>
