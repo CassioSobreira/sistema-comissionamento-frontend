@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core'; // 1. Imports Adicionados
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
+import { MessageService } from 'primeng/api'; // 2. Imports dos Serviços
+import { ColaboradorService, Colaborador } from '../../../../../../services/colaboradores.service'; // 3. Import do seu Serviço
+import { Subject, takeUntil, finalize } from 'rxjs'; // 4. Imports do RxJS
 
 interface Option {
   name: string;
@@ -23,52 +26,175 @@ interface Option {
     InputTextModule,
     MultiSelectModule
   ]
+  // O MessageService é injetado, mas fornecido na página 'colaboradores'
 })
-export class ModalUsuario implements OnInit {
-  visible: boolean = false;
+export class ModalUsuario implements OnInit, OnDestroy { // 5. Adicionado OnDestroy
+  
+  // 6. Outputs para notificar o componente "Pai"
+  @Output() usuarioAdicionado = new EventEmitter<void>();
+  @Output() usuarioAtualizado = new EventEmitter<void>();
 
+  private destroy$ = new Subject<void>();
+
+  // --- Estado do Modal ---
+  visible: boolean = false;
+  isEditMode: boolean = false; // 7. Flag de controle
+  private currentColaboradorId: number | null = null;
+  isLoading: boolean = false;
+
+  // --- Campos do Formulário ---
+  nome: string = '';
+  email: string = '';
+  selectedCargos: Option[] = [];
+  selectedModulos: Option[] = [];
+  selectedSexos: Option[] = []; 
+
+  // --- Opções dos Dropdowns ---
   cargosOptions!: Option[];
   modulosOptions!: Option[];
   sexoOptions!: Option[]; 
-  selectedCargos!: Option[];
-  selectedModulos!: Option[];
-  selectedSexos!: Option[]; 
-  nome: string = '';
-  email: string = '';
+
+  // 8. Injeção dos Serviços
+  constructor(
+    private colaboradorService: ColaboradorService,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit() {
+    // Listas de opções que você já tinha
     this.cargosOptions = [
       { name: 'Desenvolvedor Jr', code: 'DEV_JR' },
       { name: 'Desenvolvedor Pleno', code: 'DEV_PL' },
-      { name: 'Gerente de Projetos', code: 'GP' }
+      { name: 'Gerente de Projetos', code: 'GP' },
+      { name: 'Analista de Sistemas', code: 'AS' },
+      { name: 'Analista de Qualidade', code: 'AQ' },
+      { name: 'Analista de Suporte', code: 'ASUP' }
     ];
 
     this.modulosOptions = [
       { name: 'Módulo de Gestão', code: 'GEST' },
       { name: 'Módulo Financeiro', code: 'FIN' },
-      { name: 'Módulo de RH', code: 'RH' }
+      { name: 'Módulo de RH', code: 'RH' },
+      { name: 'Módulo de Vendas', code: 'VEND' },
+      { name: 'Módulo de Suporte', code: 'SUP' }, 
+      { name: 'Módulo de Segurança', code: 'SEG' },
+      { name: 'Módulo de Marketing', code: 'MARK' }
     ];
-
     
     this.sexoOptions = [
-        { name: 'Masculino', code: 'M' },
-        { name: 'Feminino', code: 'F' },
-        { name: 'Outro', code: 'O' }
+        { name: 'Masculino', code: 'Masculino' }, // Ajustei o code para bater com o name
+        { name: 'Feminino', code: 'Feminino' },
+        { name: 'Outro', code: 'Outro' }
     ];
   }
 
-  showDialog() {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // 9. --- NOVOS MÉTODOS PÚBLICOS ---
+
+  /**
+   * Chamado pelo 'colaboradores.ts' (Pai) para ADICIONAR.
+   */
+  public abrirModalParaAdicionar() {
+    this.isEditMode = false;
+    this.currentColaboradorId = null;
+    this.resetForm();
     this.visible = true;
   }
 
+  /**
+   * Chamado pelo 'colaboradores.ts' (Pai) para EDITAR.
+   */
+  public abrirModalParaEditar(colaborador: Colaborador) {
+    this.isEditMode = true;
+    this.currentColaboradorId = colaborador.id_colaborador;
+
+    // Preenche o formulário com os dados do colaborador
+    this.nome = colaborador.nome;
+    this.email = colaborador.email;
+    
+    // Converte as strings dos dados do colaborador de volta para os objetos de Option
+    // Isso é crucial para o p-multiselect entender qual opção está selecionada
+    this.selectedCargos = this.cargosOptions.filter(opt => opt.name === colaborador.cargo);
+    this.selectedSexos = this.sexoOptions.filter(opt => opt.name === colaborador.sexo);
+    this.selectedModulos = this.modulosOptions.filter(opt => opt.name === colaborador.modulo);
+
+    this.visible = true;
+  }
+
+  /**
+   * Limpa o formulário para um novo registo.
+   */
+  private resetForm() {
+    this.nome = '';
+    this.email = '';
+    this.selectedCargos = [];
+    this.selectedModulos = [];
+    this.selectedSexos = [];
+  }
+
+  // 10. --- LÓGICA DE 'SAVE' ATUALIZADA ---
+
+  /**
+   * Chamado pelo botão 'Salvar' ou 'Atualizar' no modal.
+   */
   save() {
-    console.log({
+    this.isLoading = true;
+
+    // Transforma os dados do formulário (que usam Option[]) num formato compatível com 'Colaborador'
+    const dadosParaApi: any = {
       nome: this.nome,
       email: this.email,
-      cargos: this.selectedCargos,
-      modulos: this.selectedModulos,
-      sexos: this.selectedSexos 
-    });
-    this.visible = false;
+      // Pega o 'name' da primeira (e única) opção selecionada, ou nulo
+      cargo: this.selectedCargos.length > 0 ? this.selectedCargos[0].name : null,
+      sexo: this.selectedSexos.length > 0 ? this.selectedSexos[0].name : null,
+      modulo: this.selectedModulos.length > 0 ? this.selectedModulos[0].name : null,
+    };
+
+    if (this.isEditMode && this.currentColaboradorId) {
+      // --- LÓGICA DE ATUALIZAÇÃO (UPDATE) ---
+      this.colaboradorService.updateColaborador(this.currentColaboradorId, dadosParaApi)
+        .pipe(
+          takeUntil(this.destroy$),
+          finalize(() => this.isLoading = false) // Para o loading
+        )
+        .subscribe({
+          next: () => {
+            this.showSuccess('Colaborador atualizado com sucesso.');
+            this.usuarioAtualizado.emit(); // Notifica o "Pai"
+            this.visible = false;
+          },
+          error: (err) => this.showError('Falha ao atualizar colaborador.')
+        });
+
+    } else {
+      // --- LÓGICA DE CRIAÇÃO (CREATE) ---
+      this.colaboradorService.createColaborador(dadosParaApi)
+        .pipe(
+          takeUntil(this.destroy$),
+          finalize(() => this.isLoading = false) // Para o loading
+        )
+        .subscribe({
+          next: () => {
+            this.showSuccess('Colaborador adicionado com sucesso.');
+            this.usuarioAdicionado.emit(); // Notifica o "Pai"
+            this.visible = false;
+          },
+          error: (err) => this.showError('Falha ao adicionar colaborador.')
+        });
+    }
+  }
+
+  // --- Funções Auxiliares de Notificação ---
+  private showSuccess(message: string): void {
+    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: message, life: 3000 });
+  }
+
+  private showError(message: string): void {
+    this.messageService.add({ severity: 'error', summary: 'Erro', detail: message, life: 3000 });
   }
 }
+

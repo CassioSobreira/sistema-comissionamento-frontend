@@ -1,17 +1,33 @@
 <div class="card flex justify-center">
-    <p-button (click)="showDialog()" icon="pi pi-user-edit" label="Adicionar Colaborador" />
-    <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '30rem' }">
+    <!-- 
+      BOTÃO DE GATILHO:
+      Agora chama a função 'abrirModalParaAdicionar()'
+    -->
+    <p-button 
+      (click)="abrirModalParaAdicionar()" 
+      icon="pi pi-user-plus" 
+      label="Adicionar Colaborador" 
+      styleClass="p-button-success" />
+
+    <!-- 
+      MODAL:
+      O título e o botão de salvar agora são dinâmicos.
+    -->
+    <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '30rem' }" [draggable]="false" [closable]="!isLoading">
         <ng-template pTemplate="header">
             <div class="inline-flex items-center justify-center gap-2">
                 <i class="pi pi-user text-xl"></i>
-                <span class="font-bold whitespace-nowrap">Informações do Colaborador</span>
+                
+                <span class="font-bold whitespace-nowrap">
+                  {{ isEditMode ? 'Editar' : 'Adicionar' }} Colaborador
+                </span>
             </div>
         </ng-template>
 
         <div class="flex flex-col gap-4 mt-4">
             <div class="flex items-center gap-4">
                 <label for="nome" class="font-semibold w-24">Nome</label>
-                <input pInputText id="nome" class="flex-auto" [(ngModel)]="nome" />
+                <input pInputText id="nome" class="flex-auto" [(ngModel)]="nome" [disabled]="isLoading" />
             </div>
 
             <div class="flex items-center gap-4">
@@ -21,7 +37,10 @@
                                [(ngModel)]="selectedCargos" 
                                optionLabel="name" 
                                placeholder="Selecione o(s) cargo(s)" 
-                               class="flex-auto">
+                               class="flex-auto"
+                               [selectionLimit]="1"
+                               [disabled]="isLoading"
+                               [appendTo]="'body'">
                 </p-multiselect>
             </div>
             
@@ -33,13 +52,15 @@
                                optionLabel="name"
                                placeholder="Selecione o sexo"
                                class="flex-auto"
-                               [selectionLimit]="1">
+                               [selectionLimit]="1"
+                               [disabled]="isLoading"
+                               [appendTo]="'body'">
                 </p-multiselect>
             </div>
 
             <div class="flex items-center gap-4">
                 <label for="email" class="font-semibold w-24">Email</label>
-                <input pInputText id="email" class="flex-auto" [(ngModel)]="email" />
+                <input pInputText id="email" class="flex-auto" [(ngModel)]="email" [disabled]="isLoading" />
             </div>
 
             <div class="flex items-center gap-4">
@@ -49,14 +70,28 @@
                                [(ngModel)]="selectedModulos" 
                                optionLabel="name" 
                                placeholder="Selecione o(s) módulo(s)" 
-                               class="flex-auto">
+                               class="flex-auto"
+                               [selectionLimit]="1"
+                               [disabled]="isLoading"
+                               [appendTo]="'body'"> 
                 </p-multiselect>
             </div>
         </div>
 
         <ng-template pTemplate="footer">
-            <p-button label="Cancelar" [text]="true" severity="secondary" (click)="visible = false" />
-            <p-button label="Salvar" severity="primary" (click)="save()" />
+            <p-button 
+              label="Cancelar" 
+              [text]="true" 
+              severity="secondary" 
+              (click)="visible = false" 
+              [disabled]="isLoading" />
+            
+            <p-button 
+              [label]="isEditMode ? 'Atualizar' : 'Salvar'" 
+              severity="primary" 
+              (click)="save()"
+              [loading]="isLoading" />
         </ng-template>
     </p-dialog>
 </div>
+
