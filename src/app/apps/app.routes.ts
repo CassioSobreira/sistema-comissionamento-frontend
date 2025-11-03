@@ -10,9 +10,14 @@ import { AdminDashboard } from '../pages/pages/admin-dashboard/admin-dashboard';
 import { Info } from '../pages/pages/info-devs/info-devs';
 import { ConfigUser } from '../components/shared-components/components/config-user/config-user';
 import { Entradas } from '../pages/pages/entradas/entradas';
+import { CardPendenciaComponent } from '../components/shared-components/components/card-pendencia-component/card-pendencia-component';
 export const routes: Routes = [
     // { path: '', component: HomeComponent },
     { path: '', component: LoginPageComponent},
+    {
+        path: 'pendencias', 
+        component: CardPendenciaComponent       
+    },
     { 
         path: 'home', 
         component: HomePage,
