@@ -1,17 +1,19 @@
 <div class="card flex justify-center">
     <!-- 
-      BOTÃO DE GATILHO:
-      Agora chama a função 'abrirModalParaAdicionar()'
+        BOTÃO DE GATILHO:
+        - Agora chama a função 'abrirModalParaAdicionar()'
+        - O 'styleClass' foi REMOVIDO para que ele use a cor padrão do tema,
+          igual ao botão 'Importar'.
     -->
     <p-button 
       (click)="abrirModalParaAdicionar()" 
       icon="pi pi-user-plus" 
       label="Adicionar Colaborador" 
-      styleClass="p-button-success" />
+    /> <!-- 'styleClass' REMOVIDO DAQUI -->
 
     <!-- 
-      MODAL:
-      O título e o botão de salvar agora são dinâmicos.
+        MODAL:
+        O título e o botão de salvar agora são dinâmicos.
     -->
     <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '30rem' }" [draggable]="false" [closable]="!isLoading">
         <ng-template pTemplate="header">
@@ -19,11 +21,13 @@
                 <i class="pi pi-user text-xl"></i>
                 
                 <span class="font-bold whitespace-nowrap">
+                  <!-- O título muda se estiver a editar ou a adicionar -->
                   {{ isEditMode ? 'Editar' : 'Adicionar' }} Colaborador
                 </span>
             </div>
         </ng-template>
 
+        <!-- Corpo do Modal -->
         <div class="flex flex-col gap-4 mt-4">
             <div class="flex items-center gap-4">
                 <label for="nome" class="font-semibold w-24">Nome</label>
@@ -78,6 +82,7 @@
             </div>
         </div>
 
+        <!-- Rodapé do Modal -->
         <ng-template pTemplate="footer">
             <p-button 
               label="Cancelar" 
@@ -90,7 +95,7 @@
               [label]="isEditMode ? 'Atualizar' : 'Salvar'" 
               severity="primary" 
               (click)="save()"
-              [loading]="isLoading" />
+              [loading]="isLoading" /> <!-- Mostra um ícone de loading enquanto salva/atualiza -->
         </ng-template>
     </p-dialog>
 </div>
