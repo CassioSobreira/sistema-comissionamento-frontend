@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core'; // 1. Adicionado ViewChild
 import { Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -11,8 +11,13 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MenuModule } from 'primeng/menu';
 import { ToastModule } from 'primeng/toast';
 import { ToolbarModule } from 'primeng/toolbar';
+
+// --- Nossas Importações ---
 import { AuthService, UserTokenPayload } from '../../../../../../services/auth.service';
 import { Subscription } from 'rxjs';
+// 2. Importar o componente modal e sua interface
+// (Ajuste o caminho '..' se necessário)
+import { ConfigUser, Usuario } from '../../config-user/config-user'; 
 
 interface MenuItem {
     label: string;
@@ -34,13 +39,21 @@ interface MenuItem {
         MenuModule, 
         ToastModule,
         ToolbarModule,
+        ConfigUser // 3. Adicionar o componente modal aos imports
     ],
     providers: [MessageService]
 })
 export class MenuBar implements OnInit, OnDestroy {
     
+    // 4. Adicionar @ViewChild para "capturar" o modal do HTML
+    // O nome 'configUserModal' deve ser o mesmo do #apelido no HTML
+    @ViewChild('configUserModal') configUserModal!: ConfigUser;
+
     nomeUsuario: string = '';
     iniciaisUsuario: string = '';
+    
+    // 5. Armazenar os dados completos do usuário
+    private currentUser: UserTokenPayload | null = null; 
     
     private userSubscription?: Subscription;
 
@@ -82,6 +95,8 @@ export class MenuBar implements OnInit, OnDestroy {
     }
 
     private atualizarDadosUsuario(user: UserTokenPayload | null) {
+        this.currentUser = user; // 6. Guardar o usuário completo
+        
         if (user) {
             this.nomeUsuario = user.nome.split(' ')[0]; // Pega só o primeiro nome
             this.iniciaisUsuario = this.getIniciais(user.nome);
@@ -118,9 +133,12 @@ export class MenuBar implements OnInit, OnDestroy {
             item.perfisPermitidos.includes(perfilUsuario)
         );
     }
+
     ngOnDestroy() {
         this.routerSubscription?.unsubscribe();
+        this.userSubscription?.unsubscribe(); // 7. Adicionado unsubscribe para user
     }
+
     selecionarPagina(rota: string) {
         this.paginaAtiva = rota;
         this.visible = false;
@@ -145,9 +163,33 @@ export class MenuBar implements OnInit, OnDestroy {
         this.paginaAtiva = 'info';
         this.router.navigate(['info']);
     }
+
+    // 8. --- NOVA FUNÇÃO PARA ABRIR O MODAL ---
+    /**
+     * Chamada pelo clique no ícone do usuário/avatar no HTML.
+     */
+    abrirModalPerfil() {
+        if (this.currentUser) {
+            // Mapear os dados do UserTokenPayload para a interface Usuario
+            // A interface 'Usuario' veio do 'config-user.ts'
+            const usuarioParaModal: Usuario = {
+                nome: this.currentUser.nome,
+                email: this.currentUser.email,
+                cargo: this.currentUser.cargo,
+                sexo: this.currentUser.sexo,
+                modulo: this.currentUser.modulo
+            };
+            
+            // Chamar o método público do componente filho
+            this.configUserModal.abrirModal(usuarioParaModal);
+        } else {
+            this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível carregar os dados do usuário.' });
+        }
+    }
+
     private setActiveFromUrl(url: string) {
         const segment = url.split('/').filter(Boolean)[0] || 'home';
         this.paginaAtiva = segment;
     }
- 
+
 }
