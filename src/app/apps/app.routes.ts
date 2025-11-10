@@ -10,6 +10,8 @@ import { AdminDashboard } from '../pages/pages/admin-dashboard/admin-dashboard';
 import { Info } from '../pages/pages/info-devs/info-devs';
 import { ConfigUser } from '../components/shared-components/components/config-user/config-user';
 import { Entradas } from '../pages/pages/entradas/entradas';
+import { DocumentoCreateComponent } from '../pages/pages/documento-create/documento-create';
+import { DocumentoCriadoComponent } from '../pages/pages/documento-criado/documento-criado';
 export const routes: Routes = [
     // { path: '', component: HomeComponent },
     { path: '', component: LoginPageComponent},
@@ -58,6 +60,15 @@ export const routes: Routes = [
         path: 'modulos/:id_modulo/entradas',
         component: Entradas,
         canActivate: [authGuard] // O usuário precisa estar logado para acessar
+    },
+    {
+        path: 'entradas/:id_entrada/criar',
+        component: DocumentoCreateComponent,
+        canActivate: [authGuard]   
+    },
+    {    
+        path: 'documentos/:id/criado', 
+        component: DocumentoCriadoComponent,
+        canActivate: [authGuard]
     }
-
 ];
