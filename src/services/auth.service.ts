@@ -9,6 +9,10 @@ export interface UserTokenPayload {
   id: number;
   nome: string;
   perfil: string;
+  cargo: string;
+  sexo: string;
+  modulo: string;
+  email: string;
 }
 
 @Injectable({

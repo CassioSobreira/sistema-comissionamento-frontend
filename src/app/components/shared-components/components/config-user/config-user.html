@@ -1,2 +1,59 @@
-<menu-bar></menu-bar>
-<p>config-user works!</p>
+
+<p-dialog 
+  [(visible)]="visible" 
+  [modal]="true" 
+  [style]="{ width: '30rem' }" 
+  [draggable]="false"
+  (onHide)="onModalHide()"
+>
+    
+    <ng-template pTemplate="header">
+        <div class="inline-flex items-center justify-center gap-2">
+            <i class="pi pi-user text-xl"></i>
+            <span class="font-bold whitespace-nowrap">Informações do Usuário</span>
+        </div>
+    </ng-template>
+
+    
+    <div *ngIf="usuarioMostrado" class="flex flex-col gap-5 mt-4 p-2 text-white">
+        
+        
+        <div>
+            <label class="block text-sm font-semibold text-gray-400 mb-1">Nome</label>
+            <span class="text-lg">{{ usuarioMostrado.nome }}</span>
+        </div>
+
+        <!-- Bloco Email -->
+        <div>
+            <label class="block text-sm font-semibold text-gray-400 mb-1">Email</label>
+            <span class="text-lg">{{ usuarioMostrado.email }}</span>
+        </div>
+
+        <!-- Bloco Cargo -->
+        <div>
+            <label class="block text-sm font-semibold text-gray-400 mb-1">Cargo</label>
+            <span class="text-lg">{{ usuarioMostrado.cargo }}</span>
+        </div>
+
+        <!-- Bloco Sexo -->
+        <div>
+            <label class="block text-sm font-semibold text-gray-400 mb-1">Sexo</label>
+            <span class="text-lg">{{ usuarioMostrado.sexo }}</span>
+        </div>
+
+        <!-- Bloco Módulo -->
+        <div>
+            <label class="block text-sm font-semibold text-gray-400 mb-1">Módulo</label>
+            <span class="text-lg">{{ usuarioMostrado.modulo }}</span>
+        </div>
+
+    </div>
+
+    <ng-template pTemplate="footer">
+        <p-button 
+          label="Fechar" 
+          severity="secondary" 
+          (click)="visible = false" 
+        />
+    </ng-template>
+</p-dialog>
