@@ -64,16 +64,12 @@
                 <span class="font-bold hidden sm:block">{{ nomeUsuario }}</span>
             </div>
         }
-        
-        <!-- 
-          MUDANÇA AQUI: 
-          O (click) agora chama 'abrirModalPerfil()' em vez de 'goToConfig()'
-        -->
+    
         <p-button
             icon="pi pi-cog" 
             text 
             severity="secondary" 
-            (click)="abrirModalPerfil()"
+            (click)="goToConfig()"
             class="text-white"
         />
         

@@ -40,7 +40,9 @@ export const routes: Routes = [
             perfisPermitidos: ['Administrador'] // Apenas usuários com perfil 'Administrador' podem acessar
         }
     },
-    {path: 'confirma-senha', component: ConfirmaSenha},
+    {
+        path: 'confirma-senha', component: ConfirmaSenha
+    },
     {
         path: 'colaboradores', 
         component: Colaboradores,
@@ -50,11 +52,6 @@ export const routes: Routes = [
         path: 'info', 
         component: Info, 
         canActivate: [authGuard]
-    },
-    {
-        path: 'configuracoes',
-        component: ConfigUser,
-        canActivate: [authGuard] // O usuário precisa estar logado para acessar
     },
     {
         path: 'modulos/:id_modulo/entradas',

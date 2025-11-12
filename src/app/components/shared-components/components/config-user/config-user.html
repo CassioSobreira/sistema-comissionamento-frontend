@@ -1,4 +1,3 @@
-
 <p-dialog 
   [(visible)]="visible" 
   [modal]="true" 
@@ -10,44 +9,53 @@
     <ng-template pTemplate="header">
         <div class="inline-flex items-center justify-center gap-2">
             <i class="pi pi-user text-xl"></i>
-            <span class="font-bold whitespace-nowrap">Informações do Usuário</span>
+            <span class="font-bold whitespace-nowrap">Minhas Informações</span>
         </div>
     </ng-template>
 
-    
-    <div *ngIf="usuarioMostrado" class="flex flex-col gap-5 mt-4 p-2 text-white">
-        
-        
-        <div>
-            <label class="block text-sm font-semibold text-gray-400 mb-1">Nome</label>
-            <span class="text-lg">{{ usuarioMostrado.nome }}</span>
-        </div>
+    @if (isLoading) {
+      <div class="flex justify-center items-center py-8">
+        <p-progressSpinner styleClass="w-12 h-12"></p-progressSpinner>
+      </div>
+    } @else if (usuario) {
+      <div class="flex flex-col gap-5 mt-4 p-2 text-white">
+          
+          <div>
+              <label class="block text-sm font-semibold text-gray-400 mb-1">Nome</label>
+              <span class="text-lg">{{ usuario.nome }}</span>
+          </div>
 
-        <!-- Bloco Email -->
-        <div>
-            <label class="block text-sm font-semibold text-gray-400 mb-1">Email</label>
-            <span class="text-lg">{{ usuarioMostrado.email }}</span>
-        </div>
+          <div>
+              <label class="block text-sm font-semibold text-gray-400 mb-1">Email</label>
+              <span class="text-lg">{{ usuario.email }}</span>
+          </div>
 
-        <!-- Bloco Cargo -->
-        <div>
-            <label class="block text-sm font-semibold text-gray-400 mb-1">Cargo</label>
-            <span class="text-lg">{{ usuarioMostrado.cargo }}</span>
-        </div>
+          <div>
+              <label class="block text-sm font-semibold text-gray-400 mb-1">Perfil</label>
+              <span class="text-lg">{{ usuario.perfil }}</span>
+          </div>
 
-        <!-- Bloco Sexo -->
-        <div>
-            <label class="block text-sm font-semibold text-gray-400 mb-1">Sexo</label>
-            <span class="text-lg">{{ usuarioMostrado.sexo }}</span>
-        </div>
-
-        <!-- Bloco Módulo -->
-        <div>
-            <label class="block text-sm font-semibold text-gray-400 mb-1">Módulo</label>
-            <span class="text-lg">{{ usuarioMostrado.modulo }}</span>
-        </div>
-
-    </div>
+          <div>
+              <label class="block text-sm font-semibold text-gray-400 mb-1">Módulos</label>
+              @if (usuario.modulos && usuario.modulos.length > 0) {
+                  <div class="flex flex-wrap gap-2 mt-2">
+                      @for (modulo of usuario.modulos; track modulo) {
+                          <span class="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                              {{ modulo }}
+                          </span>
+                      }
+                  </div>
+              } @else {
+                  <span class="text-lg text-gray-500">Nenhum módulo associado.</span>
+              }
+          </div>
+      </div>
+    } @else if (erro) {
+      <div class="text-center py-8">
+        <i class="pi pi-exclamation-circle text-3xl text-red-500 mb-4"></i>
+        <p class="text-lg text-gray-300">{{ erro }}</p>
+      </div>
+    }
 
     <ng-template pTemplate="footer">
         <p-button 

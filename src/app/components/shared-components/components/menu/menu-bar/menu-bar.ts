@@ -15,9 +15,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 // --- Nossas Importações ---
 import { AuthService, UserTokenPayload } from '../../../../../../services/auth.service';
 import { Subscription } from 'rxjs';
-// 2. Importar o componente modal e sua interface
-// (Ajuste o caminho '..' se necessário)
-import { ConfigUser, Usuario } from '../../config-user/config-user'; 
+import { ConfigUser } from '../../config-user/config-user'; 
 
 interface MenuItem {
     label: string;
@@ -39,7 +37,7 @@ interface MenuItem {
         MenuModule, 
         ToastModule,
         ToolbarModule,
-        ConfigUser // 3. Adicionar o componente modal aos imports
+        ConfigUser
     ],
     providers: [MessageService]
 })
@@ -156,7 +154,7 @@ export class MenuBar implements OnInit, OnDestroy {
     
     goToConfig() {
         this.paginaAtiva = 'configuracoes';
-        this.router.navigate(['configuracoes']);
+        this.configUserModal.abrirModal();
     }
 
     goToInfo() {
@@ -164,28 +162,6 @@ export class MenuBar implements OnInit, OnDestroy {
         this.router.navigate(['info']);
     }
 
-    // 8. --- NOVA FUNÇÃO PARA ABRIR O MODAL ---
-    /**
-     * Chamada pelo clique no ícone do usuário/avatar no HTML.
-     */
-    abrirModalPerfil() {
-        if (this.currentUser) {
-            // Mapear os dados do UserTokenPayload para a interface Usuario
-            // A interface 'Usuario' veio do 'config-user.ts'
-            const usuarioParaModal: Usuario = {
-                nome: this.currentUser.nome,
-                email: this.currentUser.email,
-                cargo: this.currentUser.cargo,
-                sexo: this.currentUser.sexo,
-                modulo: this.currentUser.modulo
-            };
-            
-            // Chamar o método público do componente filho
-            this.configUserModal.abrirModal(usuarioParaModal);
-        } else {
-            this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Não foi possível carregar os dados do usuário.' });
-        }
-    }
 
     private setActiveFromUrl(url: string) {
         const segment = url.split('/').filter(Boolean)[0] || 'home';
