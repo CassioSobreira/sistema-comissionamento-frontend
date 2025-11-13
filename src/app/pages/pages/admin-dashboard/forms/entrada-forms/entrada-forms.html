@@ -5,12 +5,6 @@
       <label for="nome_entrada" class="font-semibold">Nome do Template</label>
       <input id="nome_entrada" type="text" pInputText formControlName="nome_entrada" />
     </div>
-    
-    <div class="flex flex-col gap-2">
-      <label for="template_html" class="font-semibold">Template HTML</label>
-      <textarea id="template_html" pInputTextarea formControlName="template_html" [rows]="10"
-        placeholder="Cole seu código HTML aqui. Use nome_do_campo para as variáveis."></textarea>
-    </div>
   </div>
 
   <hr class="border-gray-700 my-6" />
@@ -40,21 +34,29 @@
             </div>
           </div>
           
-          @if (campoGroup.get('type')?.value === 'select') {
-            <div class="mt-4 p-3 bg-gray-700 rounded">
-              <label [for]="'optionsUrl-' + $index">Fonte dos Dados da Lista</label>
-              <p-select [id]="'optionsUrl-' + $index" 
-                        [options]="fontesDeDados" 
-                        formControlName="optionsUrl" 
-                        placeholder="Selecione a fonte dos dados" 
-                        optionLabel="label" 
-                        optionValue="value" 
-                        class="w-full"
-                        (onChange)="onFonteDeDadosChange($any($event), campoGroup)">
-              </p-select>
-              <input type="hidden" formControlName="optionsValueField" />
-              <input type="hidden" formControlName="optionsLabelField" />
-            </div>
+            @if (campoGroup.get('type')?.value === 'select' || campoGroup.get('type')?.value === 'multiselect') {
+              <div class="mt-4 p-3 bg-gray-700 rounded">
+                <label [for]="'optionsUrl-' + $index">Fonte dos Dados da Lista</label>
+                <p-select [id]="'optionsUrl-' + $index" 
+                          [options]="fontesDeDados" 
+                          formControlName="optionsUrl" 
+                          placeholder="Selecione a fonte dos dados" 
+                          optionLabel="label" 
+                          optionValue="value" 
+                          class="w-full"
+                          (onChange)="onFonteDeDadosChange($any($event), campoGroup)">
+                </p-select>
+                
+                @if (campoGroup.get('optionsUrl')?.value === 'custom') {
+                  <div class="mt-4">
+                    <label>Opções Customizadas (formato: label,value)</label>
+                    <textarea pInputTextarea formControlName="customOptions" class="w-full"
+                      placeholder="Opção A,A&#10;Opção B,B&#10;Opção C,C"></textarea>
+                  </div>
+                }
+                <input type="hidden" formControlName="optionsValueField" />
+                <input type="hidden" formControlName="optionsLabelField" />
+              </div>
           }
 
           <div class="flex justify-end mt-3">
