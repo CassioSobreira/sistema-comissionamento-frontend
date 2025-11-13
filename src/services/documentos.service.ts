@@ -5,6 +5,7 @@ import { environment } from '../environments/environment';
 
 export interface DocumentoPayload {
   id_entrada: number;
+  id_modulo: number;
   dados_preenchidos: any; 
   assinantes: number[];
 }

@@ -68,6 +68,35 @@
                   class="w-full"
                 />
               }
+
+            @case ('select') {
+                <p-select
+                  [id]="field.name"
+                  [options]="opcoesDropdownDinamicas.get(field.name)"
+                  [formControlName]="field.name"
+                  placeholder="Selecione uma opção"
+                  optionLabel="label"
+                  optionValue="value"
+                  class="w-full"
+                  [filter]="true"
+                  filterPlaceholder="Pesquisar...">
+                </p-select>
+              }
+
+              @case ('multiselect') {
+                <p-multiSelect
+                  [id]="field.name"
+                  [options]="opcoesDropdownDinamicas.get(field.name)"
+                  [formControlName]="field.name"
+                  placeholder="Selecione uma ou mais opções"
+                  display="chip"
+                  optionLabel="label"
+                  optionValue="value"
+                  class="w-full"
+                  [filter]="true"
+                  filterPlaceholder="Pesquisar...">
+                </p-multiSelect>
+              }
               
               @default {
                 <p class="text-sm text-yellow-500">Tipo de campo '{{field.type}}' não suportado.</p>

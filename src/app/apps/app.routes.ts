@@ -59,7 +59,7 @@ export const routes: Routes = [
         canActivate: [authGuard] // O usuário precisa estar logado para acessar
     },
     {
-        path: 'entradas/:id_entrada/criar',
+        path: 'modulos/:id_modulo/entradas/:id_entrada/criar',
         component: DocumentoCreateComponent,
         canActivate: [authGuard]   
     },

@@ -76,8 +76,8 @@ export class Entradas implements OnInit {
 
   selecionarEntrada(idEntrada: number): void {
     console.log(`Navegando para o documento da entrada com ID: ${idEntrada}`);
-    this.router.navigate(['/entradas', idEntrada, 'criar']);
-  }
+  this.router.navigate(['/modulos', this.idModulo, 'entradas', idEntrada, 'criar']); 
+ }
 
   ngOnDestroy(): void {
     this.destroy$.next();

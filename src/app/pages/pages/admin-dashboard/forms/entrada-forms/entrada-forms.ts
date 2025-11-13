@@ -10,6 +10,7 @@ import { AbstractControl} from '@angular/forms'; // Garanta que AbstractControl 
 import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
+import { MultiSelectModule } from 'primeng/multiselect'; 
 import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 
@@ -25,7 +26,8 @@ import { Entrada } from '../../../../../../services/entradas.service'; // Interf
     ReactiveFormsModule,
     InputTextModule,
     SelectModule,
-    ButtonModule
+    ButtonModule,
+    MultiSelectModule
   ],
   templateUrl: './entrada-forms.html',
 })
@@ -37,17 +39,19 @@ export class EntradaForms implements OnInit {
   isSaving = false;
 
   fontesDeDados = [
-  { label: 'Lista de Colaboradores', value: '/colaboradores', valueField: 'id_colaborador', labelField: 'nome' },
-  { label: 'Lista de Usuários', value: '/admin/usuarios', valueField: 'id_usuario', labelField: 'nome' }
-  // Adicione outras fontes de dados aqui
-];
+    { label: 'Lista de Usuários', value: '/admin/usuarios', valueField: 'id_usuario', labelField: 'nome' },
+    { label: 'Lista de Colaboradores', value: '/colaboradores', valueField: 'id_colaborador', labelField: 'nome' },
+    { label: 'Lista de Módulos', value: '/modulos/todos', valueField: 'id_modulo', labelField: 'nome_modulo' },
+    { label: 'Criar Lista Customizada', value: 'custom' } 
+  ];
 
   // Opções para o dropdown "Tipo de Campo"
   tiposDeCampo = [
     { label: 'Texto Curto', value: 'text' },
     { label: 'Texto Longo (Parágrafo)', value: 'textarea' },
     { label: 'Número', value: 'number' },
-    { label: 'Lista de Opções (Select)', value: 'select' }
+    { label: 'Lista de Opções (Dropdown))', value: 'select' },
+    { label: 'Seleção Múltipla (MultiSelect)', value: 'multiselect' }
   ];
 
   constructor(
@@ -61,9 +65,7 @@ export class EntradaForms implements OnInit {
     this.entradaForm = this.fb.group({
       nome_entrada: ['', Validators.required],
       // 'campos' é um FormArray. Ele começa vazio.
-      campos: this.fb.array([]),
-      // O template_html ainda será um campo de texto longo por enquanto
-      template_html: ['', Validators.required] 
+      campos: this.fb.array([])
     });
   }
 
@@ -119,7 +121,7 @@ export class EntradaForms implements OnInit {
   // Salva o formulário
   onSubmit(): void {
     if (this.entradaForm.invalid) {
-      this.showWarn('Preencha todos os campos obrigatórios (Nome, Template e todos os campos dinâmicos).');
+      this.showWarn('Preencha todos os campos obrigatórios.');
       return;
     }
 
@@ -129,8 +131,7 @@ export class EntradaForms implements OnInit {
     // O valor de 'campos' JÁ É o campo_json que precisamos!
     const payload = {
       nome_entrada: formData.nome_entrada,
-      campo_json: formData.campos, // O FormArray já gera o array de objetos
-      template_html: formData.template_html
+      campo_json: formData.campos
     };
 
     let saveObservable$: Observable<any>;
