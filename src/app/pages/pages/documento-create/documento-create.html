@@ -1,0 +1,122 @@
+<menu-bar></menu-bar>
+
+<div class="p-4 sm:p-6 text-white">
+  
+  @if (isLoading) {
+    <div class="flex justify-center mt-8">
+      <p-progressSpinner class="w-12 h-12" strokeWidth="6"></p-progressSpinner>
+    </div>
+  } @else if (templateInfo) {
+    
+    <div class="relative flex items-center justify-center mb-8">
+    
+    <p-button 
+        label="Voltar" 
+        icon="pi pi-arrow-left" 
+        (click)="voltar()" 
+        [outlined]="true" 
+        class="p-button-sm absolute left-0 top-1/2 -translate-y-1/2" ></p-button>
+
+    <h1 class="text-2xl font-bold">
+        Criar: {{ templateInfo.nome_entrada }}
+    </h1>
+
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="p-6 bg-gray-800 rounded-lg max-w-4xl mx-auto border border-gray-700">
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+
+        @for (field of formFields; track field.name) {
+          <div 
+            class="flex flex-col gap-2" 
+            [class.md:col-span-2]="field.type === 'textarea'"> <label [for]="field.name" class="font-semibold">
+              {{ field.label }}
+              @if (field.required) {
+                <span class="text-red-500 ml-1">*</span>
+              }
+            </label>
+
+            @switch (field.type) {
+
+              @case ('text') {
+                <input 
+                  [id]="field.name" 
+                  type="text" 
+                  pInputText 
+                  [formControlName]="field.name"
+                  class="w-full"
+                />
+              }
+              
+              @case ('textarea') {
+                <textarea 
+                  [id]="field.name" 
+                  pInputTextarea 
+                  [rows]="5" 
+                  [formControlName]="field.name"
+                  class="w-full">
+                </textarea>
+              }
+
+              @case ('number') {
+                <input 
+                  [id]="field.name" 
+                  type="number" 
+                  pInputText 
+                  [formControlName]="field.name"
+                  class="w-full"
+                />
+              }
+              
+              @default {
+                <p class="text-sm text-yellow-500">Tipo de campo '{{field.type}}' não suportado.</p>
+              }
+            } @if (field.required && form.get(field.name)?.invalid && form.get(field.name)?.touched) {
+              <small class="text-red-400 mt-1">O campo "{{ field.label }}" é obrigatório.</small>
+            }
+          </div>
+        }
+
+        <div class="flex flex-col gap-2 md:col-span-2 mt-4">
+          <label for="assinantes" class="font-semibold">
+            Selecione os Assinantes (Workflow)
+            <span class="text-red-500 ml-1">*</span>
+          </label>
+          <p-multiSelect
+            id="assinantes"
+            [options]="todosUsuarios"
+            formControlName="assinantes"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Selecione um ou mais assinantes para o fluxo"
+            display="chip"
+            [style]="{'width': '100%'}"
+            scrollHeight="250px">
+          </p-multiSelect>
+          @if (form.get('assinantes')?.invalid && form.get('assinantes')?.touched) {
+            <small class="text-red-400 mt-1">Pelo menos um assinante é obrigatório.</small>
+          }
+        </div>
+      </div>
+
+      <div class="flex justify-end mt-8 border-t border-gray-700 pt-6">
+        <p-button 
+          type="submit" 
+          [label]="isSaving ? 'Salvando...' : 'Gerar e Salvar Documento'" 
+          icon="pi pi-check"
+          [disabled]="form.invalid || isSaving"
+          [loading]="isSaving">
+        </p-button>
+      </div>
+
+    </form>
+    
+  } @else {
+    <div class="text-center mt-8 bg-gray-800/50 p-6 rounded-lg max-w-lg mx-auto">
+      <i class="pi pi-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+      <h3 class="text-xl font-bold text-gray-300">Template não carregado</h3>
+      <p class="text-gray-400 mt-2">Não foi possível carregar os dados para este formulário.</p>
+    </div>
+  }
+</div>

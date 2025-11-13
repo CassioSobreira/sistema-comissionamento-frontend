@@ -24,6 +24,7 @@ import { ModuloForm } from './forms/modulo-forms/modulo-forms'; // Importe Modul
 // import { EntradaFormComponent } from './entrada-form/entrada-form.component';
 import { MenuBar } from '../../../components/shared-components/components/menu/menu-bar/menu-bar';
 import { error } from 'console';
+import { EntradaForms } from './forms/entrada-forms/entrada-forms';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -69,12 +70,13 @@ export class AdminDashboard implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.carregarUsuarios();
-    //this.carregarEntradas();
+    this.carregarEntradas();
     this.carregarModulos();
   }
 
   // --- LÓGICA DE CARREGAMENTO DE DADOS ---
 
+  //CARREFA LISTA DE USUARIOS 
   carregarUsuarios(): void {
     this.isLoadingUsuarios = true;
     this.adminService.getUsuarios().pipe(takeUntil(this.destroy$)).subscribe({
@@ -92,6 +94,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
     });
   }
 
+  //CARREGA LIStA DE MODULOS
   carregarModulos(): void {
     this.isLoadingModulos = true;
     this.modulosService.getModulosComEntradas().pipe(takeUntil(this.destroy$)).subscribe({
@@ -109,6 +112,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
       });
     }
 
+    //CARREGA LISTA DE ENTRADAS
     carregarEntradas(): void {
       this.isLoadingEntradas = true;
       this.adminService.getEntradas().pipe(takeUntil(this.destroy$)).subscribe({
@@ -127,6 +131,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
 
   // --- AÇÕES DE CRUD (USUÁRIOS) ---
 
+  //ABERTURA MODAL DE USUARIOS
   abrirModalUsuario(usuario?: Usuario): void {
     const dialogRef = this.dialogService.open(UsuarioForm, {
       header: usuario ? `Editar Usuário: ${usuario.nome}` : 'Criar Novo Usuário',
@@ -150,6 +155,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
     }
 }
 
+  //FUNCAO DELETAR USUARIO E O ABERTURA DO MODAL DE EXCLUSAO
   deletarUsuario(usuario: Usuario): void {
     this.confirmationService.confirm({
       message: `Você tem certeza que deseja deletar o usuário "${usuario.nome}"?`,
@@ -178,8 +184,28 @@ export class AdminDashboard implements OnInit, OnDestroy {
 
   abrirModalEntrada(entrada?: Entrada): void {
     // A lógica para abrir o modal de criação/edição de entrada virá aqui
-    console.log("Abrindo modal para:", entrada ? `Editar ${entrada.nome_entrada}` : "Criar Nova Entrada");
-    this.showInfo('Funcionalidade de edição a ser implementada.');
+    //console.log("Abrindo modal para:", entrada ? `Editar ${entrada.nome_entrada}` : "Criar Nova Entrada");
+    //this.showInfo('Funcionalidade de edição a ser implementada.');
+    const dialogRef = this.dialogService.open(EntradaForms, {
+      header: entrada ? `Editar Entrada: ${entrada.nome_entrada}` : 'Criar Nova Entrada',
+      width: '40%',
+      contentStyle: {          
+        "overflow": "auto"            
+      },
+      data: { entrada } // Passa o usuário para o modal (será undefined se for criação)
+    });
+
+    this.ref = dialogRef ?? undefined;
+
+    // Escuta o fechamento do modal
+    if (this.ref) {
+      this.ref.onClose.subscribe((foiSalvo: boolean) => {
+        // Se o modal retornou 'true', significa que a operação foi um sucesso
+        if (foiSalvo) {
+          this.carregarEntradas(); // Recarrega a lista
+        }
+      });
+    }
   }
 
   deletarEntrada(entrada: Entrada): void {
@@ -189,6 +215,8 @@ export class AdminDashboard implements OnInit, OnDestroy {
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Sim, deletar',
       rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text p-button-secondary',
       accept: () => {
         this.adminService.deleteEntrada(entrada.id_entrada).pipe(takeUntil(this.destroy$)).subscribe({
           next: () => {

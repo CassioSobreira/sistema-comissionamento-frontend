@@ -10,6 +10,8 @@ import { AdminDashboard } from '../pages/pages/admin-dashboard/admin-dashboard';
 import { Info } from '../pages/pages/info-devs/info-devs';
 import { ConfigUser } from '../components/shared-components/components/config-user/config-user';
 import { Entradas } from '../pages/pages/entradas/entradas';
+import { DocumentoCreateComponent } from '../pages/pages/documento-create/documento-create';
+import { DocumentoCriadoComponent } from '../pages/pages/documento-criado/documento-criado';
 import { CardPendenciaComponent } from '../components/shared-components/components/card-pendencia-component/card-pendencia-component';
 export const routes: Routes = [
     // { path: '', component: HomeComponent },
@@ -43,7 +45,9 @@ export const routes: Routes = [
             perfisPermitidos: ['Administrador'] // Apenas usuários com perfil 'Administrador' podem acessar
         }
     },
-    {path: 'confirma-senha', component: ConfirmaSenha},
+    {
+        path: 'confirma-senha', component: ConfirmaSenha
+    },
     {
         path: 'colaboradores', 
         component: Colaboradores,
@@ -55,14 +59,18 @@ export const routes: Routes = [
         canActivate: [authGuard]
     },
     {
-        path: 'configuracoes',
-        component: ConfigUser,
-        canActivate: [authGuard] // O usuário precisa estar logado para acessar
-    },
-    {
         path: 'modulos/:id_modulo/entradas',
         component: Entradas,
         canActivate: [authGuard] // O usuário precisa estar logado para acessar
+    },
+    {
+        path: 'entradas/:id_entrada/criar',
+        component: DocumentoCreateComponent,
+        canActivate: [authGuard]   
+    },
+    {    
+        path: 'documentos/:id/criado', 
+        component: DocumentoCriadoComponent,
+        canActivate: [authGuard]
     }
-
 ];

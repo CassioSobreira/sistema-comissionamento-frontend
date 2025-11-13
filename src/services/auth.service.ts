@@ -9,6 +9,10 @@ export interface UserTokenPayload {
   id: number;
   nome: string;
   perfil: string;
+  cargo: string;
+  sexo: string;
+  modulo: string;
+  email: string;
 }
 
 @Injectable({
@@ -98,4 +102,7 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/usuarios/redefinir-senha-logado`, { novaSenha });
   }
   
+  getMeusDados(): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/usuarios/dados-usuario`);
+  }
 }

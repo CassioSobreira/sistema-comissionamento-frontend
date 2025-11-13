@@ -36,7 +36,7 @@
                         </i>
                         <span class="font-bold text-base uppercase">{{ item.label }}</span>
                     </a>
-            }
+                }
                 
             </div>
         </p-drawer>
@@ -52,8 +52,11 @@
          />
     </ng-template>
     <ng-template #end>
-    <div class="flex items-center gap-1"> @if (nomeUsuario) {
-            <div class="flex items-center gap-2 mr-2"> <p-avatar 
+    <div class="flex items-center gap-1"> 
+        @if (nomeUsuario) {
+            <!-- ÁREA DO USUÁRIO AGORA NÃO É MAIS CLICÁVEL -->
+            <div class="flex items-center gap-2 mr-2"> 
+                <p-avatar 
                     [label]="iniciaisUsuario" 
                     shape="circle" 
                     class="bg-sky-500 text-white font-bold">
@@ -61,16 +64,13 @@
                 <span class="font-bold hidden sm:block">{{ nomeUsuario }}</span>
             </div>
         }
-        
+    
         <p-button
             icon="pi pi-cog" 
             text 
             severity="secondary" 
             (click)="goToConfig()"
-            [ngClass]="{
-                'bg-white/20 text-blue-300 rounded-md': paginaAtiva === 'configuracoes', 
-                'text-white': paginaAtiva !== 'configuracoes'
-            }"
+            class="text-white"
         />
         
         <p-button 
@@ -90,3 +90,10 @@
     </ng-template>
     
 </p-toolbar>
+
+<!-- 
+  Este modal continua aqui, "invisível", 
+  esperando ser chamado pelo @ViewChild
+-->
+<app-config-user #configUserModal></app-config-user>
+

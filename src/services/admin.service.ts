@@ -13,10 +13,11 @@ export interface Usuario {
   status: 'ativo' | 'inativo' | 'pendente_ativacao';
 }
 
-export interface Entrada {
+export interface Entrada{
   id_entrada: number;
   nome_entrada: string;
-  // Adicione outras propriedades se necessário
+  campo_json: any;
+  template_html: string;
 }
 
 export interface Perfil {
@@ -113,8 +114,9 @@ export class AdminService {
    * Busca a lista completa de entradas (templates).
    * Chama: GET /api/entradas
    */
+
   getEntradas(): Observable<Entrada[]> {
-    return this.http.get<Entrada[]>(this.entradasApiUrl);
+    return this.http.get<Entrada[]>(`${this.entradasApiUrl}/todos`);
   }
 
   /**
