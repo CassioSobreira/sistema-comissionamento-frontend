@@ -6,7 +6,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { TagModule } from 'primeng/tag';
 import { ModuleTagService } from '../../../../../services/modulo-tag.service';
 import { DocumentosService } from '../../../../../services/documentos.service';
-import { ApprovalCardData } from '../../../../../models/card-pendencia.interface';
+import { Pendencia } from '../../../../../models/card-pendencia.interface';
 @Component({
   selector: 'app-card-pendencia-component',
   imports: [CardModule, ButtonModule, AvatarModule, TagModule, CommonModule],
@@ -15,7 +15,7 @@ import { ApprovalCardData } from '../../../../../models/card-pendencia.interface
 })
 export class CardPendenciaComponent {
   
-  @Input() data!: ApprovalCardData;
+  @Input() data!: Pendencia;
 
   @Output() aprovar = new EventEmitter<number>();
   @Output() rejeitar = new EventEmitter<number>();
@@ -51,7 +51,7 @@ export class CardPendenciaComponent {
 
   getModuleSeverity() {
   // Exemplo simples
-  return this.data.status === 'Aguardando aprovação'
+  return this.data.status === 'pendente'
       ? 'warning'
       : 'success';
 }
@@ -59,9 +59,9 @@ export class CardPendenciaComponent {
   // === Tag de Status ===
   getStatusSeverity() {
     switch (this.data.status) {
-      case 'Aguardando aprovação':
+      case 'pendente':
         return 'warn';
-      case 'Aprovado':
+      case 'concluido':
         return 'success';
       default:
         return 'secondary';
@@ -69,11 +69,11 @@ export class CardPendenciaComponent {
   }
 
   getStatusLabel() {
-  if (this.data.status === 'Aguardando aprovação') {
-    return 'Pendente';
+  if (this.data.status === 'pendente') {
+    return 'Aguardando aprovação';
   }
 
-  if (this.data.status === 'Aprovado') {
+  if (this.data.status === 'concluido') {
     return 'Concluído';
   }
 

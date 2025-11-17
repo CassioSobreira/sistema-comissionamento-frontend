@@ -17,7 +17,7 @@
         <span class="text-sm text-gray-200 font-medium">Status:</span>
 
         <p-tag
-          [value]="data.status"
+          [value]="getStatusLabel()"
           [severity]="getStatusSeverity()">
         </p-tag>
       </div>
@@ -32,7 +32,14 @@
       <span class="text-sm">Documento:</span>
       <strong class="text-base text-white">{{ data.nomeDocumento }}</strong>
     </div>
-
+    <div class="flex flex-col gap-1 mt-3">
+      <span class="text-sm">Num. Protocolo:</span>
+      <strong class="text-base text-white">{{ data.numeroProtocolo || '—' }}</strong>
+    </div>
+    <div class="flex flex-col gap-1 mt-3" *ngIf="data.status === 'concluido'">
+      <span class="text-sm">Data de conclusão:</span>
+      <strong class="text-base text-white">{{ data.dataFim | date: 'dd/MM/yyyy HH:mm' }}</strong>
+    </div>
     <div class="mt-5 flex flex-col sm:flex-row justify-center gap-3">
       <p-button
         label="Baixar PDF"
@@ -42,6 +49,7 @@
         styleClass="w-full sm:w-auto">
       </p-button>
     </div>
+    
 
   </div>
 

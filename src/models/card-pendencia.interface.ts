@@ -1,8 +1,10 @@
-export interface ApprovalCardData {
+export interface Pendencia {
   idDocumento: number;
   numeroProtocolo: string | null;
   nome: string;
   modulo: string;
-  status: 'Aguardando aprovação' | 'Aprovado';
+  status: 'pendente' | 'concluido';
   nomeDocumento: string;
+  dataInicio: string;
+  dataFim: string | null;
 }

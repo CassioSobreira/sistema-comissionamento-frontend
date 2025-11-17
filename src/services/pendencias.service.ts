@@ -2,15 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../environments/environment';
-
-export interface Pendencia {
-  idDocumento: number;
-  numeroProtocolo: string | null;
-  nome: string;
-  modulo: string;
-  status: 'Aguardando aprovação' | 'Aprovado';
-  nomeDocumento: string;
-}
+import { Pendencia } from '../models/card-pendencia.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -25,11 +17,17 @@ export class PendenciasService {
     return this.http.get<Pendencia[]>(`${this.workflowApiUrl}/pendencias/${id_usuario}`);
   }
 
-  aprovarDocumento(id_documento: number): Observable<any> {
-    return this.http.put(`${this.workflowApiUrl}/aprovar/${id_documento}`, {});
-  }
+  aprovarDocumento(idDocumento: number, idUsuario: number): Observable<any> {
+  return this.http.post(`${this.workflowApiUrl}/aprovar`, {
+    idDocumento,
+    idUsuario
+  });
+}
 
-  rejeitarDocumento(id_documento: number): Observable<any> {
-    return this.http.put(`${this.workflowApiUrl}/rejeitar/${id_documento}`, {});
-  }
+  rejeitarDocumento(idDocumento: number, idUsuario: number): Observable<any> {
+  return this.http.post(`${this.workflowApiUrl}/rejeitar`, {
+    idDocumento,
+    idUsuario
+  });
+}
 }
