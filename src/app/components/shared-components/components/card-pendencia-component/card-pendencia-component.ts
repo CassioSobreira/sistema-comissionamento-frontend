@@ -5,69 +5,105 @@ import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { TagModule } from 'primeng/tag';
 import { ModuleTagService } from '../../../../../services/modulo-tag.service';
-
-export interface ApprovalCardData {
-  nome: string;
-  modulo: string;
-  status: 'Aguardando aprovação' | 'Aprovado' | 'Rejeitado';
-  nomeDocumento: string;
-  imageUrl?: string;
-}
-
+import { DocumentosService } from '../../../../../services/documentos.service';
+import { ApprovalCardData } from '../../../../../models/card-pendencia.interface';
 @Component({
   selector: 'app-card-pendencia-component',
-  imports: [CardModule,ButtonModule,AvatarModule,TagModule,CommonModule],
+  imports: [CardModule, ButtonModule, AvatarModule, TagModule, CommonModule],
   templateUrl: './card-pendencia-component.html',
   styleUrl: './card-pendencia-component.css'
 })
 export class CardPendenciaComponent {
+  
   @Input() data!: ApprovalCardData;
-  @Output() approve = new EventEmitter<void>();
-  @Output() reject = new EventEmitter<void>();
 
-constructor(private moduleTagService: ModuleTagService) {}
+  @Output() aprovar = new EventEmitter<number>();
+  @Output() rejeitar = new EventEmitter<number>();
 
-  // 🔹 Métodos auxiliares (usando o service)
+  isDownloading = false;
+
+  constructor(
+    private moduleTagService: ModuleTagService,
+    private documentosService: DocumentosService
+  ) {}
+
+  // === Botões Aprovar / Rejeitar ===
+  onAprovar() {
+    this.aprovar.emit(this.data.idDocumento);
+  }
+
+  onRejeitar() {
+    this.rejeitar.emit(this.data.idDocumento);
+  }
+
+  // === Tags do módulo ===
   getModuleLabel() {
-    return this.moduleTagService.getLabel(this.data?.modulo);
+    return this.moduleTagService.getLabel(this.data.modulo);
   }
 
   getModuleIcon() {
-    return this.moduleTagService.getIcon(this.data?.modulo);
+    return this.moduleTagService.getIcon(this.data.modulo);
   }
 
   getModuleClass(modulo: string) {
-    return this.moduleTagService.getClass(modulo); 
-  }
-
-   ngOnInit() {
-    // 🔹 simulação de dados locais enquanto não vem do pai
-    if (!this.data) {
-      this.data = {
-        nome: 'João Silva',
-        modulo: 'FABRICAÇÃO',
-        status: 'Aguardando aprovação',
-        nomeDocumento: 'Relatório Final - Unidade 04',
-        imageUrl: ''
-      };
-    }
-  }
-
-getStatusSeverity() {
-    switch (this.data.status) {
-      case 'Aguardando aprovação': return 'warn';
-      case 'Aprovado': return 'success';
-      case 'Rejeitado': return 'danger';
-      default: return 'info';
-    }
+    return this.moduleTagService.getClass(modulo);
   }
 
   getModuleSeverity() {
-    switch (this.data.modulo) {
-      case 'Meio Ambiente': return 'success';
-      case 'Segurança': return 'danger';
-      case 'Qualidade': return 'info';
-      default: return 'secondary';
+  // Exemplo simples
+  return this.data.status === 'Aguardando aprovação'
+      ? 'warning'
+      : 'success';
+}
+
+  // === Tag de Status ===
+  getStatusSeverity() {
+    switch (this.data.status) {
+      case 'Aguardando aprovação':
+        return 'warn';
+      case 'Aprovado':
+        return 'success';
+      default:
+        return 'secondary';
     }
+  }
+
+  getStatusLabel() {
+  if (this.data.status === 'Aguardando aprovação') {
+    return 'Pendente';
+  }
+
+  if (this.data.status === 'Aprovado') {
+    return 'Concluído';
+  }
+
+  return this.data.status;
+}
+
+
+  // === Download ===
+  baixarDocumento(): void {
+    this.isDownloading = true;
+
+    this.documentosService.downloadDocumento(this.data.idDocumento).subscribe({
+      next: (blob) => {
+
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = `documento-${this.data.numeroProtocolo}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        this.isDownloading = false;
+      },
+      error: (err) => {
+        console.error('Erro ao baixar PDF:', err);
+        this.isDownloading = false;
+      }
+    });
   }
 }

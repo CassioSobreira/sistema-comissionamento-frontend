@@ -12,13 +12,14 @@ import { ConfigUser } from '../components/shared-components/components/config-us
 import { Entradas } from '../pages/pages/entradas/entradas';
 import { DocumentoCreateComponent } from '../pages/pages/documento-create/documento-create';
 import { DocumentoCriadoComponent } from '../pages/pages/documento-criado/documento-criado';
-import { CardPendenciaComponent } from '../components/shared-components/components/card-pendencia-component/card-pendencia-component';
+import { PendenciasPageComponent } from '../pages/pages/pendencias/pendencias';
+
 export const routes: Routes = [
     // { path: '', component: HomeComponent },
     { path: '', component: LoginPageComponent},
     {
         path: 'pendencias', 
-        component: CardPendenciaComponent       
+        component: PendenciasPageComponent       
     },
     { 
         path: 'home', 

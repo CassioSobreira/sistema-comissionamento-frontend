@@ -1,45 +1,71 @@
-<div class="flex justify-center">
-  <p-card [style]="{ width: '26rem', overflow: 'hidden' }">
-    <ng-template pTemplate="header">
-      <div class="flex items-center gap-3 p-2">
-        <p-avatar icon="pi pi-user" shape="circle"></p-avatar>
-        <div>
-          <strong>{{ data.nome }}</strong>
-          <p-tag
-            [value]="getModuleLabel()"
-            [icon]="getModuleIcon()"
-            [severity]="getModuleSeverity()"
-            [ngClass]="getModuleClass(data.modulo)">
-            </p-tag>
-          <div class="flex gap-2 mt-1">
-            <p class="font-bold">Status:</p>
-            <p-tag [value]="data.status" [severity]="getStatusSeverity()"></p-tag>
-          </div>
-        </div>
+<p-card [style]="{ width: '26rem', overflow: 'hidden' }" class="bg-gray-800 border border-gray-700 rounded-xl shadow-md">
+  
+  <!-- Cabeçalho -->
+  <ng-template pTemplate="header">
+    <div class="p-4 border-b border-gray-700 text-white">
+
+      <!-- Linha 1: Nome + Módulo -->
+      <div class="flex justify-between items-center">
+        <h3 class="text-lg font-semibold">{{ data.nome }}</h3>
+        <p-tag
+          [value]="getModuleLabel()">
+        </p-tag>
       </div>
-    </ng-template>
 
-    <div class="text-center mt-3 mb-5">
-      <p class="font-medium">Requisição de assinatura de</p>
-      <p class="font-bold text-gray-200">{{ data.nomeDocumento }}</p>
+      <!-- Linha 2: Status -->
+      <div class="flex items-center gap-2 mt-3">
+        <span class="text-sm text-gray-200 font-medium">Status:</span>
 
-      <img *ngIf="data.imageUrl; else placeholder"
-           [src]="data.imageUrl"
-           alt="documento"
-           class="mt-3 mx-auto rounded shadow w-full object-cover" />
+        <p-tag
+          [value]="data.status"
+          [severity]="getStatusSeverity()">
+        </p-tag>
+      </div>
 
-      <ng-template #placeholder>
-        <div class="rounded w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400">
-          <i class="pi pi-image text-3xl"></i>
-        </div>
-      </ng-template>
+    </div>
+  </ng-template>
+
+  <!-- Conteúdo -->
+  <div class="p-5 text-gray-300">
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm">Documento:</span>
+      <strong class="text-base text-white">{{ data.nomeDocumento }}</strong>
     </div>
 
-    <ng-template pTemplate="footer">
-      <div class="flex justify-center gap-4">
-        <p-button label="Rejeitar" severity="secondary" class="mr-24" [outlined]="true" (onClick)="reject.emit()"></p-button>
-        <p-button label="Aprovar" class="" (onClick)="approve.emit()"></p-button>
-      </div>
-    </ng-template>
-  </p-card>
-</div>
+    <div class="mt-5 flex flex-col sm:flex-row justify-center gap-3">
+      <p-button
+        label="Baixar PDF"
+        icon="pi pi-download"
+        (click)="baixarDocumento()"
+        [loading]="isDownloading"
+        styleClass="w-full sm:w-auto">
+      </p-button>
+    </div>
+
+  </div>
+
+  <!-- Rodapé -->
+  <ng-template pTemplate="footer">
+    <div class="flex justify-center gap-4 border-t border-gray-700 pt-4 pb-2">
+
+      <!-- Botão Rejeitar -->
+      <p-button
+        label="Rejeitar"
+        severity="danger"
+        [outlined]="true"
+        (onClick)="onRejeitar()"
+        class="w-full ">      
+      </p-button>
+
+      <!-- Botão Aprovar -->
+      <p-button
+        label="Aprovar"
+        severity="success"
+        (onClick)="onAprovar()">
+      </p-button>
+
+    </div>
+  </ng-template>
+
+</p-card>
