@@ -20,12 +20,13 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { AdminService, Usuario } from '../../../../services/admin.service';
 import { ModulosService, Modulo } from '../../../../services/modulos.service';
 import { ColaboradorService, Colaborador } from '../../../../services/colaboradores.service';
+import { DatePickerModule } from 'primeng/datepicker';
 
 // Interface local para os campos do formulário
 interface FormField {
   name: string;
   label: string;
-  type: 'text' | 'textarea' | 'number' | 'select' | 'multiselect'; 
+  type: 'text' | 'textarea' | 'number' | 'select' | 'multiselect' | 'date'; 
   required?: boolean;
   optionsUrl?: string; 
   optionsValueField?: string;
@@ -44,7 +45,8 @@ interface FormField {
     ButtonModule,
     ProgressSpinnerModule,
     SelectModule,
-    MultiSelectModule
+    MultiSelectModule,
+    DatePickerModule
   ],
   templateUrl: './documento-create.html',
 })
