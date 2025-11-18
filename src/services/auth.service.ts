@@ -105,4 +105,9 @@ export class AuthService {
   getMeusDados(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/usuarios/dados-usuario`);
   }
+
+  getUserId(): number | null {
+    const user = this.getDecodedToken();
+    return user?.id ?? null;
+  }
 }

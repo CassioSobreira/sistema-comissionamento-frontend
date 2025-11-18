@@ -1,0 +1,62 @@
+<menu-bar></menu-bar>
+
+<div class=" text-white">
+  <h1 class="mt-4 text-2xl font-bold mb-6 text-center">Minhas Pendências</h1>
+
+  <p-tabs [(value)]="abaAtiva" >
+    <p-tablist>
+      <p-tab [value]="0">Em Andamento</p-tab>
+      <p-tab [value]="1">Concluídas</p-tab>
+    </p-tablist>
+
+    <p-tabpanels>
+
+      <!-- EM ANDAMENTO -->
+      <p-tabpanel [value]="0">
+        <div *ngIf="pendenciasEmAndamento.length; else vazioAndamento">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            <app-card-pendencia-component
+              *ngFor="let item of pendenciasEmAndamento"
+              [data]="item"
+              (aprovar)="aprovar(item.idDocumento)"
+              (rejeitar)="rejeitar(item.idDocumento)">
+            </app-card-pendencia-component>
+          </div>
+
+        </div>
+
+        <ng-template #vazioAndamento>
+          <div class="text-center text-gray-400 mt-12">
+            <i class="pi pi-inbox text-5xl mb-3"></i>
+            <p>Nenhuma pendência em andamento.</p>
+          </div>
+        </ng-template>
+      </p-tabpanel>
+
+      <!-- CONCLUÍDAS -->
+      <p-tabpanel [value]="1">
+        <div *ngIf="pendenciasConcluidas.length; else vazioConcluidas">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+
+            <app-card-pendencia-component
+              *ngFor="let item of pendenciasConcluidas"
+              [data]="item">
+            </app-card-pendencia-component>
+
+          </div>
+
+        </div>
+
+        <ng-template #vazioConcluidas>
+          <div class="text-center text-gray-400 mt-12">
+            <i class="pi pi-check-circle text-5xl mb-3"></i>
+            <p>Nenhuma pendência concluída.</p>
+          </div>
+        </ng-template>
+      </p-tabpanel>
+
+    </p-tabpanels>
+  </p-tabs>
+</div>

@@ -1,0 +1,11 @@
+.p-tabview-panels {
+  background-color: transparent !important;
+}
+
+.p-tabview-nav {
+  background-color: transparent !important;
+}
+
+.p-tabview .p-tabview-nav li .p-tabview-nav-link {
+  background-color: transparent !important;
+}
