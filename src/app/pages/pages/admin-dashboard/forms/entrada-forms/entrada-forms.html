@@ -50,11 +50,23 @@
             </p-select>
             
             @if (campoGroup.get('optionsUrl')?.value === 'custom') {
-              <div class="mt-4">
-                <label>Opções Customizadas (formato: label,value)</label>
-                <textarea pInputTextarea formControlName="customOptions" class="w-full"
-                  placeholder="Opção A,A&#10;Opção B,B&#10;Opção C,C"></textarea>
-              </div>
+            <div class="mt-4">
+              <label class="block mb-1 text-sm text-gray-400">
+                Opções da Lista (digite uma opção por linha)
+              </label>
+              
+              <textarea 
+                pInputTextarea 
+                formControlName="customOptions" 
+                class="w-full"
+                [rows]="4"
+                placeholder="Opção 1&#10;Opção 2&#10;Opção 3">
+              </textarea>
+              
+              <small class="text-gray-500">
+                O sistema usará o texto digitado como valor.
+              </small>
+            </div>
             }
             <input type="hidden" formControlName="optionsValueField" />
             <input type="hidden" formControlName="optionsLabelField" />

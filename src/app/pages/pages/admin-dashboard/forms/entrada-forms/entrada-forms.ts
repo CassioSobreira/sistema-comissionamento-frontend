@@ -102,7 +102,8 @@ export class EntradaForms implements OnInit {
       required: [dados.required || false],
       optionsUrl: [dados.optionsUrl || null], // Ex: "/colaboradores"
       optionsValueField: [dados.optionsValueField || null],
-      optionsLabelField: [dados.optionsLabelField || null]
+      optionsLabelField: [dados.optionsLabelField || null],
+      customOptions: [dados.customOptions || null]
     });
   }
 
