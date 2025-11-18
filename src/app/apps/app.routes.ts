@@ -19,7 +19,8 @@ export const routes: Routes = [
     { path: '', component: LoginPageComponent},
     {
         path: 'pendencias', 
-        component: PendenciasPageComponent       
+        component: PendenciasPageComponent,
+        canActivate: [authGuard]       
     },
     { 
         path: 'home', 
