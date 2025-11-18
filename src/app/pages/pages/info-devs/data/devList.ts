@@ -10,7 +10,7 @@ export type dev = {
 export const devList: dev[] = [
   {
     nome: 'Andrei Rehem',
-    foto: '/lucas.png',
+    foto: '/andrei.jpg',
     descricao: 'Engenharia de Computação',
     github: 'https://github.com/AndreiRehem',
     linkedin: 'https://www.linkedin.com/in/andreirehem/',
@@ -26,7 +26,7 @@ export const devList: dev[] = [
   },
   {
     nome: 'Cássio Sobreira',
-    foto: '/lucas.png',
+    foto: '/cassio.jpg',
     descricao: 'Engenharia de Computação',
     github: 'https://github.com/CassioSobreira',
     linkedin: 'https://www.linkedin.com/in/c%C3%A1ssio-sobreira-a45329366/',
@@ -43,7 +43,7 @@ export const devList: dev[] = [
   },
   {
     nome: 'Lucas Braga',
-    foto: '/lucas.png',
+    foto: '/lucas.jpg',
     descricao: 'Engenharia de Computação',
     github: 'https://github.com/LucasBraga2',
     linkedin: 'https://www.linkedin.com/in/lucas-braga-207671268/',
