@@ -1,9 +1,11 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectorRef } from '@angular/core';
+import { finalize } from 'rxjs/operators';
 import { CommonModule } from '@angular/common';
 import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { TagModule } from 'primeng/tag';
+import { MessageService } from 'primeng/api';
 import { ModuleTagService } from '../../../../../services/modulo-tag.service';
 import { DocumentosService } from '../../../../../services/documentos.service';
 import { Pendencia } from '../../../../../models/card-pendencia.interface';
@@ -24,7 +26,9 @@ export class CardPendenciaComponent {
 
   constructor(
     private moduleTagService: ModuleTagService,
-    private documentosService: DocumentosService
+    private documentosService: DocumentosService,
+    private cdr: ChangeDetectorRef,
+    private messageService: MessageService,
   ) {}
 
   // === Botões Aprovar / Rejeitar ===
@@ -82,28 +86,60 @@ export class CardPendenciaComponent {
 
 
   // === Download ===
+// === Download ===
   baixarDocumento(): void {
     this.isDownloading = true;
 
-    this.documentosService.downloadDocumento(this.data.idDocumento).subscribe({
-      next: (blob) => {
+    this.documentosService.downloadDocumento(this.data.idDocumento)
+      .pipe(
+        finalize(() => {
+            this.isDownloading = false;
+            this.cdr.detectChanges(); 
+        })
+      )
+      .subscribe({
+        next: (blob) => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `documento-${this.data.numeroProtocolo}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            this.showSuccess('Download feito com sucesso.');
+        },
+        error: (err) => {
+            console.error('Erro ao baixar PDF:', err);
+            this.showError('Erro ao baixar o documento. Por favor, tente novamente mais tarde.');
+        }
+      });
+  }
 
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = `documento-${this.data.numeroProtocolo}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
+   private showSuccess(detail: string) {
+    this.messageService.add({ 
+      severity: 'success', 
+      summary: 'Sucesso', 
+      detail: detail,
+      life: 3000
+    });
+  }
 
-        this.isDownloading = false;
-      },
-      error: (err) => {
-        console.error('Erro ao baixar PDF:', err);
-        this.isDownloading = false;
-      }
+  private showError(detail: string) {
+    this.messageService.add({ 
+      severity: 'error', 
+      summary: 'Erro', 
+      detail: detail 
+    });
+  }
+
+  private showWarn(detail: string) {
+    this.messageService.add({ 
+      severity: 'warn', 
+      summary: 'Atenção', 
+      detail: detail 
     });
   }
 }
+
