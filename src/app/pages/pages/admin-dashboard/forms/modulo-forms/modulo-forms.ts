@@ -53,7 +53,7 @@ export class ModuloForm implements OnInit {
     this.carregarDadosIniciais().subscribe({
       next: (initialData) => {
         this.todasEntradas = initialData.entradas; // Atribui dados do forkJoin
-
+        this.cdr.detectChanges();
         if (this.config.data && this.config.data.modulo) {
           this.isEditMode = true;
           const moduloParaEditar = this.config.data.modulo; 
@@ -74,9 +74,6 @@ export class ModuloForm implements OnInit {
               this.cdr.detectChanges();
             }
           });
-        } else {
-          // Modo Criação
-          this.cdr.detectChanges(); // Garante que as opções do MultiSelect apareçam
         }
       },
       error: (err) => {
@@ -86,7 +83,6 @@ export class ModuloForm implements OnInit {
     });
   }
 
-  // 6. carregarDadosIniciais usando forkJoin (mesmo com 1 item, para manter o padrão)
   carregarDadosIniciais(): Observable<{ entradas: any[] }> {
     return forkJoin({
       entradas: this.carregarTodasEntradas()
