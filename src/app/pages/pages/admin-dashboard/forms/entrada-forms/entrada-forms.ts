@@ -48,7 +48,8 @@ export class EntradaForms implements OnInit {
     { label: 'Texto Curto', value: 'text' },
     { label: 'Texto Longo (Parágrafo)', value: 'textarea' },
     { label: 'Número', value: 'number' },
-    { label: 'Lista de Opções (Dropdown))', value: 'select' },
+    { label: 'Data', value: 'date' },
+    { label: 'Lista de Opções (Dropdown)', value: 'select' },
     { label: 'Seleção Múltipla (MultiSelect)', value: 'multiselect' }
   ];
 

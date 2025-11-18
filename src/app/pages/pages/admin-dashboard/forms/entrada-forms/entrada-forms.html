@@ -12,62 +12,61 @@
   <div class="flex flex-col gap-4">
     <h3 class="text-lg font-semibold">Campos do Formulário</h3>
 
-    <div formArrayName="campos">
-      
-      @for (campoGroup of campos.controls; track $index) {
-        <div [formGroupName]="$index" class="p-4 mb-3 border border-gray-700 rounded-lg bg-gray-800">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            
-        <div class="flex flex-col gap-2">
-        <label [for]="'label-' + $index">Label do Campo</label>
-        <input 
-          [id]="'label-' + $index" 
-          type="text" 
-          pInputText 
-          formControlName="label" 
-          placeholder="Ex: Nome do Cliente"
+  <div formArrayName="campos">
+        
+    @for (campoGroup of campos.controls; track $index) {
+      <div [formGroupName]="$index" class="p-4 mb-3 border rounded-lg dark:text-white">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           
-          (blur)="gerarNameAutomaticamente($index)" 
-        />
-        </div>
+          <div class="flex flex-col gap-2">
+            <label [for]="'label-' + $index">Label do Campo</label>
+            <input 
+              [id]="'label-' + $index" 
+              type="text" 
+              pInputText 
+              formControlName="label" 
+              placeholder="Ex: Nome do Cliente"
+              (blur)="gerarNameAutomaticamente($index)" 
+            />
+          </div>
 
           <div class="flex flex-col gap-2">
-              <label [for]="'type-' + $index">Tipo de Campo</label>
-              <p-select [id]="'type-' + $index" [options]="tiposDeCampo" formControlName="type" />
-            </div>
-          </div>
-          
-            @if (campoGroup.get('type')?.value === 'select' || campoGroup.get('type')?.value === 'multiselect') {
-              <div class="mt-4 p-3 bg-gray-700 rounded">
-                <label [for]="'optionsUrl-' + $index">Fonte dos Dados da Lista</label>
-                <p-select [id]="'optionsUrl-' + $index" 
-                          [options]="fontesDeDados" 
-                          formControlName="optionsUrl" 
-                          placeholder="Selecione a fonte dos dados" 
-                          optionLabel="label" 
-                          optionValue="value" 
-                          class="w-full"
-                          (onChange)="onFonteDeDadosChange($any($event), campoGroup)">
-                </p-select>
-                
-                @if (campoGroup.get('optionsUrl')?.value === 'custom') {
-                  <div class="mt-4">
-                    <label>Opções Customizadas (formato: label,value)</label>
-                    <textarea pInputTextarea formControlName="customOptions" class="w-full"
-                      placeholder="Opção A,A&#10;Opção B,B&#10;Opção C,C"></textarea>
-                  </div>
-                }
-                <input type="hidden" formControlName="optionsValueField" />
-                <input type="hidden" formControlName="optionsLabelField" />
-              </div>
-          }
-
-          <div class="flex justify-end mt-3">
-            <p-button type="button" icon="pi pi-trash" severity="danger" [text]="true" (click)="removerCampo($index)" />
+            <label [for]="'type-' + $index">Tipo de Campo</label>
+            <p-select [id]="'type-' + $index" [options]="tiposDeCampo" formControlName="type" />
           </div>
         </div>
-      }
-    </div>
+        
+        @if (campoGroup.get('type')?.value === 'select' || campoGroup.get('type')?.value === 'multiselect') {
+          <div class="mt-4 p-3 dark:text-white rounded">
+            <label [for]="'optionsUrl-' + $index">Fonte dos Dados da Lista</label>
+            <p-select [id]="'optionsUrl-' + $index" 
+                      [options]="fontesDeDados" 
+                      formControlName="optionsUrl" 
+                      placeholder="Selecione a fonte dos dados" 
+                      optionLabel="label" 
+                      optionValue="value" 
+                      class="w-full"
+                      (onChange)="onFonteDeDadosChange($any($event), campoGroup)">
+            </p-select>
+            
+            @if (campoGroup.get('optionsUrl')?.value === 'custom') {
+              <div class="mt-4">
+                <label>Opções Customizadas (formato: label,value)</label>
+                <textarea pInputTextarea formControlName="customOptions" class="w-full"
+                  placeholder="Opção A,A&#10;Opção B,B&#10;Opção C,C"></textarea>
+              </div>
+            }
+            <input type="hidden" formControlName="optionsValueField" />
+            <input type="hidden" formControlName="optionsLabelField" />
+          </div>
+        }
+
+        <div class="flex justify-end mt-3">
+          <p-button type="button" icon="pi pi-trash" severity="danger" [text]="true" (click)="removerCampo($index)" />
+        </div>
+      </div>
+    }
+  </div>
     @if (campos.invalid && campos.hasError('labelsNaoUnicos') && campos.dirty) {
       <div class="p-2 text-center bg-red-800 border border-red-600 rounded-md text-white font-semibold">
         <i class="pi pi-exclamation-circle mr-2"></i>
