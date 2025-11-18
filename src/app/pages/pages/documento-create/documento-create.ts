@@ -2,25 +2,25 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
-import { finalize } from 'rxjs/operators';
-import { forkJoin, Observable } from 'rxjs'; 
+import { finalize, forkJoin, Observable } from 'rxjs'; 
+
 // Nossos Serviços e Interfaces
 import { EntradasService, Entrada } from '../../../../services/entradas.service';
 import { DocumentosService, DocumentoPayload } from '../../../../services/documentos.service';
-import { AuthService } from '../../../../services/auth.service';
+
 // Componentes PrimeNG
 import { MenuBar } from '../../../components/shared-components/components/menu/menu-bar/menu-bar';
 import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
+import { Textarea } from 'primeng/textarea';
 import { ButtonModule } from 'primeng/button';
 import { MessageService } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SelectModule } from 'primeng/select';
 import { MultiSelectModule } from 'primeng/multiselect'; 
-import { AdminService, Usuario } from '../../../../services/admin.service';
-import { ModulosService, Modulo } from '../../../../services/modulos.service';
-import { ColaboradorService, Colaborador } from '../../../../services/colaboradores.service';
-import { DatePickerModule } from 'primeng/datepicker';
+import { AdminService } from '../../../../services/admin.service';
+import { ModulosService } from '../../../../services/modulos.service';
+import { ColaboradorService } from '../../../../services/colaboradores.service';
+import { DatePickerModule } from 'primeng/datepicker'; 
 
 // Interface local para os campos do formulário
 interface FormField {
@@ -31,6 +31,7 @@ interface FormField {
   optionsUrl?: string; 
   optionsValueField?: string;
   optionsLabelField?: string;
+  customOptions?: string; 
 }
 
 @Component({
@@ -41,7 +42,7 @@ interface FormField {
     ReactiveFormsModule,
     MenuBar,
     InputTextModule,
-    TextareaModule,
+    Textarea,
     ButtonModule,
     ProgressSpinnerModule,
     SelectModule,
@@ -71,7 +72,6 @@ export class DocumentoCreateComponent implements OnInit {
     private adminService: AdminService,
     private messageService: MessageService,
     private cdr: ChangeDetectorRef,
-    private authService: AuthService,
     private modulosService: ModulosService,
     private colaboradorService: ColaboradorService
   ) {}
@@ -86,7 +86,7 @@ export class DocumentoCreateComponent implements OnInit {
       return;
     }
 
-      if (!idModuloParam) {
+    if (!idModuloParam) {
       this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'ID do módulo não encontrado.' });
       this.router.navigate(['/home']);
       return;
@@ -97,19 +97,18 @@ export class DocumentoCreateComponent implements OnInit {
 
     forkJoin({
       template: this.entradasService.buscarEntradaPorId(this.idEntrada),
-      usuarios: this.adminService.getUsuarios() // Busca todos os usuários para o MultiSelect
+      usuarios: this.adminService.getUsuarios() 
     }).subscribe({
       next: ({ template, usuarios }) => {
         this.templateInfo = template;
-        this.formFields = template.campo_json; // Pega os campos do JSON
+        this.formFields = template.campo_json; 
 
         // Formata os usuários para o MultiSelect de Assinantes
         this.todosUsuarios = usuarios.map(u => ({ label: u.nome, value: u.id_usuario }));
         
-        this.buildForm(); // Constrói o formulário dinâmico
+        this.buildForm(); 
         this.carregarOpcoesDinamicas();
-        //this.isLoading = false;
-        this.cdr.detectChanges();
+        
       },
       error: (err) => {
         this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Falha ao carregar dados.' });
@@ -119,24 +118,6 @@ export class DocumentoCreateComponent implements OnInit {
     });  
   }
 
-  carregarTemplate(): void {
-    this.entradasService.buscarEntradaPorId(this.idEntrada!).subscribe({
-      next: (data) => {
-        this.templateInfo = data;
-        this.formFields = data.campo_json; // Pega os campos do JSON
-        this.buildForm();
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Falha ao carregar o template do documento.' });
-        this.isLoading = false;
-        this.cdr.detectChanges();
-      }
-    });
-  }
-
-  // Constrói o FormGroup dinamicamente a partir do JSON
   buildForm(): void {
     const controls: { [key: string]: FormControl } = {};
     for (const field of this.formFields) {
@@ -150,35 +131,57 @@ export class DocumentoCreateComponent implements OnInit {
 
   carregarOpcoesDinamicas(): void {
     const chamadasAPI: { [key: string]: Observable<any[]> } = {};
+    
     const camposSelect = this.formFields.filter(f => (f.type === 'select' || f.type === 'multiselect') && f.optionsUrl);
 
     if (camposSelect.length === 0) {
-      this.isLoading = false; // Se não há selects dinâmicos, termina o loading
+      this.isLoading = false; 
       this.cdr.detectChanges();
       return;
     }
 
-    // Monta um objeto de chamadas de API
     for (const field of camposSelect) {
-      if (field.optionsUrl === '/admin/usuarios') {
-         chamadasAPI[field.name] = this.adminService.getUsuarios();
-      }
-      else if (field.optionsUrl === '/colaboradores') {
-         chamadasAPI[field.name] = this.colaboradorService.getColaboradores(); 
-      }
-      else if (field.optionsUrl === '/modulos/todos') {
-        chamadasAPI[field.name] = this.adminService.getTodosModulos(); // (Use o método que já existe)
+      
+      // --- 1. OPÇÕES CUSTOMIZADAS ---
+      if (field.optionsUrl === 'custom') {
+        if (field.customOptions) { 
+          // Divide por linha e remove vazios
+          const linhas = field.customOptions.split('\n').filter((l: string) => l.trim() !== '');
+          
+          const opcoes = linhas.map((linha: string) => {
+            // Tenta dividir por vírgula (formato Label,Valor)
+            const partes = linha.split(',');
+            const label = partes[0].trim();
+            // Se não tiver vírgula, valor = label
+            const value = partes.length > 1 ? partes[1].trim() : label;
+            
+            return { label, value };
+          });
+          
+          this.opcoesDropdownDinamicas.set(field.name, opcoes);
+        }
+      } 
+      else {
+        // Monta o objeto de chamadas para o forkJoin
+        if (field.optionsUrl === '/admin/usuarios') {
+           chamadasAPI[field.name] = this.adminService.getUsuarios();
+        }
+        else if (field.optionsUrl === '/colaboradores') {
+           chamadasAPI[field.name] = this.colaboradorService.getColaboradores(); 
+        }
+        else if (field.optionsUrl === '/modulos/todos') {
+          chamadasAPI[field.name] = this.modulosService.getTodosModulos();
+        }
       }
     }
 
-    // Se não houver chamadas de API (ex: apenas selects 'custom'), termina o loading
     if (Object.keys(chamadasAPI).length === 0) {
         this.isLoading = false;
         this.cdr.detectChanges();
         return;
     }
 
-    // Executa todas as chamadas em paralelo
+    // Se houver chamadas de API, executa em paralelo
     forkJoin(chamadasAPI).subscribe({
       next: (resultados) => {
         for (const key in resultados) {
@@ -195,7 +198,7 @@ export class DocumentoCreateComponent implements OnInit {
         }
         
         this.isLoading = false;
-        this.cdr.detectChanges(); // Força a atualização final
+        this.cdr.detectChanges(); 
       },
       error: (err) => {
         this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Falha ao carregar opções do formulário.' });
@@ -204,22 +207,18 @@ export class DocumentoCreateComponent implements OnInit {
       }
     });
   }
-
   
   onSubmit(): void {
     if (this.form.invalid) {
       this.messageService.add({ severity: 'warn', summary: 'Atenção', detail: 'Preencha todos os campos obrigatórios.' });
       return;
     }
-    if (!this.idEntrada) return;
-    if (!this.idModulo) return;
+    if (!this.idEntrada || !this.idModulo) return;
 
     this.isSaving = true;
 
-    // Separa os 'assinantes' do resto dos campos do formulário
     const { assinantes, ...dados_preenchidos } = this.form.value;
 
-    // ERROS 2 E 3 CORRIGIDOS no payload:
     const payload: DocumentoPayload = {
       id_entrada: this.idEntrada,
       id_modulo: this.idModulo,
@@ -238,7 +237,7 @@ export class DocumentoCreateComponent implements OnInit {
         this.router.navigate(
           ['/documentos', response.id_documento, 'criado'], 
           { 
-            queryParams: { protocolo: response.numero_protocolo } // Passa o protocolo pela URL
+            queryParams: { protocolo: response.numero_protocolo } 
           }
         );      
       },
@@ -250,6 +249,6 @@ export class DocumentoCreateComponent implements OnInit {
   }
 
   voltar(): void {
-    this.location.back(); // Simplesmente volta para a página anterior  }
-}
+    this.location.back(); 
+  }
 }
