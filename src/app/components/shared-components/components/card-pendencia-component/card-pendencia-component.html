@@ -54,7 +54,7 @@
   </div>
 
   <!-- Rodapé -->
-  <ng-template pTemplate="footer">
+  <ng-template pTemplate="footer" *ngIf="data.status === 'pendente'">
     <div class="flex justify-center gap-4 border-t border-gray-700 pt-4 pb-2">
 
       <!-- Botão Rejeitar -->

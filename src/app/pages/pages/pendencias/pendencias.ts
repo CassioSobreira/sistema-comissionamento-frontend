@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { PendenciasService } from '../../../../services/pendencias.service';
 import { Pendencia } from '../../../../models/card-pendencia.interface';
@@ -6,11 +7,19 @@ import { TabsModule } from 'primeng/tabs';
 import { CardPendenciaComponent } from '../../../components/shared-components/components/card-pendencia-component/card-pendencia-component';
 import { MenuBar } from '../../../components/shared-components/components/menu/menu-bar/menu-bar';
 import { AuthService } from '../../../../services/auth.service';
-
+import { PaginatorModule, PaginatorState  } from 'primeng/paginator';
+import { ButtonModule } from 'primeng/button';
+import {DrawerModule} from "primeng/drawer";
+import { AutoCompleteModule } from 'primeng/autocomplete';
+import { DatePickerModule } from 'primeng/datepicker';
+import { SelectModule } from 'primeng/select';
+import { InputTextModule } from 'primeng/inputtext';
+import { ModulosService,Modulo } from '../../../../services/modulos.service';
+import { AdminService,Usuario } from '../../../../services/admin.service';
 @Component({
   selector: 'app-pendencias-page',
   standalone: true,
-  imports: [TabsModule, MenuBar, CardPendenciaComponent, CommonModule],
+  imports: [InputTextModule,FormsModule,SelectModule,DatePickerModule,AutoCompleteModule,DrawerModule,ButtonModule,PaginatorModule,TabsModule, MenuBar, CardPendenciaComponent, CommonModule],
   templateUrl: './pendencias.html'
 })
 export class PendenciasPageComponent implements OnInit {
@@ -21,12 +30,29 @@ export class PendenciasPageComponent implements OnInit {
   pendenciasConcluidas: Pendencia[] = [];
 
   id_usuario: number | null = null;
+  firstAndamento = 0;
+  rowsAndamento = 10;
+
+  firstConcluidas = 0;
+  rowsConcluidas = 10;
+
+  visible: boolean = false;
+  modulos: Modulo[] = [];
+  usuarios: Usuario[] = [];
+  value: any;
+  filteredModulos: Modulo[] = [];
 
   constructor(
     private pendenciasService: PendenciasService,
     private authService: AuthService,
-    private cd: ChangeDetectorRef
+    private cd: ChangeDetectorRef,
+    private modulosService: ModulosService
   ) {}
+
+  search(event: any) {
+    
+  }
+
 
   ngOnInit() {
     this.id_usuario = this.authService.getUserId();
@@ -69,4 +95,15 @@ export class PendenciasPageComponent implements OnInit {
 
     }
   }
+
+  onPageChangeAndamento(event: PaginatorState) {
+  this.firstAndamento = event.first ?? 0;
+  this.rowsAndamento = event.rows ?? 10;
+}
+
+onPageChangeConcluidas(event: PaginatorState) {
+  this.firstConcluidas = event.first ?? 0;
+  this.rowsConcluidas = event.rows ?? 10;
+}
+
 }
