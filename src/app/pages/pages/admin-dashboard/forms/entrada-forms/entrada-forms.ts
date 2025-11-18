@@ -14,7 +14,7 @@ import { MessageService } from 'primeng/api';
 
 // Serviços
 import { AdminService } from '../../../../../../services/admin.service'; // Ajuste o caminho
-import { Entrada } from '../../../../../../services/entradas.service'; // Interface
+import { Entrada, EntradasService } from '../../../../../../services/entradas.service'; // Interface
 
 @Component({
   selector: 'app-entrada-form',
@@ -56,6 +56,7 @@ export class EntradaForms implements OnInit {
   constructor(
     private fb: FormBuilder, // Injeta o FormBuilder
     private adminService: AdminService,
+    private entradasService: EntradasService,
     public ref: DynamicDialogRef,
     public config: DynamicDialogConfig,
     private messageService: MessageService,
@@ -67,24 +68,48 @@ export class EntradaForms implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    // Modo de Edição: Preenche o formulário
+ngOnInit(): void {
     if (this.config.data && this.config.data.entrada) {
       this.isEditMode = true;
-      const entrada: Entrada = this.config.data.entrada; // Assumindo que Entrada tem todos os campos
-      this.currentEntradaId = entrada.id_entrada;
+      // Pega os dados básicos que vieram da tabela
+      const entradaBasica: Entrada = this.config.data.entrada; 
+      this.currentEntradaId = entradaBasica.id_entrada;
 
-      this.entradaForm.patchValue({
-        nome_entrada: entrada.nome_entrada,
-        template_html: entrada.template_html
+      this.entradasService.buscarEntradaPorId(this.currentEntradaId!).subscribe({
+        next: (entradaCompleta) => {
+          
+          // Preenche o nome
+          this.entradaForm.patchValue({
+            nome_entrada: entradaCompleta.nome_entrada,
+            // template_html removido conforme sua decisão anterior
+          });
+          
+          // Limpa campos existentes (se houver)
+          this.campos.clear();
+
+          // Preenche o FormArray 'campos'
+          // O backend pode retornar string (JSON) ou objeto direto, garantimos aqui:
+          let camposJson = entradaCompleta.campo_json;
+          
+          if (typeof camposJson === 'string') {
+            try {
+              camposJson = JSON.parse(camposJson);
+            } catch (e) {
+              console.error('Erro ao fazer parse do JSON de campos:', e);
+              camposJson = [];
+            }
+          }
+
+          if (camposJson && Array.isArray(camposJson)) {
+            camposJson.forEach((campo: any) => {
+              this.campos.push(this.criarGrupoDeCampo(campo));
+            });
+          }
+        },
+        error: (err) => {
+          this.messageService.add({ severity: 'error', summary: 'Erro', detail: 'Falha ao carregar detalhes do template.' });
+        }
       });
-      
-      // Preenche o FormArray 'campos' com os dados do campo_json
-      if (entrada.campo_json && Array.isArray(entrada.campo_json)) {
-        entrada.campo_json.forEach(campo => {
-          this.campos.push(this.criarGrupoDeCampo(campo));
-        });
-      }
     }
   }
 
