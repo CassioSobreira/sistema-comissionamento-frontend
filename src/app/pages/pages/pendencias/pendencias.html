@@ -4,78 +4,99 @@
   <h1 class="mt-4 text-2xl font-bold mb-6 text-center">Minhas Pendências</h1>
 
   <div class="flex justify-end mb-4 pr-5">
-    <p-button
-      label="Filtrar"
-      icon="pi pi-filter"
-      styleClass="w-full sm:w-auto"
-      (onClick)="visible = true">
-    </p-button>
+  <p-button
+    label="Filtrar"
+    icon="pi pi-filter"
+    styleClass="w-full sm:w-auto"
+    (onClick)="toggleFiltro()">
+  </p-button>
+</div>
+
+<!-- BLOCO EXPANSÍVEL DE FILTRO -->
+<div
+  *ngIf="filtroAberto">
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 p-5">
+
+    <!-- NOME -->
+<div class="flex flex-col">
+  <label class="mb-1 font-semibold">Nome do Documento</label>
+  <input pInputText placeholder="Digite o nome do documento" class="w-full" />
+</div>
+
+<!-- MÓDULO -->
+<div class="flex flex-col">
+  <label class="mb-1 font-semibold">Módulo</label>
+
+  <p-autocomplete
+    [(ngModel)]="selectedModulo"
+    [suggestions]="filteredModulos"
+    (completeMethod)="searchModulo($event)"
+    [dropdown]="true"
+    optionLabel="nome_modulo"
+    placeholder="Selecione o módulo"
+    class="w-full"
+    inputStyleClass="w-full"
+    style="width: 100%">
+  </p-autocomplete>
+</div>
+
+<!-- USUÁRIO -->
+<div class="flex flex-col">
+  <label class="mb-1 font-semibold">Usuário</label>
+  <input pInputText placeholder="Digite o nome do Usuário"class="w-full" />
+</div>
+
+<!-- DATA -->
+<div class="flex flex-col">
+  <label class="mb-1 font-semibold">Data de conclusão</label>
+
+  <p-datepicker
+    [(ngModel)]="date2"
+    [showIcon]="true"
+    placeholder="Selecione a data de conclusão"
+    class="w-full"
+    inputStyleClass="w-full"
+    style="width: 100%">
+  </p-datepicker>
+</div>
+
+
+<!-- STATUS -->
+<div class="flex flex-col">
+  <label class="mb-1 font-semibold">Status</label>
+
+  <p-auto-complete
+    placeholder="Selecione o status"
+    class="w-full"
+    [dropdown]="true"
+    inputStyleClass="w-full"
+    style="width: 100%">
+  </p-auto-complete>
+</div>
+
+<!-- PROTOCOLO -->
+<div class="flex flex-col">
+  <label class="mb-1 font-semibold">Num. Protocolo</label>
+
+  <p-auto-complete
+    placeholder="Num. Protocolo"
+    class="w-full"
+    inputStyleClass="w-full"
+    style="width: 100%">
+  </p-auto-complete>
+</div>
+
+
+
   </div>
 
-  <!-- DRAWER DE FILTRO -->
-  <p-drawer
-      header="Filtrar Pendências"
-      [(visible)]="visible"
-      position="top"
-      [modal]="true"
-      [dismissible]="true"
-      [style]="{ 'background-color': '#181818', 'border': 'none', 'color': 'white', 'height': 'auto' }">
-
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-
-      <!-- FILTRO POR NOME -->
-  <!-- FILTRO POR NOME -->
-  <div class="flex flex-col">
-    <label class="mb-1 font-semibold">Nome do Documento</label>
-    <input
-      pInputText
-      placeholder="Digite o nome"
-      class="w-full"
-    />
+  <div class="flex justify-end gap-3 p-5 pt-0">
+    <p-button label="Limpar" severity="secondary"></p-button>
+    <p-button label="Aplicar Filtros" icon="pi pi-check"></p-button>
   </div>
 
-  <!-- FILTRO POR MÓDULO (DROPDOWN) -->
-  <div class="flex flex-col">
-        <label class="mb-1 font-semibold">Módulo</label>
-        <p-autocomplete
-          [(ngModel)]="value"
-          [suggestions]="filteredModulos"
-          (completeMethod)="search($event)"
-          [dropdown]="true"
-          optionLabel="nome"
-          placeholder="Selecione o módulo"
-          class="w-full"
-        ></p-autocomplete>
-      </div>
-
-      <!-- FILTRO POR USUÁRIO -->
-      <div class="flex flex-col">
-        <label class="mb-1 font-semibold">Usuário</label>
-        <input
-          pInputText
-          placeholder="Digite o nome do usuário"
-          class="w-full"
-        />
-      </div>
-      
-
-    </div>
-
-    <div class="flex justify-end gap-3 mt-6">
-      <p-button
-        label="Limpar"
-        severity="secondary"
-        styleClass="w-full sm:w-auto">
-      </p-button>
-
-      <p-button
-        label="Aplicar Filtros"
-        icon="pi pi-check"
-        styleClass="w-full sm:w-auto">
-      </p-button>
-    </div>
-
-  </p-drawer>
+</div>
 
 
   <p-tabs [(value)]="abaAtiva">

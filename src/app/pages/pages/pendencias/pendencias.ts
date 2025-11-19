@@ -22,6 +22,8 @@ import { AdminService,Usuario } from '../../../../services/admin.service';
   imports: [InputTextModule,FormsModule,SelectModule,DatePickerModule,AutoCompleteModule,DrawerModule,ButtonModule,PaginatorModule,TabsModule, MenuBar, CardPendenciaComponent, CommonModule],
   templateUrl: './pendencias.html'
 })
+
+
 export class PendenciasPageComponent implements OnInit {
 
   abaAtiva = 0;
@@ -38,9 +40,20 @@ export class PendenciasPageComponent implements OnInit {
 
   visible: boolean = false;
   modulos: Modulo[] = [];
+  filteredModulos: Modulo[] = [];
+  selectedModulo: Modulo | null = null;
   usuarios: Usuario[] = [];
   value: any;
-  filteredModulos: Modulo[] = [];
+  date2: Date | null = null;
+  filtroAberto = false;
+  filtros = {
+    nomeDocumento: '',
+    usuario: '',
+    dataFim: null,
+    status: '',
+    modulo: null,
+    protocolo: ''
+  };
 
   constructor(
     private pendenciasService: PendenciasService,
@@ -56,11 +69,20 @@ export class PendenciasPageComponent implements OnInit {
 
   ngOnInit() {
     this.id_usuario = this.authService.getUserId();
-
+    this.carregarModulos();
     if (this.id_usuario !== null) {
       this.carregarPendencias(this.id_usuario);
+      
     }
   }
+
+  carregarModulos() {
+  this.modulosService.getTodosModulos().subscribe({
+    next: (res) => this.modulos = res,
+    error: (err) => console.error("Erro ao carregar módulos", err)
+  });
+  console.log("Módulos carregados:", this.modulos);
+}
 
   carregarPendencias(id_usuario: number) {
     this.pendenciasService.getPendencias(id_usuario).subscribe((dados) => {
@@ -106,4 +128,14 @@ onPageChangeConcluidas(event: PaginatorState) {
   this.rowsConcluidas = event.rows ?? 10;
 }
 
+toggleFiltro() {
+  this.filtroAberto = !this.filtroAberto;
+}
+
+searchModulo(event: any) {
+  const query = event.query.toLowerCase();
+  this.filteredModulos = this.modulos.filter(m =>
+    m.nome_modulo.toLowerCase().includes(query)
+  );
+}
 }

@@ -9,3 +9,13 @@
 .p-tabview .p-tabview-nav li .p-tabview-nav-link {
   background-color: transparent !important;
 }
+
+.filtro-container {
+  max-height: 0;
+  opacity: 0;
+}
+
+.filtro-container.filtro-aberto {
+  max-height: 500px; /* tamanho suficiente para o conteúdo */
+  opacity: 1;
+}

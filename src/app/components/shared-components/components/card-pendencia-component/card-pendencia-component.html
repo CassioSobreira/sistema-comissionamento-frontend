@@ -71,6 +71,7 @@
         label="Rejeitar"
         severity="danger"
         [outlined]="true"
+        [disabled]="isAprovadoPeloUsuario()"
         (onClick)="onRejeitar()"
         class="w-full ">      
       </p-button>
