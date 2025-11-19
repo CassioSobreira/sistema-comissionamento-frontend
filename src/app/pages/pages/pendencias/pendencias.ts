@@ -30,6 +30,8 @@ export class PendenciasPageComponent implements OnInit {
 
   pendenciasEmAndamento: Pendencia[] = [];
   pendenciasConcluidas: Pendencia[] = [];
+  pendenciasRejeitadas: Pendencia[] = [];
+
 
   id_usuario: number | null = null;
   firstAndamento = 0;
@@ -37,6 +39,8 @@ export class PendenciasPageComponent implements OnInit {
 
   firstConcluidas = 0;
   rowsConcluidas = 10;
+  firstRejeitadas = 0;
+  rowsRejeitadas = 10;
 
   visible: boolean = false;
   modulos: Modulo[] = [];
@@ -85,23 +89,26 @@ export class PendenciasPageComponent implements OnInit {
 }
 
   carregarPendencias(id_usuario: number) {
-    this.pendenciasService.getPendencias(id_usuario).subscribe((dados) => {
-      console.log("Dados recebidos do serviço de pendências:", dados);
+      this.pendenciasService.getPendencias(id_usuario).subscribe((dados) => {
 
-      this.pendenciasEmAndamento = dados.filter(
-        p => p.aprovadoresConcluidos < p.totalAprovadores
-      );
+        this.pendenciasRejeitadas = this.ordenarPendencias(
+          dados.filter(p => p.status === 'rejeitado')
+        );
 
-      this.pendenciasConcluidas = dados.filter(
-        p => p.aprovadoresConcluidos === p.totalAprovadores
-      );
+        this.pendenciasConcluidas = this.ordenarPendencias(
+          dados.filter(p => p.status === 'concluido')
+        );
 
-      console.log("Pendências em and carregadas:", this.pendenciasEmAndamento);
-      console.log("Pendências concluidas carregadas:", this.pendenciasConcluidas);
-
-      this.cd.detectChanges();
-    });
-  }
+        this.pendenciasEmAndamento = this.ordenarPendencias(
+          dados.filter(p =>
+            p.status !== 'rejeitado' &&
+            p.aprovadoresConcluidos < p.totalAprovadores
+          )
+        );
+        console.log("Pendências carregadas:", dados);
+        this.cd.detectChanges();
+      });
+    }
 
   aprovar(idDocumento: number) {
   if (this.id_usuario !== null) {
@@ -114,6 +121,7 @@ export class PendenciasPageComponent implements OnInit {
     if (this.id_usuario !== null) {
       this.pendenciasService.rejeitarDocumento(idDocumento, this.id_usuario!)
   .subscribe(() => this.carregarPendencias(this.id_usuario!));
+    console.log("Documento rejeitado:", idDocumento);
 
     }
   }
@@ -121,6 +129,11 @@ export class PendenciasPageComponent implements OnInit {
   onPageChangeAndamento(event: PaginatorState) {
   this.firstAndamento = event.first ?? 0;
   this.rowsAndamento = event.rows ?? 10;
+}
+
+onPageChangeRejeitadas(event: PaginatorState) {
+  this.firstRejeitadas = event.first ?? 0;
+  this.rowsRejeitadas = event.rows ?? 10;
 }
 
 onPageChangeConcluidas(event: PaginatorState) {
@@ -137,5 +150,36 @@ searchModulo(event: any) {
   this.filteredModulos = this.modulos.filter(m =>
     m.nome_modulo.toLowerCase().includes(query)
   );
+}
+
+recarregarPendencias() {
+  if (this.id_usuario !== null) {
+    this.carregarPendencias(this.id_usuario);
+  }
+}
+
+ordenarPendencias(lista: Pendencia[]) {
+  return lista.sort((a, b) => {
+
+    const grupoA = a.status === 'rejeitado'
+      ? 3
+      : (a.status === 'concluido'
+          ? 2
+          : (a.usuarioAprovou ? 1 : 0));
+
+    const grupoB = b.status === 'rejeitado'
+      ? 3
+      : (b.status === 'concluido'
+          ? 2
+          : (b.usuarioAprovou ? 1 : 0));
+
+    if (grupoA !== grupoB) return grupoA - grupoB;
+
+    // mesmo grupo → ordem por data
+    const dataA = grupoA === 2 ? new Date(a.dataFim!) : new Date(a.dataInicio);
+    const dataB = grupoB === 2 ? new Date(b.dataFim!) : new Date(b.dataInicio);
+
+    return dataB.getTime() - dataA.getTime();
+  });
 }
 }

@@ -63,15 +63,25 @@ export class CardPendenciaComponent {
 
   // === Tag de Status ===
   getStatusSeverity() {
+  if (this.data.status === 'rejeitado') {
+    return "danger";
+  }
+
   if (this.data.aprovadoresConcluidos === this.data.totalAprovadores) {
     return "success";
   }
+
   if (this.data.aprovadoresConcluidos === 0) {
     return "warn";
   }
-  return "info"; // andamento
+
+  return "info";
 }
   getStatusLabel() {
+  if (this.data.status === 'rejeitado') {
+    return "Rejeitado";
+  }
+
   if (this.data.aprovadoresConcluidos === this.data.totalAprovadores) {
     return "Concluído";
   }
@@ -82,12 +92,18 @@ export class CardPendenciaComponent {
 }
 
 getStatusIcon() {
+  if (this.data.status === 'rejeitado') {
+    return 'pi pi-times-circle';
+  }
+
   if (this.data.aprovadoresConcluidos === this.data.totalAprovadores) {
     return 'pi pi-check-circle';
   }
+
   if (this.data.aprovadoresConcluidos === 0) {
     return 'pi pi-clock';
   }
+
   return 'pi pi-spinner';
 }
 
