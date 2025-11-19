@@ -13,13 +13,22 @@
       </div>
 
       <!-- Linha 2: Status -->
-      <div class="flex items-center gap-2 mt-3">
-        <span class="text-sm text-gray-200 font-medium">Status:</span>
-
+      <div class="flex items-center gap-2 mt-3 justify-between">
+        
+        <div>
+        <span class="text-sm text-gray-200 font-medium mr-1">Status:</span>
         <p-tag
           [value]="getStatusLabel()"
-          [severity]="getStatusSeverity()">
+          [severity]="getStatusSeverity()"
+          [icon]="getStatusIcon()">
         </p-tag>
+        </div>
+        <div>
+        <span class="text-sm">Progresso:</span>
+          <strong class="text-base text-white">
+            {{ data.aprovadoresConcluidos }} / {{ data.totalAprovadores }}
+          </strong>
+          </div>
       </div>
 
     </div>
@@ -36,7 +45,7 @@
       <span class="text-sm">Num. Protocolo:</span>
       <strong class="text-base text-white">{{ data.numeroProtocolo || '—' }}</strong>
     </div>
-    <div class="flex flex-col gap-1 mt-3" *ngIf="data.status === 'concluido'">
+    <div class="flex flex-col gap-1 mt-3" *ngIf="data.aprovadoresConcluidos === data.totalAprovadores">
       <span class="text-sm">Data de conclusão:</span>
       <strong class="text-base text-white">{{ data.dataFim | date: 'dd/MM/yyyy HH:mm' }}</strong>
     </div>
@@ -67,11 +76,16 @@
       </p-button>
 
       <!-- Botão Aprovar -->
-      <p-button
-        label="Aprovar"
-        severity="success"
-        (onClick)="onAprovar()">
-      </p-button>
+      <button
+        (click)="onAprovar()"
+        [disabled]="isAprovadoPeloUsuario()"
+        class="px-3 py-2 rounded bg-green-600 text-white flex items-center gap-2"
+      >
+        <i *ngIf="isAprovadoPeloUsuario()" class="pi pi-check"></i>
+
+        {{ isAprovadoPeloUsuario() ? 'Aprovado' : 'Aprovar' }}
+      </button>
+
 
     </div>
   </ng-template>

@@ -67,11 +67,11 @@ export class PendenciasPageComponent implements OnInit {
       console.log("Dados recebidos do serviço de pendências:", dados);
 
       this.pendenciasEmAndamento = dados.filter(
-        p => p.status === 'pendente'
+        p => p.aprovadoresConcluidos < p.totalAprovadores
       );
 
       this.pendenciasConcluidas = dados.filter(
-        p => p.status === 'concluido'
+        p => p.aprovadoresConcluidos === p.totalAprovadores
       );
 
       console.log("Pendências em and carregadas:", this.pendenciasEmAndamento);

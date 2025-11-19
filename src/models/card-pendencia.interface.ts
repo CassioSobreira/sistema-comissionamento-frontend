@@ -7,4 +7,7 @@ export interface Pendencia {
   nomeDocumento: string;
   dataInicio: string;
   dataFim: string | null;
+  aprovadoresConcluidos: number;
+  totalAprovadores: number;
+  usuarioAprovou: boolean;
 }
