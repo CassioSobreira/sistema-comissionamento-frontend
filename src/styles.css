@@ -63,7 +63,8 @@ p-tabheader {
 
 .p-tabpanels,
 .p-tablist,
-.p-tabpanel {
+.p-tabpanel,
+.p-paginator {
   background-color: transparent !important;
   background: transparent !important;
 }

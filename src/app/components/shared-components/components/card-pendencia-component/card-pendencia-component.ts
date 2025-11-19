@@ -9,9 +9,10 @@ import { MessageService } from 'primeng/api';
 import { ModuleTagService } from '../../../../../services/modulo-tag.service';
 import { DocumentosService } from '../../../../../services/documentos.service';
 import { Pendencia } from '../../../../../models/card-pendencia.interface';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-card-pendencia-component',
-  imports: [CardModule, ButtonModule, AvatarModule, TagModule, CommonModule],
+  imports: [FormsModule,CardModule, ButtonModule, AvatarModule, TagModule, CommonModule],
   templateUrl: './card-pendencia-component.html',
   styleUrl: './card-pendencia-component.css'
 })
@@ -62,28 +63,33 @@ export class CardPendenciaComponent {
 
   // === Tag de Status ===
   getStatusSeverity() {
-    switch (this.data.status) {
-      case 'pendente':
-        return 'warn';
-      case 'concluido':
-        return 'success';
-      default:
-        return 'secondary';
-    }
+  if (this.data.aprovadoresConcluidos === this.data.totalAprovadores) {
+    return "success";
   }
-
+  if (this.data.aprovadoresConcluidos === 0) {
+    return "warn";
+  }
+  return "info"; // andamento
+}
   getStatusLabel() {
-  if (this.data.status === 'pendente') {
-    return 'Aguardando aprovação';
+  if (this.data.aprovadoresConcluidos === this.data.totalAprovadores) {
+    return "Concluído";
   }
-
-  if (this.data.status === 'concluido') {
-    return 'Concluído';
+  if (this.data.aprovadoresConcluidos === 0) {
+    return "Pendente";
   }
-
-  return this.data.status;
+  return "Parcial";
 }
 
+getStatusIcon() {
+  if (this.data.aprovadoresConcluidos === this.data.totalAprovadores) {
+    return 'pi pi-check-circle';
+  }
+  if (this.data.aprovadoresConcluidos === 0) {
+    return 'pi pi-clock';
+  }
+  return 'pi pi-spinner';
+}
 
   // === Download ===
 // === Download ===
@@ -141,5 +147,9 @@ export class CardPendenciaComponent {
       detail: detail 
     });
   }
+
+  isAprovadoPeloUsuario() {
+  return this.data.usuarioAprovou === true;
+}
 }
 
