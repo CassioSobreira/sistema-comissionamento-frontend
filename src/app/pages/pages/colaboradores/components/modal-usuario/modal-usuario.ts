@@ -8,10 +8,11 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageService } from 'primeng/api'; // 2. Imports dos Serviços
 import { ColaboradorService, Colaborador } from '../../../../../../services/colaboradores.service'; // 3. Import do seu Serviço
 import { Subject, takeUntil, finalize } from 'rxjs'; // 4. Imports do RxJS
+import { ModulosService, Modulo } from '../../../../../../services/modulos.service';
 
 interface Option {
   name: string;
-  code: string;
+  code: string | number;
 }
 
 @Component({
@@ -29,7 +30,7 @@ interface Option {
   // O MessageService é injetado, mas fornecido na página 'colaboradores'
 })
 export class ModalUsuario implements OnInit, OnDestroy { // 5. Adicionado OnDestroy
-  
+
   // 6. Outputs para notificar o componente "Pai"
   @Output() usuarioAdicionado = new EventEmitter<void>();
   @Output() usuarioAtualizado = new EventEmitter<void>();
@@ -47,46 +48,53 @@ export class ModalUsuario implements OnInit, OnDestroy { // 5. Adicionado OnDest
   email: string = '';
   selectedCargos: Option[] = [];
   selectedModulos: Option[] = [];
-  selectedSexos: Option[] = []; 
+  selectedSexos: Option[] = [];
 
   // --- Opções dos Dropdowns ---
   cargosOptions!: Option[];
   modulosOptions!: Option[];
-  sexoOptions!: Option[]; 
+  sexoOptions!: Option[];
 
   // 8. Injeção dos Serviços
   constructor(
-    private colaboradorService: ColaboradorService,
-    private messageService: MessageService
-  ) {}
+  private colaboradorService: ColaboradorService,
+  private messageService: MessageService,
+  private modulosService: ModulosService   //  novo
+) {}
 
-  ngOnInit() {
-    // Listas de opções que você já tinha
-    this.cargosOptions = [
-      { name: 'Desenvolvedor Jr', code: 'DEV_JR' },
-      { name: 'Desenvolvedor Pleno', code: 'DEV_PL' },
-      { name: 'Gerente de Projetos', code: 'GP' },
-      { name: 'Analista de Sistemas', code: 'AS' },
-      { name: 'Analista de Qualidade', code: 'AQ' },
-      { name: 'Analista de Suporte', code: 'ASUP' }
-    ];
+ngOnInit() {
+  this.cargosOptions = [
+    { name: 'Desenvolvedor Jr', code: 'DEV_JR' },
+    { name: 'Desenvolvedor Pleno', code: 'DEV_PL' },
+    { name: 'Gerente de Projetos', code: 'GP' },
+    { name: 'Analista de Sistemas', code: 'AS' },
+    { name: 'Analista de Qualidade', code: 'AQ' },
+    { name: 'Analista de Suporte', code: 'ASUP' }
+  ];
 
-    this.modulosOptions = [
-      { name: 'Módulo de Gestão', code: 'GEST' },
-      { name: 'Módulo Financeiro', code: 'FIN' },
-      { name: 'Módulo de RH', code: 'RH' },
-      { name: 'Módulo de Vendas', code: 'VEND' },
-      { name: 'Módulo de Suporte', code: 'SUP' }, 
-      { name: 'Módulo de Segurança', code: 'SEG' },
-      { name: 'Módulo de Marketing', code: 'MARK' }
-    ];
-    
-    this.sexoOptions = [
-        { name: 'Masculino', code: 'Masculino' }, // Ajustei o code para bater com o name
-        { name: 'Feminino', code: 'Feminino' },
-        { name: 'Outro', code: 'Outro' }
-    ];
-  }
+  this.sexoOptions = [
+    { name: 'Masculino', code: 'Masculino' },
+    { name: 'Feminino', code: 'Feminino' },
+    { name: 'Outro', code: 'Outro' }
+  ];
+
+  // Buscar do backend: GET /modulos/todos
+  this.modulosService.getTodosModulos()
+    .pipe(takeUntil(this.destroy$))
+    .subscribe({
+      next: (modulos: Modulo[]) => {
+        this.modulosOptions = modulos.map(m => ({
+          name: m.nome_modulo,   // o que aparece no multiselect
+          code: m.id_modulo      // o ID que vamos mandar pro back
+        }));
+      },
+      error: () => {
+        this.showError('Falha ao carregar módulos.');
+        this.modulosOptions = [];
+      }
+    });
+}
+
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -115,7 +123,7 @@ export class ModalUsuario implements OnInit, OnDestroy { // 5. Adicionado OnDest
     // Preenche o formulário com os dados do colaborador
     this.nome = colaborador.nome;
     this.email = colaborador.email;
-    
+
     // Converte as strings dos dados do colaborador de volta para os objetos de Option
     // Isso é crucial para o p-multiselect entender qual opção está selecionada
     this.selectedCargos = this.cargosOptions.filter(opt => opt.name === colaborador.cargo);
@@ -143,6 +151,12 @@ export class ModalUsuario implements OnInit, OnDestroy { // 5. Adicionado OnDest
    */
   save() {
     this.isLoading = true;
+    const id_modulos = (this.selectedModulos || [])
+    .map(opt => Number(opt.code))
+    .filter(v => !Number.isNaN(v));
+
+  console.log('selectedModulos =>', this.selectedModulos);
+  console.log('id_modulos =>', id_modulos);
 
     // Transforma os dados do formulário (que usam Option[]) num formato compatível com 'Colaborador'
     const dadosParaApi: any = {
@@ -151,6 +165,7 @@ export class ModalUsuario implements OnInit, OnDestroy { // 5. Adicionado OnDest
       // Pega o 'name' da primeira (e única) opção selecionada, ou nulo
       cargo: this.selectedCargos.length > 0 ? this.selectedCargos[0].name : null,
       sexo: this.selectedSexos.length > 0 ? this.selectedSexos[0].name : null,
+      id_modulos,
       modulo: this.selectedModulos.length > 0 ? this.selectedModulos[0].name : null,
     };
 
@@ -183,7 +198,10 @@ export class ModalUsuario implements OnInit, OnDestroy { // 5. Adicionado OnDest
             this.usuarioAdicionado.emit(); // Notifica o "Pai"
             this.visible = false;
           },
-          error: (err) => this.showError('Falha ao adicionar colaborador.')
+          error: (err) => {
+            console.error('Erro ao criar colaborador:', err);
+            this.showError('Falha ao adicionar colaborador.')
+          }
         });
     }
   }

@@ -13,7 +13,7 @@
         <p-table
             #dt
             [value]="colaboradores"
-            dataKey="id_colaborador" 
+            dataKey="id_colaborador"
             [rows]="5"
             [rowsPerPageOptions]="[5, 10, 25]"
             [loading]="isLoadingColaboradores" [paginator]="true"
@@ -22,15 +22,15 @@
         >
             <ng-template pTemplate="caption">
                 <div class="flex justify-between items-center">
-                    
+
                     <div class="flex items-center gap-2">
-                        <!-- 
+                        <!--
                           Adicionada a variável #modalUsuario aqui.
                           Isso permite que o @ViewChild('modalUsuario') no seu .ts
                           encontre este componente.
                         -->
-                        <modal-usuario 
-                            #modalUsuario 
+                        <modal-usuario
+                            #modalUsuario
                             (usuarioAdicionado)="carregarColaboradores()"
                             (usuarioAtualizado)="carregarColaboradores()">
                         </modal-usuario>
@@ -40,64 +40,64 @@
 
                     <p-iconfield iconPosition="left">
                         <p-inputicon><i class="pi pi-search"></i></p-inputicon>
-                        <input 
-                            pInputText 
-                            type="text" 
+                        <input
+                            pInputText
+                            type="text"
                             class="px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                            (input)="dt.filterGlobal($any($event.target).value, 'contains')" 
-                            placeholder="Pesquisar..." 
-                        /> 
-                    </p-iconfield> 
+                            (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+                            placeholder="Pesquisar..."
+                        />
+                    </p-iconfield>
                 </div>
             </ng-template>
 
             <ng-template pTemplate="header">
-                <tr> 
-                    <th pSortableColumn="nome" style="width:20%">Nome <p-sortIcon field="nome"></p-sortIcon></th> 
-                    <th pSortableColumn="cargo" style="width:20%">Cargo <p-sortIcon field="cargo"></p-sortIcon></th> 
-                    <th pSortableColumn="sexo" style="width:15%">Sexo <p-sortIcon field="sexo"></p-sortIcon></th> 
-                    <th pSortableColumn="email" style="width:25%">Email <p-sortIcon field="email"></p-sortIcon></th> 
-                    <th pSortableColumn="modulo" style="width:15%">Módulo <p-sortIcon field="modulo"></p-sortIcon></th> 
+                <tr>
+                    <th pSortableColumn="nome" style="width:20%">Nome <p-sortIcon field="nome"></p-sortIcon></th>
+                    <th pSortableColumn="cargo" style="width:20%">Cargo <p-sortIcon field="cargo"></p-sortIcon></th>
+                    <th pSortableColumn="sexo" style="width:15%">Sexo <p-sortIcon field="sexo"></p-sortIcon></th>
+                    <th pSortableColumn="email" style="width:25%">Email <p-sortIcon field="email"></p-sortIcon></th>
+                    <th pSortableColumn="modulo" style="width:15%">Módulo <p-sortIcon field="modulo"></p-sortIcon></th>
                     <!-- 1. NOVA COLUNA DE CABEÇALHO "AÇÕES" -->
                     <th style="width:8rem">Ações</th>
-                </tr> 
-                <tr> 
-                    <th><p-columnFilter type="text" field="nome" placeholder="Filtrar por nome"></p-columnFilter></th> 
-                    <th><p-columnFilter type="text" field="cargo" placeholder="Filtrar por cargo"></p-columnFilter></th> 
-                    <th><p-columnFilter type="text" field="sexo" placeholder="Filtrar por sexo"></p-columnFilter></th> 
-                    <th><p-columnFilter type="text" field="email" placeholder="Filtrar por email"></p-columnFilter></th> 
-                    <th><p-columnFilter type="text" field="modulo" placeholder="Filtrar por módulo"></p-columnFilter></th> 
+                </tr>
+                <tr>
+                    <th><p-columnFilter type="text" field="nome" placeholder="Filtrar por nome"></p-columnFilter></th>
+                    <th><p-columnFilter type="text" field="cargo" placeholder="Filtrar por cargo"></p-columnFilter></th>
+                    <th><p-columnFilter type="text" field="sexo" placeholder="Filtrar por sexo"></p-columnFilter></th>
+                    <th><p-columnFilter type="text" field="email" placeholder="Filtrar por email"></p-columnFilter></th>
+                    <th><p-columnFilter type="text" field="modulo" placeholder="Filtrar por módulo"></p-columnFilter></th>
                     <!-- Espaço reservado para os filtros da coluna de ações -->
                     <th></th>
                 </tr>
             </ng-template>
 
             <ng-template pTemplate="body" let-colaborador>
-                <tr> 
-                    <td>{{ colaborador.nome }}</td> 
-                    <td>{{ colaborador.cargo }}</td> 
-                    <td>{{ colaborador.sexo }}</td> 
-                    <td>{{ colaborador.email }}</td> 
-                    <td>{{ colaborador.modulo }}</td> 
+                <tr>
+                    <td>{{ colaborador.nome }}</td>
+                    <td>{{ colaborador.cargo }}</td>
+                    <td>{{ colaborador.sexo }}</td>
+                    <td>{{ colaborador.email }}</td>
+                    <td>{{ colaborador.modulo }}</td>
                     <!-- 2. NOVOS BOTÕES DE AÇÃO (EDITAR/DELETAR) -->
-                    <td>
-                        <p-button 
-                            icon="pi pi-pencil" 
-                            styleClass="p-button-sm p-button-info mr-2" 
+                    <td class="flex justify-center items-center gap-2">
+                        <p-button
+                            icon="pi pi-pencil"
+                            styleClass="p-button-sm p-button-info mr-2"
                             (click)="abrirModalEditar(colaborador)" />
-                        <p-button 
-                            icon="pi pi-trash" 
-                            styleClass="p-button-sm p-button-danger" 
+                        <p-button
+                            icon="pi pi-trash"
+                            styleClass="p-button-sm p-button-danger"
                             (click)="confirmarDelete(colaborador)" />
                     </td>
-                </tr> 
+                </tr>
             </ng-template>
 
-            <ng-template pTemplate="emptymessage"> 
+            <ng-template pTemplate="emptymessage">
                 <!-- 3. Colspan atualizado para 6 (5 colunas + 1 de ações) -->
-                <tr><td colspan="6" class="text-center">Nenhum colaborador encontrado.</td></tr> 
-            </ng-template> 
-        </p-table> 
+                <tr><td colspan="6" class="text-center">Nenhum colaborador encontrado.</td></tr>
+            </ng-template>
+        </p-table>
     </div>
 </div>
 
