@@ -12,7 +12,7 @@ import { DynamicDialogRef, DynamicDialogConfig } from 'primeng/dynamicdialog';
 import { MessageService } from 'primeng/api';
 
 // Serviços e Modelos
-import { ModulosService, Modulo, Entrada } from '../../../../../../services/modulos.service'; // Ajuste o caminho
+import { ModulosService, Modulo, Entrada } from '../../../../../../services/modulos.service'; 
 
 @Component({
   selector: 'app-modulo-forms',
@@ -33,7 +33,7 @@ export class ModuloForm implements OnInit {
   todasEntradas: any[] = []; 
   isLoadingEntradas = false; 
 
-  isSaving = false; // 3. Adicionada propriedade de loading do botão
+  isSaving = false; 
 
   constructor(
     private modulosService: ModulosService,
@@ -50,11 +50,10 @@ export class ModuloForm implements OnInit {
   }
 
   ngOnInit(): void {
-    // 5. Estrutura do ngOnInit idêntica ao usuario-form
     this.carregarDadosIniciais().subscribe({
       next: (initialData) => {
         this.todasEntradas = initialData.entradas; // Atribui dados do forkJoin
-
+        this.cdr.detectChanges();
         if (this.config.data && this.config.data.modulo) {
           this.isEditMode = true;
           const moduloParaEditar = this.config.data.modulo; 
@@ -75,9 +74,6 @@ export class ModuloForm implements OnInit {
               this.cdr.detectChanges();
             }
           });
-        } else {
-          // Modo Criação
-          this.cdr.detectChanges(); // Garante que as opções do MultiSelect apareçam
         }
       },
       error: (err) => {
@@ -87,7 +83,6 @@ export class ModuloForm implements OnInit {
     });
   }
 
-  // 6. carregarDadosIniciais usando forkJoin (mesmo com 1 item, para manter o padrão)
   carregarDadosIniciais(): Observable<{ entradas: any[] }> {
     return forkJoin({
       entradas: this.carregarTodasEntradas()
@@ -108,17 +103,14 @@ export class ModuloForm implements OnInit {
     );
   }
 
-  // 8. CORRIGIDO: carregarEntradasDoModulo agora chama o serviço real
   carregarEntradasDoModulo(idModulo: number): Observable<number[]> {
      console.log(`Buscando IDs de entradas associadas ao módulo ${idModulo}...`);
      return this.modulosService.getModuloEntradasIds(idModulo).pipe(
-       // Transforma o array de {id_entrada: X} em um array simples de números [X, Y, Z]
        map(entradasObjArray => entradasObjArray.map(e => e.id_entrada)),
        tap(ids => console.log('IDs das entradas associadas recebidos:', ids))
      );
   }
 
-  // 9. onSubmit ATUALIZADO com lógica de isSaving e finalize
   onSubmit(): void {
     if (this.moduloForm.invalid) {
       this.showWarn('Por favor, preencha o nome do módulo.');

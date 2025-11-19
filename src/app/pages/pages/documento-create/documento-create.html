@@ -97,7 +97,17 @@
                   filterPlaceholder="Pesquisar...">
                 </p-multiSelect>
               }
-              
+
+              @case ('date') {
+                <p-datepicker 
+                  [id]="field.name" 
+                  [formControlName]="field.name"
+                  dateFormat="dd/mm/yy"
+                  [showIcon]="true"
+                  placeholder="dd/mm/aaaa"
+                  class="w-full">
+                </p-datepicker>
+              }
               @default {
                 <p class="text-sm text-yellow-500">Tipo de campo '{{field.type}}' não suportado.</p>
               }

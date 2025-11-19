@@ -120,14 +120,12 @@
 
             <ng-template pTemplate="header">
               <tr>
-                <th style="width: 10%">ID</th>
                 <th>Nome do Template</th>
                 <th style="width: 10rem" class="text-center">Ações</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-entrada>
               <tr>
-                <td>{{ entrada.id_entrada }}</td>
                 <td>{{ entrada.nome_entrada }}</td>
                 <td class="text-center">
                   <p-button icon="pi pi-pencil" styleClass="p-button-sm p-button-info mr-2" (click)="abrirModalEntrada(entrada)"/>
