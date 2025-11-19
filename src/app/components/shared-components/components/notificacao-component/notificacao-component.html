@@ -1,0 +1,28 @@
+<!-- Icone de notificações com badge -->
+<p-overlaybadge [value]="notifications.length" severity="danger" badgeSize="small">
+  <p-button icon="pi pi-bell"
+            text
+            severity="secondary"
+            class="text-white"
+            (click)="op.toggle($event)" />
+</p-overlaybadge>
+
+<!-- Popover -->
+<p-popover #op>
+    <div class="w-72">
+
+        <!-- Container fixo com scroll -->
+        <div class="max-h-64 overflow-y-auto flex flex-col gap-2">
+            
+            <div *ngFor="let n of notifications"
+                class="p-3 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer border-b border-gray-700 last:border-0">
+
+                <span class="font-medium block">{{ n.title }}</span>
+                <span class="text-sm text-gray-400 block">{{ n.message }}</span>
+                <span class="text-xs text-gray-500 block mt-1">{{ n.date | date:'short' }}</span>
+            </div>
+
+        </div>
+
+    </div>
+</p-popover>
