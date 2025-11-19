@@ -29,7 +29,12 @@
     <!-- NOME -->
 <div class="flex flex-col">
   <label class="mb-1 font-semibold">Nome do Documento</label>
-  <input pInputText placeholder="Digite o nome do documento" class="w-full" />
+  <input 
+  pInputText 
+  placeholder="Digite o nome do documento"
+  class="w-full"
+  [(ngModel)]="filtros.nomeDocumento"
+/>
 </div>
 
 <!-- MÓDULO -->
@@ -51,35 +56,40 @@
 
 <!-- USUÁRIO -->
 <div class="flex flex-col">
-  <label class="mb-1 font-semibold">Usuário</label>
-  <input pInputText placeholder="Digite o nome do Usuário"class="w-full" />
+  <label class="mb-1 font-semibold">Usuário Criador</label>
+  <input
+    pInputText
+    placeholder="Digite o nome do Usuário"
+    class="w-full"
+    [(ngModel)]="filtros.usuario"
+  />
 </div>
 
 <!-- DATA inicio -->
 <div class="flex flex-col">
-  <label class="mb-1 font-semibold">Data de Início</label>
+  <label class="mb-1 font-semibold">Data de Criação</label>
 
   <p-datepicker
-    [(ngModel)]="date2"
+    [(ngModel)]="filtros.dataInicio"
     [showIcon]="true"
-    placeholder="Selecione a data de início"
+    placeholder="Selecione a data de criação"
     class="w-full"
     inputStyleClass="w-full"
-    style="width: 100%">
+    dateFormat="dd/mm/yy">
   </p-datepicker>
 </div>
 
 <!-- DATA conclusão -->
 <div class="flex flex-col">
-  <label class="mb-1 font-semibold">Data de conclusão</label>
+  <label class="mb-1 font-semibold">Data de Conclusão</label>
 
   <p-datepicker
-    [(ngModel)]="date2"
+    [(ngModel)]="filtros.dataFim"
     [showIcon]="true"
     placeholder="Selecione a data de conclusão"
     class="w-full"
     inputStyleClass="w-full"
-    style="width: 100%">
+    dateFormat="dd/mm/yy">
   </p-datepicker>
 </div>
 
@@ -88,10 +98,10 @@
   <label class="mb-1 font-semibold">Num. Protocolo</label>
 
   <p-auto-complete
+    [(ngModel)]="filtros.protocolo"
     placeholder="Num. Protocolo"
     class="w-full"
-    inputStyleClass="w-full"
-    style="width: 100%">
+    inputStyleClass="w-full">
   </p-auto-complete>
 </div>
 
@@ -100,8 +110,8 @@
   </div>
 
   <div class="flex justify-end gap-3 p-5 pt-0">
-    <p-button label="Limpar" severity="secondary"></p-button>
-    <p-button label="Aplicar Filtros" icon="pi pi-check"></p-button>
+    <p-button label="Limpar" severity="secondary" (onClick)="limparFiltros()"></p-button>
+    <p-button label="Aplicar Filtros" icon="pi pi-check" (onClick)="aplicarFiltros()"></p-button>
   </div>
 
 </div>
@@ -127,7 +137,7 @@
               *ngFor="let item of pendenciasEmAndamento | slice:firstAndamento:(firstAndamento + rowsAndamento)"
               [data]="item"
               (aprovar)="aprovar(item.idDocumento)"
-              (rejeitar)="rejeitar(item.idDocumento)">
+              (rejeitar)="rejeitar($event.idDocumento, $event.motivo)">
             </app-card-pendencia-component>
           </div>
 

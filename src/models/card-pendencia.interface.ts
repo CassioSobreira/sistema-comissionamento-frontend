@@ -12,4 +12,5 @@ export interface Pendencia {
   totalAprovadores: number;
   usuarioAprovou: boolean;
   usuarioRejeitou: string | null;
+  motivoRejeicao: string | null;
 }

@@ -16,6 +16,7 @@ import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
 import { ModulosService,Modulo } from '../../../../services/modulos.service';
 import { AdminService,Usuario } from '../../../../services/admin.service';
+import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-pendencias-page',
   standalone: true,
@@ -34,6 +35,7 @@ export class PendenciasPageComponent implements OnInit {
 
 
   id_usuario: number | null = null;
+  motivoRejeicao: string = "";
   firstAndamento = 0;
   rowsAndamento = 10;
 
@@ -50,20 +52,24 @@ export class PendenciasPageComponent implements OnInit {
   value: any;
   date2: Date | null = null;
   filtroAberto = false;
+
   filtros = {
     nomeDocumento: '',
     usuario: '',
+    dataInicio: null,
     dataFim: null,
     status: '',
     modulo: null,
-    protocolo: ''
+    protocolo: '',
+    
   };
 
   constructor(
     private pendenciasService: PendenciasService,
     private authService: AuthService,
     private cd: ChangeDetectorRef,
-    private modulosService: ModulosService
+    private modulosService: ModulosService,
+    private messageService: MessageService,
   ) {}
 
   search(event: any) {
@@ -85,7 +91,6 @@ export class PendenciasPageComponent implements OnInit {
     next: (res) => this.modulos = res,
     error: (err) => console.error("Erro ao carregar módulos", err)
   });
-  console.log("Módulos carregados:", this.modulos);
 }
 
   carregarPendencias(id_usuario: number) {
@@ -93,6 +98,7 @@ export class PendenciasPageComponent implements OnInit {
 
         this.pendenciasRejeitadas = this.ordenarPendencias(
           dados.filter(p => p.status === 'rejeitado')
+          
         );
 
         this.pendenciasConcluidas = this.ordenarPendencias(
@@ -106,8 +112,10 @@ export class PendenciasPageComponent implements OnInit {
           )
         );
         console.log("Pendências carregadas:", dados);
+        console.log("Pendências rejeitadas:", this.pendenciasRejeitadas)
         this.cd.detectChanges();
       });
+      
     }
 
   aprovar(idDocumento: number) {
@@ -117,14 +125,15 @@ export class PendenciasPageComponent implements OnInit {
   }
 }
 
-  rejeitar(idDocumento: number) {
-    if (this.id_usuario !== null) {
-      this.pendenciasService.rejeitarDocumento(idDocumento, this.id_usuario!)
-  .subscribe(() => this.carregarPendencias(this.id_usuario!));
-    console.log("Documento rejeitado:", idDocumento);
+  rejeitar(idDocumento: number, motivo: string) {
+  console.log("Motivo dentro do Page:", motivo);
 
-    }
+  if (this.id_usuario !== null) {
+    this.pendenciasService
+      .rejeitarDocumento(idDocumento, this.id_usuario!, motivo)
+      .subscribe(() => this.carregarPendencias(this.id_usuario!));
   }
+}
 
   onPageChangeAndamento(event: PaginatorState) {
   this.firstAndamento = event.first ?? 0;
@@ -182,4 +191,90 @@ ordenarPendencias(lista: Pendencia[]) {
     return dataB.getTime() - dataA.getTime();
   });
 }
+
+aplicarFiltros() {
+  if (this.id_usuario === null) return;
+
+  this.pendenciasService.getPendencias(this.id_usuario).subscribe((dados) => {
+    let filtradas = dados;
+
+    // FILTRO POR MÓDULO
+    if (this.selectedModulo !== null) {
+      filtradas = filtradas.filter(p =>
+        p.modulo?.toLowerCase() === this.selectedModulo!.nome_modulo.toLowerCase()
+      );
+    }
+
+    // FILTRO POR NOME DO DOCUMENTO
+    if (this.filtros.nomeDocumento.trim() !== "") {
+      filtradas = filtradas.filter(p =>
+        p.nomeDocumento?.toLowerCase().includes(this.filtros.nomeDocumento.toLowerCase())
+      );
+    }
+
+    // FILTRO POR USUÁRIO
+    if (this.filtros.usuario.trim() !== "") {
+      filtradas = filtradas.filter(p =>
+        p.nomeCriador.toLowerCase().includes(this.filtros.usuario.toLowerCase())
+      );
+    }
+
+    // FILTRO POR PROTOCOLO
+    if (this.filtros.protocolo.trim() !== "") {
+      filtradas = filtradas.filter(p =>
+        (p.numeroProtocolo ?? "").toString().includes(this.filtros.protocolo)
+      );
+    }
+
+    // FILTRO POR DATA DE INÍCIO
+    if (this.filtros.dataInicio) {
+      const inicio = new Date(this.filtros.dataInicio).setHours(0,0,0,0);
+      filtradas = filtradas.filter(p =>
+        new Date(p.dataInicio).setHours(0,0,0,0) === inicio
+      );
+    }
+
+    // FILTRO POR DATA DE FIM
+    if (this.filtros.dataFim) {
+      const fim = new Date(this.filtros.dataFim).setHours(0,0,0,0);
+      filtradas = filtradas.filter(p =>
+        p.dataFim && new Date(p.dataFim).setHours(0,0,0,0) === fim
+      );
+    }
+
+    // AGORA REORGANIZA:
+    this.pendenciasRejeitadas = this.ordenarPendencias(filtradas.filter(p => p.status === "rejeitado"));
+    this.pendenciasConcluidas = this.ordenarPendencias(filtradas.filter(p => p.status === "concluido"));
+    this.pendenciasEmAndamento = this.ordenarPendencias(filtradas.filter(p =>
+      p.status !== 'rejeitado' &&
+      p.aprovadoresConcluidos < p.totalAprovadores
+    ));
+    this.showSuccess("Filtros aplicados com sucesso.");
+
+    this.cd.detectChanges();
+  });
+}
+
+  limparFiltros() {
+    this.selectedModulo = null;
+      this.filtros = {
+        nomeDocumento: '',
+        usuario: '',
+        dataInicio: null,
+        dataFim: null,
+        status: '',
+        modulo: null,
+        protocolo: '',
+    }
+    this.carregarPendencias(this.id_usuario!);
+    this.showSuccess("Filtros limpos com sucesso.");
+  }
+
+   private showSuccess(detail: string) {
+    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: detail, life: 3000 });
+  }
+
+  private showError(detail: string) {
+    this.messageService.add({ severity: 'error', summary: 'Erro', detail: detail });
+  }
 }

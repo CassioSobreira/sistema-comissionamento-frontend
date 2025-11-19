@@ -24,10 +24,12 @@ export class PendenciasService {
   });
 }
 
-  rejeitarDocumento(idDocumento: number, idUsuario: number): Observable<any> {
+  rejeitarDocumento(idDocumento: number, idUsuario: number, motivoRejeicao: string): Observable<any> {
   return this.http.post(`${this.workflowApiUrl}/rejeitar`, {
     idDocumento,
-    idUsuario
+    idUsuario,
+    mensagem: motivoRejeicao
   });
 }
 }
+
