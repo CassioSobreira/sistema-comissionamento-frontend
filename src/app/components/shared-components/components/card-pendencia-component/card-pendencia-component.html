@@ -1,4 +1,4 @@
-<p-card [style]="{ width: '26rem', overflow: 'hidden' }" class="bg-gray-800 border border-gray-700 rounded-xl shadow-md">
+<p-card class="bg-gray-800 border border-gray-700 rounded-xl shadow-md w-full sm:w-64 md:w-96 overflow-hidden">
   
   <!-- Cabeçalho -->
   <ng-template pTemplate="header">
@@ -6,7 +6,10 @@
 
       <!-- Linha 1: Nome + Módulo -->
       <div class="flex justify-between items-center">
-        <h3 class="text-lg font-semibold">{{ data.nome }}</h3>
+        <div class="row">
+        <span class="text-sm text-gray-400 font-medium mr-1">Gerado por</span>
+        <h3 class="text-lg font-bold">{{ data.nomeCriador }}</h3>
+        </div>
         <p-tag
           [value]="getModuleLabel()">
         </p-tag>
@@ -16,18 +19,17 @@
       <div class="flex items-center gap-2 mt-3 justify-between">
         
         <div>
-        <span class="text-sm text-gray-200 font-medium mr-1">Status:</span>
+          <span class="text-sm">Progresso:</span>
+          <strong class="text-base text-white">
+            {{ data.aprovadoresConcluidos }} / {{ data.totalAprovadores }}
+          </strong>     
+        </div>
+        <div>
         <p-tag
           [value]="getStatusLabel()"
           [severity]="getStatusSeverity()"
           [icon]="getStatusIcon()">
         </p-tag>
-        </div>
-        <div>
-        <span class="text-sm">Progresso:</span>
-          <strong class="text-base text-white">
-            {{ data.aprovadoresConcluidos }} / {{ data.totalAprovadores }}
-          </strong>
           </div>
       </div>
 
@@ -70,7 +72,7 @@
       <p-button
         label="Rejeitar"
         severity="danger"
-        [outlined]="true"
+        icon ="pi pi-times"
         [disabled]="isAprovadoPeloUsuario()"
         (onClick)="onRejeitar()"
         class="w-full ">      

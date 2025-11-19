@@ -1,7 +1,8 @@
 export interface Pendencia {
   idDocumento: number;
   numeroProtocolo: string | null;
-  nome: string;
+  nomeCriador: string;
+  nomeAprovador: string;
   modulo: string;
   status: 'pendente' | 'concluido';
   nomeDocumento: string;
