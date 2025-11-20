@@ -73,9 +73,9 @@ ngOnInit() {
   ];
 
   this.sexoOptions = [
-    { name: 'Masculino', code: 'Masculino' },
-    { name: 'Feminino', code: 'Feminino' },
-    { name: 'Outro', code: 'Outro' }
+    { name: 'Masculino', code: 'masculino' },
+    { name: 'Feminino', code: 'feminino' },
+    { name: 'Outro', code: 'outro' }
   ];
 
   // Buscar do backend: GET /modulos/todos
@@ -158,13 +158,15 @@ ngOnInit() {
   console.log('selectedModulos =>', this.selectedModulos);
   console.log('id_modulos =>', id_modulos);
 
+    const sexo = this.selectedSexos.length > 0 ? String(this.selectedSexos[0].code).toLowerCase() : null;
+
     // Transforma os dados do formulário (que usam Option[]) num formato compatível com 'Colaborador'
     const dadosParaApi: any = {
       nome: this.nome,
       email: this.email,
       // Pega o 'name' da primeira (e única) opção selecionada, ou nulo
       cargo: this.selectedCargos.length > 0 ? this.selectedCargos[0].name : null,
-      sexo: this.selectedSexos.length > 0 ? this.selectedSexos[0].name : null,
+      sexo,
       id_modulos,
       modulo: this.selectedModulos.length > 0 ? this.selectedModulos[0].name : null,
     };
