@@ -15,7 +15,8 @@ import { ToolbarModule } from 'primeng/toolbar';
 // --- Nossas Importações ---
 import { AuthService, UserTokenPayload } from '../../../../../../services/auth.service';
 import { Subscription } from 'rxjs';
-import { ConfigUser } from '../../config-user/config-user'; 
+import { ConfigUser } from '../../config-user/config-user';
+import { NotificacaoComponent } from "../../notificacao-component/notificacao-component"; 
 
 interface MenuItem {
     label: string;
@@ -29,16 +30,17 @@ interface MenuItem {
     templateUrl: './menu-bar.html',
     standalone: true,
     imports: [
-        CommonModule,
-        AvatarModule,
-        ButtonModule,
-        DrawerModule,
-        InputTextModule,
-        MenuModule, 
-        ToastModule,
-        ToolbarModule,
-        ConfigUser
-    ],
+    CommonModule,
+    AvatarModule,
+    ButtonModule,
+    DrawerModule,
+    InputTextModule,
+    MenuModule,
+    ToastModule,
+    ToolbarModule,
+    ConfigUser,
+    NotificacaoComponent
+],
     providers: [MessageService]
 })
 export class MenuBar implements OnInit, OnDestroy {

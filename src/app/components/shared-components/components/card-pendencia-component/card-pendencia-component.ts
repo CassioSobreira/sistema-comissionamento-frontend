@@ -5,14 +5,20 @@ import { CardModule } from 'primeng/card';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { TagModule } from 'primeng/tag';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { ModuleTagService } from '../../../../../services/modulo-tag.service';
 import { DocumentosService } from '../../../../../services/documentos.service';
 import { Pendencia } from '../../../../../models/card-pendencia.interface';
 import { FormsModule } from '@angular/forms';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { DialogModule } from 'primeng/dialog';
+import { Toast } from "primeng/toast";
+import { TextareaModule } from 'primeng/textarea';
+import { FloatLabel } from 'primeng/floatlabel';
+
 @Component({
   selector: 'app-card-pendencia-component',
-  imports: [FormsModule,CardModule, ButtonModule, AvatarModule, TagModule, CommonModule],
+  imports: [FloatLabel,TextareaModule,DialogModule,ConfirmDialogModule, FormsModule, CardModule, ButtonModule, AvatarModule, TagModule, CommonModule, Toast],
   templateUrl: './card-pendencia-component.html',
   styleUrl: './card-pendencia-component.css'
 })
@@ -21,15 +27,19 @@ export class CardPendenciaComponent {
   @Input() data!: Pendencia;
 
   @Output() aprovar = new EventEmitter<number>();
-  @Output() rejeitar = new EventEmitter<number>();
-
+  @Output() rejeitar = new EventEmitter<{ idDocumento: number, motivo: string }>();
   isDownloading = false;
+  showRejeitarDialogVisible: boolean = false;
+  motivoRejeicao: string = "";
+  showMotivoDialog = false;
+
 
   constructor(
     private moduleTagService: ModuleTagService,
     private documentosService: DocumentosService,
     private cdr: ChangeDetectorRef,
     private messageService: MessageService,
+    private ConfirmationService: ConfirmationService
   ) {}
 
   // === Botões Aprovar / Rejeitar ===
@@ -37,10 +47,44 @@ export class CardPendenciaComponent {
     this.aprovar.emit(this.data.idDocumento);
   }
 
-  onRejeitar() {
-    this.rejeitar.emit(this.data.idDocumento);
+  abrirMotivoDialog() {
+  this.showMotivoDialog = true;
+}
+
+showRejeitarDialog() {
+  this.motivoRejeicao = "";
+  this.showRejeitarDialogVisible = true;
+}
+
+cancelarRejeicao() {
+  this.showRejeitarDialogVisible = false;
+}
+
+confirmarRejeicao() {
+  if (!this.motivoRejeicao || this.motivoRejeicao.trim().length === 0) {
+    this.messageService.add({
+      severity: "warn",
+      summary: "Atenção",
+      detail: "Informe um motivo para rejeitar a pendência."
+    });
+    return;
   }
 
+  this.showRejeitarDialogVisible = false;
+
+  // 🔥 envia para o componente pai o id + motivo
+  this.rejeitar.emit({
+    idDocumento: this.data.idDocumento,
+    motivo: this.motivoRejeicao
+  });
+  console.log("saindo do componente card:", this.motivoRejeicao);
+
+  this.messageService.add({
+    severity: "success",
+    summary: "Rejeitado",
+    detail: "Pendência rejeitada com sucesso."
+  });
+}
   // === Tags do módulo ===
   getModuleLabel() {
     return this.moduleTagService.getLabel(this.data.modulo);
@@ -63,15 +107,25 @@ export class CardPendenciaComponent {
 
   // === Tag de Status ===
   getStatusSeverity() {
+  if (this.data.status === 'rejeitado') {
+    return "danger";
+  }
+
   if (this.data.aprovadoresConcluidos === this.data.totalAprovadores) {
     return "success";
   }
+
   if (this.data.aprovadoresConcluidos === 0) {
     return "warn";
   }
-  return "info"; // andamento
+
+  return "info";
 }
   getStatusLabel() {
+  if (this.data.status === 'rejeitado') {
+    return "Rejeitado";
+  }
+
   if (this.data.aprovadoresConcluidos === this.data.totalAprovadores) {
     return "Concluído";
   }
@@ -82,12 +136,18 @@ export class CardPendenciaComponent {
 }
 
 getStatusIcon() {
+  if (this.data.status === 'rejeitado') {
+    return 'pi pi-times-circle';
+  }
+
   if (this.data.aprovadoresConcluidos === this.data.totalAprovadores) {
     return 'pi pi-check-circle';
   }
+
   if (this.data.aprovadoresConcluidos === 0) {
     return 'pi pi-clock';
   }
+
   return 'pi pi-spinner';
 }
 

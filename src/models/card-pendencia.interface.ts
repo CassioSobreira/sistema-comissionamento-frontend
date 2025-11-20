@@ -1,13 +1,16 @@
 export interface Pendencia {
   idDocumento: number;
   numeroProtocolo: string | null;
-  nome: string;
+  nomeCriador: string;
+  nomeAprovador: string;
   modulo: string;
-  status: 'pendente' | 'concluido';
+  status: 'pendente' | 'concluido' | 'rejeitado';
   nomeDocumento: string;
   dataInicio: string;
   dataFim: string | null;
   aprovadoresConcluidos: number;
   totalAprovadores: number;
   usuarioAprovou: boolean;
+  usuarioRejeitou: string | null;
+  motivoRejeicao: string | null;
 }
