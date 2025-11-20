@@ -28,7 +28,7 @@ export class NotificacaoComponent {
     this.notifService.notifications$.subscribe(n => {
       this.notifications = n;
     });
-    this.testeNotificacao();
+    
   }
 
   selectNotification(n: Notification) {
@@ -36,37 +36,12 @@ export class NotificacaoComponent {
   }
 
   testeNotificacao() {
-  this.notifService.adicionar({
-    id: Date.now(),
-    title: 'Nova Pendência',
-    message: 'Um processo foi enviado para você analisar.',
-    date: new Date(),
-    read: false
-  });
-  this.notifService.adicionar({
-    id: Date.now(),
-    title: 'Nova Pendência',
-    message: 'Um processo foi enviado para você analisar.',
-    date: new Date(),
-    read: false
-  });this.notifService.adicionar({
-    id: Date.now(),
-    title: 'Nova Pendência',
-    message: 'Um processo foi enviado para você analisar.',
-    date: new Date(),
-    read: false
-  });this.notifService.adicionar({
-    id: Date.now(),
-    title: 'Nova Pendência',
-    message: 'Um processo foi enviado para você analisar.',
-    date: new Date(),
-    read: false
-  });this.notifService.adicionar({
-    id: Date.now(),
-    title: 'Nova Pendência',
-    message: 'Um processo foi enviado para você analisar.',
-    date: new Date(),
-    read: false
-  });
-}
+      this.notifService.adicionar({
+        id: Date.now(),
+        title: 'Nova Pendência',
+        message: 'Um processo foi enviado para você analisar.',
+        date: new Date(),
+        read: false
+      });
+    }
 }

@@ -14,7 +14,7 @@
         <!-- Container fixo com scroll -->
         <div class="max-h-64 overflow-y-auto flex flex-col gap-2">
             
-            <div *ngFor="let n of notifications"
+            <div *ngFor="let n of notifications" (onclick)="selectNotification(n)"
                 class="p-3 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-800 cursor-pointer border-b border-gray-700 last:border-0">
 
                 <span class="font-medium block">{{ n.title }}</span>
