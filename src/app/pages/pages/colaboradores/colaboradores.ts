@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, ViewChild } from '@angular/core'; // 1. Adicionado ViewChild
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { MenuBar } from '../../../components/shared-components/components/menu/menu-bar/menu-bar';
 import { ColaboradorService, Colaborador } from '../../../../services/colaboradores.service';
@@ -46,7 +46,7 @@ export class Colaboradores implements OnInit, OnDestroy {
   @ViewChild('modalUsuario') modalUsuario!: ModalUsuario;
 
   isLoadingColaboradores = false;
-  colaboradores: Colaborador[] = [];
+  colaboradores: any[] = [];
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -60,27 +60,53 @@ export class Colaboradores implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.carregarColaboradores();
   }
-  
+
   carregarColaboradores() {
-    this.isLoadingColaboradores = true;
-    this.colaboradorService.getColaboradores()
-      .pipe(
-        takeUntil(this.destroy$),
-        finalize(() => {
-          this.isLoadingColaboradores = false;
-          this.cdr.detectChanges(); 
-        })
-      )
-      .subscribe({
-        next: (data) => {
-          this.colaboradores = data;
-        },
-        error: (err) => {
-          // Atualizado para usar o MessageService
-          this.showError('Falha ao carregar a lista de colaboradores.');
-        }
-      });
-  }
+  this.isLoadingColaboradores = true;
+
+  this.colaboradorService.getColaboradores()
+    .pipe(
+      takeUntil(this.destroy$),
+      finalize(() => {
+        this.isLoadingColaboradores = false;
+        this.cdr.detectChanges();
+      })
+    )
+    .subscribe({
+      next: (data) => {
+        // data = linhas vindas do back
+        // (uma por combinação colaborador × módulo)
+
+        const map = new Map<number, any>();
+
+        data.forEach((row: any) => {
+          const id = row.id_colaborador;
+
+          // se ainda não temos esse colaborador no mapa, criamos a base
+          if (!map.has(id)) {
+            map.set(id, {
+              ...row,
+              modulo: '' // vamos montar a string de módulos aqui
+            });
+          }
+
+          const item = map.get(id);
+
+          if (row.modulo) {
+            // concatena módulos em uma string única: "M1, M2, M3"
+            item.modulo = item.modulo
+              ? `${item.modulo}, ${row.modulo}`
+              : row.modulo;
+          }
+        });
+
+        this.colaboradores = Array.from(map.values());
+      },
+      error: (err) => {
+        this.showError('Falha ao carregar a lista de colaboradores.');
+      }
+    });
+}
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -94,7 +120,19 @@ export class Colaboradores implements OnInit, OnDestroy {
    * Usa a referência @ViewChild para chamar um método público no componente 'modal-usuario'.
    */
   abrirModalEditar(colaborador: Colaborador) {
-    this.modalUsuario.abrirModalParaEditar(colaborador);
+    if(!colaborador.id_colaborador) return;
+
+    this.colaboradorService.getColaboradorById(colaborador.id_colaborador)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (colaboradorDetalhado) => {
+          this.modalUsuario.abrirModalParaEditar(colaboradorDetalhado);
+        },
+        error: (err) => {
+          console.error('Erro ao carregar detalhes do colaborador por ID:', err);
+          this.showError('Falha ao carregar os detalhes do colaborador.');
+        }
+      });
   }
 
   /**
@@ -108,6 +146,9 @@ export class Colaboradores implements OnInit, OnDestroy {
         icon: 'pi pi-exclamation-triangle',
         acceptLabel: 'Sim, apagar',
         rejectLabel: 'Cancelar',
+        acceptButtonStyleClass: 'p-button-danger',
+        rejectButtonStyleClass: 'p-button-text p-button-secondary',
+
         accept: () => {
             // Lógica de exclusão real
             this.isLoadingColaboradores = true;

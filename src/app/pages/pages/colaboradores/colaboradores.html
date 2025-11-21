@@ -74,11 +74,19 @@
 
             <ng-template pTemplate="body" let-colaborador>
                 <tr>
-                    <td>{{ colaborador.nome }}</td>
-                    <td>{{ colaborador.cargo }}</td>
-                    <td>{{ colaborador.sexo }}</td>
+                    <td>{{ colaborador.nome | titlecase }}</td>   <!-- primeira letra maiúscula -->
+                    <td>{{ colaborador.cargo | titlecase }}</td>
+                    <td>{{ colaborador.sexo | titlecase }}</td>
                     <td>{{ colaborador.email }}</td>
-                    <td>{{ colaborador.modulo }}</td>
+
+                    <td>                      <!--modulos -->
+                      <div class="flex flex-wrap gap-1">
+                        <span *ngFor="let mod of colaborador.modulo?.split(', ')"
+                         class="px-2 py-1 rounded-full bg-neutral-800 text-gray-100 text-xs">
+                          {{ mod.trim() | titlecase }}
+                        </span>
+                      </div>
+                    </td>
                     <!-- 2. NOVOS BOTÕES DE AÇÃO (EDITAR/DELETAR) -->
                     <td class="flex justify-center items-center gap-2">
                         <p-button

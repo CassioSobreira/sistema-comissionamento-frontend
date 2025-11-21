@@ -10,6 +10,7 @@ export interface Colaborador {
   sexo: string;
   email: string;
   modulo: string;
+  id_modulos: number[];
 }
 
 @Injectable({
@@ -64,5 +65,10 @@ export class ColaboradorService {
         const data = new FormData();
         data.append('file', file);
         return this.http.post(`${this.colaboradoresApiUrl}/importar`, data);
+    }
+
+    getColaboradorById(id: number): Observable<Colaborador> {
+      const url = `${this.colaboradoresApiUrl}/${id}`;
+      return this.http.get<Colaborador>(url);
     }
 }
