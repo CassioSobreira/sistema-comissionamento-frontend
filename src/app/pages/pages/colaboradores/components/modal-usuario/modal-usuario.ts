@@ -25,11 +25,12 @@ interface Option {
     DialogModule,
     ButtonModule,
     InputTextModule,
-    MultiSelectModule
-  ]
+    MultiSelectModule,
+  ],
   // O MessageService é injetado, mas fornecido na página 'colaboradores'
 })
-export class ModalUsuario implements OnInit, OnDestroy { // 5. Adicionado OnDestroy
+export class ModalUsuario implements OnInit, OnDestroy {
+  // 5. Adicionado OnDestroy
 
   // 6. Outputs para notificar o componente "Pai"
   @Output() usuarioAdicionado = new EventEmitter<void>();
@@ -57,48 +58,64 @@ export class ModalUsuario implements OnInit, OnDestroy { // 5. Adicionado OnDest
 
   // 8. Injeção dos Serviços
   constructor(
-  private colaboradorService: ColaboradorService,
-  private messageService: MessageService,
-  private modulosService: ModulosService   //  novo
-) {}
+    private colaboradorService: ColaboradorService,
+    private messageService: MessageService,
+    private modulosService: ModulosService //  novo
+  ) {}
 
-ngOnInit() {
-  this.cargosOptions = [
-    { name: 'Desenvolvedor Jr', code: 'DEV_JR' },
-    { name: 'Desenvolvedor Pleno', code: 'DEV_PL' },
-    { name: 'Gerente de Projetos', code: 'GP' },
-    { name: 'Analista de Sistemas', code: 'AS' },
-    { name: 'Analista de Qualidade', code: 'AQ' },
-    { name: 'Analista de Suporte', code: 'ASUP' }
-  ];
+  ngOnInit() {
+    this.cargosOptions = [
+      { name: 'Desenvolvedor Jr', code: 'DEV_JR' },
+      { name: 'Desenvolvedor Pleno', code: 'DEV_PL' },
+      { name: 'Gerente de Projetos', code: 'GP' },
+      { name: 'Analista de Sistemas', code: 'AS' },
+      { name: 'Analista de Qualidade', code: 'AQ' },
+      { name: 'Analista de Suporte', code: 'ASUP' },
+    ];
 
-  this.sexoOptions = [
-    { name: 'Masculino', code: 'masculino' },
-    { name: 'Feminino', code: 'feminino' },
-    { name: 'Outro', code: 'outro' }
-  ];
+    this.sexoOptions = [
+      { name: 'Masculino', code: 'masculino' },
+      { name: 'Feminino', code: 'feminino' },
+      { name: 'Outro', code: 'outro' },
+    ];
 
-  // Buscar do backend: GET /modulos/todos
-  this.modulosService.getTodosModulos()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe({
-      next: (modulos: Modulo[]) => {
-        this.modulosOptions = modulos.map(m => ({
-          name: m.nome_modulo,   // o que aparece no multiselect
-          code: m.id_modulo      // o ID que vamos mandar pro back
-        }));
-      },
-      error: () => {
-        this.showError('Falha ao carregar módulos.');
-        this.modulosOptions = [];
-      }
-    });
-}
-
+    // Buscar do backend: GET /modulos/todos
+    this.modulosService
+      .getTodosModulos()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (modulos: Modulo[]) => {
+          this.modulosOptions = modulos.map((m) => ({
+            name: m.nome_modulo, // o que aparece no multiselect
+            code: m.id_modulo, // o ID que vamos mandar pro back
+          }));
+        },
+        error: () => {
+          this.showError('Falha ao carregar módulos.');
+          this.modulosOptions = [];
+        },
+      });
+  }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  // MELHORADORES DE UX (CARGO E SEXO)
+
+  onCargoChange(event: any) {
+    const selected = event.value || [];
+    if (selected.length > 0) {
+      this.selectedCargos = [selected[selected.length - 1]];
+    }
+  }
+
+  onSexoChange(event: any) {
+    const selected = event.value || [];
+   if (selected.length > 0) {
+      this.selectedSexos = [selected[selected.length - 1]];
+    }
   }
 
   // 9. --- NOVOS MÉTODOS PÚBLICOS ---
@@ -121,17 +138,49 @@ ngOnInit() {
     this.currentColaboradorId = colaborador.id_colaborador;
 
     // Preenche o formulário com os dados do colaborador
-    this.nome = colaborador.nome;
-    this.email = colaborador.email;
+    this.nome = this.toTitleCase(colaborador.nome || '');
+    this.email = colaborador.email || '';
 
-    // Converte as strings dos dados do colaborador de volta para os objetos de Option
-    // Isso é crucial para o p-multiselect entender qual opção está selecionada
-    this.selectedCargos = this.cargosOptions.filter(opt => opt.name === colaborador.cargo);
-    this.selectedSexos = this.sexoOptions.filter(opt => opt.name === colaborador.sexo);
-    this.selectedModulos = this.modulosOptions.filter(opt => opt.name === colaborador.modulo);
+    // ---- CARGO ----
+    const cargoStr = colaborador.cargo || '';
+
+    if (cargoStr) {
+      let cargoMatch = this.cargosOptions.find(
+        (opt) => opt.name.toLowerCase() === cargoStr.toLowerCase()
+      );
+
+    if(!cargoMatch) {
+      cargoMatch = {
+        name: this.toTitleCase(cargoStr),
+        code: cargoStr
+      };
+      this.cargosOptions = [...this.cargosOptions, cargoMatch];
+    }
+
+    this.selectedCargos = [cargoMatch]
+    } else {
+      this.selectedCargos = [];
+    }
+
+    // ---- SEXO ----
+    // supondo sexo no banco = 'masculino' | 'feminino' | 'outro'
+    const sexoMatch = this.sexoOptions.find(
+      (opt) => opt.code.toString().toLowerCase() === (colaborador.sexo || '').toLowerCase()
+    );
+    this.selectedSexos = sexoMatch ? [sexoMatch] : [];
+
+    // ---- MÓDULOS ----
+    if (colaborador.id_modulos && this.modulosOptions?.length) {
+      this.selectedModulos = this.modulosOptions.filter((opt) =>
+        colaborador.id_modulos!.includes(opt.code as number)
+      );
+    } else {
+      this.selectedModulos = [];
+    }
 
     this.visible = true;
   }
+
 
   /**
    * Limpa o formulário para um novo registo.
@@ -144,6 +193,14 @@ ngOnInit() {
     this.selectedSexos = [];
   }
 
+  // Função auxiliar para formatar strings em Title Case
+  private toTitleCase(str: string): string {
+  if (!str) return '';
+  return str
+    .toLowerCase()
+    .replace(/\b\p{L}/gu, (char) => char.toUpperCase());
+}
+
   // 10. --- LÓGICA DE 'SAVE' ATUALIZADA ---
 
   /**
@@ -152,13 +209,14 @@ ngOnInit() {
   save() {
     this.isLoading = true;
     const id_modulos = (this.selectedModulos || [])
-    .map(opt => Number(opt.code))
-    .filter(v => !Number.isNaN(v));
+      .map((opt) => Number(opt.code))
+      .filter((v) => !Number.isNaN(v));
 
-  console.log('selectedModulos =>', this.selectedModulos);
-  console.log('id_modulos =>', id_modulos);
+    console.log('selectedModulos =>', this.selectedModulos);
+    console.log('id_modulos =>', id_modulos);
 
-    const sexo = this.selectedSexos.length > 0 ? String(this.selectedSexos[0].code).toLowerCase() : null;
+    const sexo =
+      this.selectedSexos.length > 0 ? String(this.selectedSexos[0].name).toLowerCase() : null;
 
     // Transforma os dados do formulário (que usam Option[]) num formato compatível com 'Colaborador'
     const dadosParaApi: any = {
@@ -173,10 +231,11 @@ ngOnInit() {
 
     if (this.isEditMode && this.currentColaboradorId) {
       // --- LÓGICA DE ATUALIZAÇÃO (UPDATE) ---
-      this.colaboradorService.updateColaborador(this.currentColaboradorId, dadosParaApi)
+      this.colaboradorService
+        .updateColaborador(this.currentColaboradorId, dadosParaApi)
         .pipe(
           takeUntil(this.destroy$),
-          finalize(() => this.isLoading = false) // Para o loading
+          finalize(() => (this.isLoading = false)) // Para o loading
         )
         .subscribe({
           next: () => {
@@ -184,15 +243,15 @@ ngOnInit() {
             this.usuarioAtualizado.emit(); // Notifica o "Pai"
             this.visible = false;
           },
-          error: (err) => this.showError('Falha ao atualizar colaborador.')
+          error: (err) => this.showError('Falha ao atualizar colaborador.'),
         });
-
     } else {
       // --- LÓGICA DE CRIAÇÃO (CREATE) ---
-      this.colaboradorService.createColaborador(dadosParaApi)
+      this.colaboradorService
+        .createColaborador(dadosParaApi)
         .pipe(
           takeUntil(this.destroy$),
-          finalize(() => this.isLoading = false) // Para o loading
+          finalize(() => (this.isLoading = false)) // Para o loading
         )
         .subscribe({
           next: () => {
@@ -202,19 +261,23 @@ ngOnInit() {
           },
           error: (err) => {
             console.error('Erro ao criar colaborador:', err);
-            this.showError('Falha ao adicionar colaborador.')
-          }
+            this.showError('Falha ao adicionar colaborador.');
+          },
         });
     }
   }
 
   // --- Funções Auxiliares de Notificação ---
   private showSuccess(message: string): void {
-    this.messageService.add({ severity: 'success', summary: 'Sucesso', detail: message, life: 3000 });
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Sucesso',
+      detail: message,
+      life: 3000,
+    });
   }
 
   private showError(message: string): void {
     this.messageService.add({ severity: 'error', summary: 'Erro', detail: message, life: 3000 });
   }
 }
-

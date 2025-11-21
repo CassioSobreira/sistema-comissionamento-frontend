@@ -42,9 +42,9 @@
                                optionLabel="name"
                                placeholder="Selecione o(s) cargo(s)"
                                class="flex-auto"
-                               [selectionLimit]="1"
                                [disabled]="isLoading"
-                               [appendTo]="'body'">
+                               [appendTo]="'body'"
+                               (onChange)="onCargoChange($event)">
                 </p-multiselect>
             </div>
 
@@ -56,9 +56,9 @@
                                optionLabel="name"
                                placeholder="Selecione o sexo"
                                class="flex-auto"
-                               [selectionLimit]="1"
                                [disabled]="isLoading"
-                               [appendTo]="'body'">
+                               [appendTo]="'body'"
+                               (onChange)="onSexoChange($event)">
                 </p-multiselect>
             </div>
 

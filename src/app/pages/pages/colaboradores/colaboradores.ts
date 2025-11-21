@@ -120,7 +120,19 @@ export class Colaboradores implements OnInit, OnDestroy {
    * Usa a referência @ViewChild para chamar um método público no componente 'modal-usuario'.
    */
   abrirModalEditar(colaborador: Colaborador) {
-    this.modalUsuario.abrirModalParaEditar(colaborador);
+    if(!colaborador.id_colaborador) return;
+
+    this.colaboradorService.getColaboradorById(colaborador.id_colaborador)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (colaboradorDetalhado) => {
+          this.modalUsuario.abrirModalParaEditar(colaboradorDetalhado);
+        },
+        error: (err) => {
+          console.error('Erro ao carregar detalhes do colaborador por ID:', err);
+          this.showError('Falha ao carregar os detalhes do colaborador.');
+        }
+      });
   }
 
   /**
