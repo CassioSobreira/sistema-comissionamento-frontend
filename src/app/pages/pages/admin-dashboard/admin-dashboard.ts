@@ -1,11 +1,11 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, finalize} from 'rxjs/operators';
 
 // Serviços da Aplicação
 import { AdminService, Usuario, Entrada } from '../../../../services/admin.service';
-
+import { ModulosService, Modulo, ModuloDetalhado } from '../../../../services/modulos.service'; // Importe o ModulosService
 // Módulos e Serviços do PrimeNG
 import { TabsModule } from 'primeng/tabs';
 import { TableModule } from 'primeng/table';
@@ -20,9 +20,11 @@ import { InputIconModule } from 'primeng/inputicon'; // NOVO: Para o <p-inputico
 
 // Componentes de Modal (que você precisará criar no futuro)
 import { UsuarioForm } from './forms/usuario-form/usuario-form';
+import { ModuloForm } from './forms/modulo-forms/modulo-forms'; // Importe ModuloFormComponent
 // import { EntradaFormComponent } from './entrada-form/entrada-form.component';
 import { MenuBar } from '../../../components/shared-components/components/menu/menu-bar/menu-bar';
 import { error } from 'console';
+import { EntradaForms } from './forms/entrada-forms/entrada-forms';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -35,7 +37,7 @@ import { error } from 'console';
     MenuBar,
     InputTextModule,
     IconFieldModule,
-    InputIconModule
+    InputIconModule,
     // EntradaFormComponent // Importe o componente de formulário de entrada quando criado
   ],
   templateUrl: './admin-dashboard.html',
@@ -45,9 +47,11 @@ export class AdminDashboard implements OnInit, OnDestroy {
 
   usuarios: Usuario[] = [];
   entradas: Entrada[] = [];
+  modulos: ModuloDetalhado[] = [];
   abaAtiva: number = 0;
   isLoadingUsuarios = false;
   isLoadingEntradas = false;
+  isLoadingModulos = false;
 
   // controla a aba ativa do componente p-tabs; inicializado como '0' para abrir a primeira aba por padrão
   
@@ -57,6 +61,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
 
   constructor(
     private adminService: AdminService,
+    private modulosService: ModulosService,
     private messageService: MessageService,
     private dialogService: DialogService,
     private confirmationService: ConfirmationService,
@@ -66,10 +71,12 @@ export class AdminDashboard implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.carregarUsuarios();
     this.carregarEntradas();
+    this.carregarModulos();
   }
 
   // --- LÓGICA DE CARREGAMENTO DE DADOS ---
 
+  //CARREFA LISTA DE USUARIOS 
   carregarUsuarios(): void {
     this.isLoadingUsuarios = true;
     this.adminService.getUsuarios().pipe(takeUntil(this.destroy$)).subscribe({
@@ -87,29 +94,51 @@ export class AdminDashboard implements OnInit, OnDestroy {
     });
   }
 
-  carregarEntradas(): void {
-    this.isLoadingEntradas = true;
-    this.adminService.getEntradas().pipe(takeUntil(this.destroy$)).subscribe({
+  //CARREGA LIStA DE MODULOS
+  carregarModulos(): void {
+    this.isLoadingModulos = true;
+    this.modulosService.getModulosComEntradas().pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
-        this.entradas = data;
-        this.isLoadingEntradas = false;
-        this.cdr.detectChanges();
-      },
-      error: (err) => {
-        this.showError('Falha ao carregar a lista de templates.');
-        this.isLoadingEntradas = false;
-        this.cdr.detectChanges();
-      }
-    });
-  }
+        this.modulos = data;
+          this.isLoadingModulos = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          const errorMsg = err.error.message || 'Falha ao carregar a lista de módulos.';
+          this.showError(errorMsg);
+          this.isLoadingModulos = false;
+          this.cdr.detectChanges();
+        }
+      });
+    }
+
+    //CARREGA LISTA DE ENTRADAS
+    carregarEntradas(): void {
+      this.isLoadingEntradas = true;
+      this.adminService.getEntradas().pipe(takeUntil(this.destroy$)).subscribe({
+        next: (data) => {
+          this.entradas = data;
+          this.isLoadingEntradas = false;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          this.showError('Falha ao carregar a lista de templates.');
+          this.isLoadingEntradas = false;
+          this.cdr.detectChanges();
+        }
+      });
+    }
 
   // --- AÇÕES DE CRUD (USUÁRIOS) ---
 
+  //ABERTURA MODAL DE USUARIOS
   abrirModalUsuario(usuario?: Usuario): void {
     const dialogRef = this.dialogService.open(UsuarioForm, {
       header: usuario ? `Editar Usuário: ${usuario.nome}` : 'Criar Novo Usuário',
       width: '40%',
-      contentStyle: { "overflow": "auto" },
+      contentStyle: {          
+        "overflow": "auto"            
+      },
       data: { usuario } // Passa o usuário para o modal (será undefined se for criação)
     });
 
@@ -126,6 +155,7 @@ export class AdminDashboard implements OnInit, OnDestroy {
     }
 }
 
+  //FUNCAO DELETAR USUARIO E O ABERTURA DO MODAL DE EXCLUSAO
   deletarUsuario(usuario: Usuario): void {
     this.confirmationService.confirm({
       message: `Você tem certeza que deseja deletar o usuário "${usuario.nome}"?`,
@@ -133,6 +163,8 @@ export class AdminDashboard implements OnInit, OnDestroy {
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Sim, deletar',
       rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text p-button-secondary',
       accept: () => {
         this.adminService.excluirUsuario(usuario.id_usuario).pipe(takeUntil(this.destroy$)).subscribe({
           next: () => {
@@ -152,8 +184,28 @@ export class AdminDashboard implements OnInit, OnDestroy {
 
   abrirModalEntrada(entrada?: Entrada): void {
     // A lógica para abrir o modal de criação/edição de entrada virá aqui
-    console.log("Abrindo modal para:", entrada ? `Editar ${entrada.nome_entrada}` : "Criar Nova Entrada");
-    this.showInfo('Funcionalidade de edição a ser implementada.');
+    //console.log("Abrindo modal para:", entrada ? `Editar ${entrada.nome_entrada}` : "Criar Nova Entrada");
+    //this.showInfo('Funcionalidade de edição a ser implementada.');
+    const dialogRef = this.dialogService.open(EntradaForms, {
+      header: entrada ? `Editar Entrada: ${entrada.nome_entrada}` : 'Criar Nova Entrada',
+      width: '40%',
+      contentStyle: {          
+        "overflow": "auto"            
+      },
+      data: { entrada } // Passa o usuário para o modal (será undefined se for criação)
+    });
+
+    this.ref = dialogRef ?? undefined;
+
+    // Escuta o fechamento do modal
+    if (this.ref) {
+      this.ref.onClose.subscribe((foiSalvo: boolean) => {
+        // Se o modal retornou 'true', significa que a operação foi um sucesso
+        if (foiSalvo) {
+          this.carregarEntradas(); // Recarrega a lista
+        }
+      });
+    }
   }
 
   deletarEntrada(entrada: Entrada): void {
@@ -163,6 +215,8 @@ export class AdminDashboard implements OnInit, OnDestroy {
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Sim, deletar',
       rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text p-button-secondary',
       accept: () => {
         this.adminService.deleteEntrada(entrada.id_entrada).pipe(takeUntil(this.destroy$)).subscribe({
           next: () => {
@@ -175,7 +229,49 @@ export class AdminDashboard implements OnInit, OnDestroy {
     });
   }
 
+  // --- AÇÕES DE CRUD (MODULOS) ---
 
+  abrirModalModulo(modulo?: ModuloDetalhado): void {
+    // Note que passamos ModuloDetalhado, mas o form pode precisar só de Modulo básico
+    const moduloData = modulo ? { id_modulo: modulo.id_modulo, nome_modulo: modulo.nome_modulo } : undefined;
+
+    this.ref = this.dialogService.open(ModuloForm, {
+      header: modulo ? `Editar Módulo: ${modulo.nome_modulo}` : 'Criar Novo Módulo',
+      width: '40%', 
+      contentStyle: { "overflow": "auto" },
+      data: { modulo: moduloData } // Passa os dados básicos do módulo
+    }) ?? undefined;
+
+    this.ref?.onClose.subscribe((foiSalvo: boolean) => {
+      if (foiSalvo) {
+        this.carregarModulos(); // Recarrega a lista de módulos
+      }
+    });
+  }
+
+  deletarModulo(modulo: ModuloDetalhado): void {
+    this.confirmationService.confirm({
+      message: `Você tem certeza que deseja deletar o módulo "${modulo.nome_modulo}"?`,
+      header: 'Confirmar Exclusão',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sim, deletar',
+      rejectLabel: 'Cancelar',
+      acceptButtonStyleClass: 'p-button-danger',
+      rejectButtonStyleClass: 'p-button-text p-button-secondary',
+      accept: () => {
+        this.modulosService.deleteModulo(modulo.id_modulo).pipe(takeUntil(this.destroy$)).subscribe({
+          next: () => {
+            this.showSuccess('Módulo deletado com sucesso!');
+            this.carregarModulos(); // Recarrega a lista
+          },
+          error: (err) => {
+            const errorMsg = err.error.message || 'Falha ao deletar módulo.';
+            this.showError(errorMsg);
+          }
+        });
+      }
+    });
+  }
   // --- MÉTODOS PRIVADOS PARA FACILITAR AS NOTIFICAÇÕES (TOASTS) ---
   
   private showSuccess(detail: string) {

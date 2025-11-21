@@ -13,10 +13,11 @@ export interface Usuario {
   status: 'ativo' | 'inativo' | 'pendente_ativacao';
 }
 
-export interface Entrada {
+export interface Entrada{
   id_entrada: number;
   nome_entrada: string;
-  // Adicione outras propriedades se necessário
+  campo_json: any;
+  template_html: string;
 }
 
 export interface Perfil {
@@ -38,7 +39,7 @@ export class AdminService {
   private usuariosApiUrl = `${environment.apiUrl}/usuarios`; // URL para o registro
   private perfisApiUrl = `${environment.apiUrl}/perfis`; 
   private modulosApiUrl = `${environment.apiUrl}/modulos`; 
-
+  private documentosApiUrl = `${environment.apiUrl}/documentos`;
 
   constructor(private http: HttpClient) { }
 
@@ -69,6 +70,10 @@ export class AdminService {
    */
   getUsuarios(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(`${this.adminApiUrl}/usuarios`);
+  }
+
+  getUsuariosParaSelecao(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.documentosApiUrl}/lista`);
   }
 
   getPerfis(): Observable<Perfil[]> {
@@ -113,8 +118,9 @@ export class AdminService {
    * Busca a lista completa de entradas (templates).
    * Chama: GET /api/entradas
    */
+
   getEntradas(): Observable<Entrada[]> {
-    return this.http.get<Entrada[]>(this.entradasApiUrl);
+    return this.http.get<Entrada[]>(`${this.entradasApiUrl}/todos`);
   }
 
   /**
@@ -150,6 +156,6 @@ export class AdminService {
    * Chama: GET /api/modulos/todos (AJUSTE A ROTA SE NECESSÁRIO)
    */
   getTodosModulos(): Observable<Modulo[]> {
-    return this.http.get<Modulo[]>(`${this.modulosApiUrl}/all`); 
+    return this.http.get<Modulo[]>(`${this.modulosApiUrl}/todos`); 
   }
 }

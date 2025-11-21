@@ -1,16 +1,10 @@
-// Em: button-modal.ts
 
 import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-// Imports do PrimeNG
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-
 import { FileUploadModule, FileUploadEvent, FileUploadHandlerEvent } from 'primeng/fileupload';
 import { MessageService } from 'primeng/api';
-
-// Importe seu serviço
 import { ColaboradorService } from '../../../../../../services/colaboradores.service';
 
 @Component({
@@ -27,7 +21,7 @@ export class ButtonModal {
 
     constructor(
         private messageService: MessageService,
-        private colaboradorService: ColaboradorService // 2. Injete o serviço
+        private colaboradorService: ColaboradorService 
     ) {}
 
     showDialog() {
@@ -35,7 +29,7 @@ export class ButtonModal {
     }
 
     onCustomUpload(event: FileUploadHandlerEvent) {
-        // Pega o primeiro (e único) arquivo selecionado
+       
         const file = event.files[0];
         if (!file) {
             return;
@@ -44,8 +38,8 @@ export class ButtonModal {
         this.colaboradorService.importColaboradores(file).subscribe({
             next: (response) => {
                 this.showSuccess('Colaboradores importados com sucesso!');
-                this.visible = false; // Fecha o modal
-                this.uploadConcluido.emit(); // 4. Avisa o componente pai para atualizar a tabela
+                this.visible = false; 
+                this.uploadConcluido.emit(); 
             },
             error: (err) => {
                 const erroMsg = err.error.error || 'Falha ao importar a planilha.';

@@ -5,51 +5,29 @@
   <p-tabs [(value)]="abaAtiva">
     <p-tablist>
       <p-tab [value]="0">Gerenciar Usuários</p-tab>
-      <p-tab [value]="1">Gerenciar Templates</p-tab>
+      <p-tab [value]="1">Gerenciar Módulos</p-tab>
+      <p-tab [value]="2">Gerenciar Templates</p-tab>
     </p-tablist>
 
     <p-tabpanels>
       <p-tabpanel [value]="0">
-        <div class="p-4 bg-black rounded-b-lg">
-
-          <p-table 
-            #dt1
-            [value]="usuarios" 
-            class="p-datatable-striped" 
-            [loading]="isLoadingUsuarios"
-            [globalFilterFields]="['nome', 'email', 'nome_perfil', 'status']"
-          >
+        <div class="p-4 bg-white dark:bg-black rounded-b-lg">
+          <p-table #dt1 [value]="usuarios" class="p-datatable-striped" [loading]="isLoadingUsuarios"
+            [globalFilterFields]="['nome', 'email', 'nome_perfil', 'status']">
+            
             <ng-template pTemplate="caption">
               <div class="flex items-center justify-between">
-                
                 <p-iconfield iconPosition="left">
-                  <p-inputicon>
-                    <i class="pi pi-search"></i>
-                  </p-inputicon>
-                  <input 
-                    pInputText 
-                    type="text" 
-                    (input)="dt1.filterGlobal($any($event.target).value, 'contains')" 
-                    placeholder="Pesquisar..."
-                    class="
-                      p-inputtext-sm 
-                      bg-gray-900 text-gray-200      
-                      border border-gray-600 rounded-lg 
-                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                      placeholder-gray-400
-                    "
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="dt1.filterGlobal($any($event.target).value, 'contains')" 
+                    placeholder="Pesquisar Usuários..."
+                    class="p-inputtext-sm bg-gray-900 text-gray-200 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
                   />
                 </p-iconfield>
-
-                <p-button 
-                  label="Criar Novo Usuário" 
-                  icon="pi pi-plus" 
-                  (click)="abrirModalUsuario()" 
-                  class="p-button-sm">
-                </p-button>
-
+                <p-button label="Criar Novo Usuário" icon="pi pi-plus" (click)="abrirModalUsuario()" class="p-button-sm"/>
               </div>
             </ng-template>
+
             <ng-template pTemplate="header">
               <tr>
                 <th>Nome</th>
@@ -74,71 +52,94 @@
             </ng-template>
 
             <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="5" class="text-center p-4">
-                  Nenhum usuário encontrado.
-                </td>
-              </tr>
+              <tr><td colspan="5" class="text-center p-4">Nenhum usuário encontrado.</td></tr>
             </ng-template>
-
           </p-table>
         </div>  
       </p-tabpanel>
+
       <p-tabpanel [value]="1">
-        <div class="p-4 bg-black rounded-b-lg">
-          <p-table 
-            [value]="entradas" 
-            class="p-datatable-striped" 
-            [loading]="isLoadingEntradas">
+        <div class="p-4 bg-white dark:bg-black rounded-b-lg">
+          <p-table #dt2 [value]="modulos" class="p-datatable-striped" [loading]="isLoadingModulos"
+             [globalFilterFields]="['nome_modulo', 'entradas_associadas']"> 
             
             <ng-template pTemplate="caption">
-              <div class="flex justify-end">
-                <p-button 
-                  label="Criar Novo Template" 
-                  icon="pi pi-plus" 
-                  (click)="abrirModalEntrada()">
-                </p-button>
+              <div class="flex items-center justify-between">
+                <p-iconfield iconPosition="left">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="dt2.filterGlobal($any($event.target).value, 'contains')" 
+                    placeholder="Pesquisar Módulos..."
+                    class="p-inputtext-sm bg-gray-900 text-gray-200 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
+                  />
+                </p-iconfield>
+                <p-button label="Criar Novo Módulo" icon="pi pi-plus" (click)="abrirModalModulo()" class="p-button-sm"/>
               </div>
             </ng-template>
 
             <ng-template pTemplate="header">
               <tr>
-                <th style="width: 10%">ID</th>
+                <th>Nome do Módulo</th>
+                <th>Templates Associados</th>
+                <th style="width: 10rem">Ações</th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-modulo>
+              <tr>
+                <td>{{ modulo.nome_modulo }}</td>
+                <td>{{ modulo.entradas_associadas || 'Nenhum' }}</td>
+                <td>
+                  <p-button icon="pi pi-pencil" styleClass="p-button-sm p-button-info mr-2" (click)="abrirModalModulo(modulo)" />
+                  <p-button icon="pi pi-trash" styleClass="p-button-sm p-button-danger" (click)="deletarModulo(modulo)" />
+                </td>
+              </tr>
+            </ng-template>
+             <ng-template pTemplate="emptymessage">
+               <tr><td colspan="3" class="text-center p-4">Nenhum módulo encontrado.</td></tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-tabpanel>
+
+      <p-tabpanel [value]="2">
+        <div class="p-4 bg-white dark:bg-black rounded-b-lg">
+          <p-table #dt3 [value]="entradas" class="p-datatable-striped" [loading]="isLoadingEntradas"
+            [globalFilterFields]="['id_entrada', 'nome_entrada']">
+            
+            <ng-template pTemplate="caption">
+              <div class="flex items-center justify-between">
+                <p-iconfield iconPosition="left">
+                  <p-inputicon><i class="pi pi-search"></i></p-inputicon>
+                  <input pInputText type="text" (input)="dt3.filterGlobal($any($event.target).value, 'contains')" 
+                    placeholder="Pesquisar Templates..."
+                    class="p-inputtext-sm bg-gray-900 text-gray-200 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400"
+                  />
+                </p-iconfield>
+                <p-button label="Criar Novo Template" icon="pi pi-plus" (click)="abrirModalEntrada()" class="p-button-sm"/>
+              </div>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+              <tr>
                 <th>Nome do Template</th>
                 <th style="width: 10rem" class="text-center">Ações</th>
               </tr>
             </ng-template>
-
             <ng-template pTemplate="body" let-entrada>
               <tr>
-                <td>{{ entrada.id_entrada }}</td>
                 <td>{{ entrada.nome_entrada }}</td>
                 <td class="text-center">
-                  <p-button 
-                    icon="pi pi-pencil" 
-                    styleClass="p-button-sm p-button-info mr-2" 
-                    (click)="abrirModalEntrada(entrada)">
-                  </p-button>
-                  <p-button 
-                    icon="pi pi-trash" 
-                    styleClass="p-button-sm p-button-danger" 
-                    (click)="deletarEntrada(entrada)">
-                  </p-button>
+                  <p-button icon="pi pi-pencil" styleClass="p-button-sm p-button-info mr-2" (click)="abrirModalEntrada(entrada)"/>
+                  <p-button icon="pi pi-trash" styleClass="p-button-sm p-button-danger" (click)="deletarEntrada(entrada)"/>
                 </td>
               </tr>
             </ng-template>
-
             <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="3" class="text-center p-4">
-                  Nenhum template de entrada encontrado.
-                </td>
-              </tr>
+              <tr><td colspan="3" class="text-center p-4">Nenhum template de entrada encontrado.</td></tr>
             </ng-template>
-
           </p-table>
         </div>
       </p-tabpanel>
     </p-tabpanels>
   </p-tabs>
 </div>
+

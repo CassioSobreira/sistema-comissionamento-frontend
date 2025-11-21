@@ -74,12 +74,10 @@ export class Entradas implements OnInit {
     this.router.navigate(['/home']);
   }
 
-  // Função para navegar para a criação do documento (próximo passo)
   selecionarEntrada(idEntrada: number): void {
-    // Exemplo de como você navegaria para a página de criação de documento
     console.log(`Navegando para o documento da entrada com ID: ${idEntrada}`);
-    // this.router.navigate(['/documento', idEntrada, 'criar']);
-  }
+  this.router.navigate(['/modulos', this.idModulo, 'entradas', idEntrada, 'criar']); 
+ }
 
   ngOnDestroy(): void {
     this.destroy$.next();

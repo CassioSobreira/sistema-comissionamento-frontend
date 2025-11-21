@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { tap, Observable, forkJoin, of } from 'rxjs'; // Import forkJoin and of
-import { switchMap } from 'rxjs/operators';
+import { switchMap, finalize } from 'rxjs/operators';
 
 // Imports do PrimeNG
 import { InputTextModule } from 'primeng/inputtext';
@@ -44,6 +44,7 @@ export class UsuarioForm implements OnInit {
   perfis: any[] = []; // Para o dropdown
   currentUserStatus: string | null = null;
   todosModulos: any[] = []; // Array for MultiSelect options
+  isSaving = false;
 
   constructor(
     private adminService: AdminService,
@@ -63,33 +64,25 @@ export class UsuarioForm implements OnInit {
   }
 
 ngOnInit(): void {
-    console.log('UsuarioForm ngOnInit starting...');
 
     this.carregarDadosIniciais().subscribe({
       next: (initialData) => {
-        console.log('UsuarioForm carregarDadosIniciais completed.');
-        console.log('Checking config.data:', this.config.data);
 
         this.perfis = initialData.perfis;
         this.todosModulos = initialData.modulos;
 
         if (this.config.data && this.config.data.usuario) {
-          console.log('Entering EDIT mode. User data:', this.config.data.usuario);
           this.isEditMode = true;
           const usuario: Usuario = this.config.data.usuario;
           this.currentUserId = usuario.id_usuario;
           this.currentUserStatus = usuario.status;
 
           // Desabilita os campos IMEDIATAMENTE após definir isEditMode
-          console.log('Disabling name and email fields...'); 
           this.usuarioForm.get('nome')?.disable();
           this.usuarioForm.get('email')?.disable();
-          console.log('Fields disabled.');
 
-          console.log('Calling carregarModulosDoUsuario...');
           this.carregarModulosDoUsuario(this.currentUserId).subscribe({
             next: (modulosUsuarioIds) => {
-              console.log('User modules received:', modulosUsuarioIds);
 
               const patchData = {
                 nome: usuario.nome,
@@ -98,28 +91,20 @@ ngOnInit(): void {
                 ativo: usuario.status === 'ativo',
                 id_modulos: modulosUsuarioIds
               };
-              console.log('Patching form with data:', patchData);
               this.usuarioForm.patchValue(patchData);
-              console.log('Form patched.');
-
-              // 4. FORÇA A DETECÇÃO DE MUDANÇAS
               this.cdr.detectChanges();
-              console.log('Change detection triggered.');
 
             },
             error: (err) => {
-              console.error('ERROR loading user modules:', err);
               this.showError('Falha ao carregar os módulos do usuário.');
               this.cdr.detectChanges(); // Também força aqui em caso de erro
             }
           });
         } else {
-          console.log('Entering CREATE mode.');
           this.cdr.detectChanges();
         }
       },
       error: (err) => {
-        console.error('ERROR loading initial data:', err);
         this.showError('Falha ao carregar dados iniciais do formulário.');
         this.cdr.detectChanges(); 
       }
@@ -137,7 +122,7 @@ ngOnInit(): void {
     return this.adminService.getPerfis().pipe(
         switchMap(data => {
             const formattedPerfis = data.map(perfil => ({ label: perfil.nome_perfil, value: perfil.id_perfil }));
-            return of(formattedPerfis); // Return the formatted data as an observable
+            return of(formattedPerfis); 
         })
     );
   }
@@ -146,7 +131,7 @@ ngOnInit(): void {
     return this.adminService.getTodosModulos().pipe(
           switchMap(data => {
             const formattedModulos = data.map(modulo => ({ label: modulo.nome_modulo, value: modulo.id_modulo }));
-            return of(formattedModulos); // Return the formatted data as an observable
+            return of(formattedModulos);
         })
     );
   }
@@ -164,9 +149,12 @@ ngOnInit(): void {
       return;
     }
 
+    this.isSaving = true;
     const formValue = this.usuarioForm.getRawValue(); 
     const status = formValue.ativo ? 'ativo' : 'inativo';
     const id_modulos = formValue.id_modulos || []; 
+
+    let saveObservable$: Observable<any>; // Variável para guardar o observable
 
     if (this.isEditMode && this.currentUserId) {
       //Logica de update
@@ -175,34 +163,39 @@ ngOnInit(): void {
           status: status,
           id_modulos: id_modulos
       };
-      this.adminService.updateUsuario(this.currentUserId, payload).subscribe({
-        next: () => this.ref.close(true),
-        error: (err) => {
-          const errMsg = err.error.error || 'Erro ao atualizar usuário.';
-          this.showError(errMsg);
-        }
-      });
-
+      saveObservable$ = this.adminService.updateUsuario(this.currentUserId, payload);
     } 
     else {
       //Logica de create
       const payload = {
-        nome: formValue.nome, // Get value even if disabled (use getRawValue if needed)
-        email: formValue.email, // Get value even if disabled (use getRawValue if needed)
+        nome: formValue.nome, 
+        email: formValue.email, 
         id_perfil: formValue.id_perfil,
-        id_modulos: id_modulos // Pass selected module IDs
+        id_modulos: id_modulos 
       };
-      this.adminService.registrarUsuario(payload).subscribe({
+      saveObservable$ = this.adminService.registrarUsuario(payload);
+    }
+    
+    saveObservable$
+      .pipe(
+        finalize(() => {
+          this.isSaving = false; 
+        })
+      )
+      .subscribe({
         next: () => {
-          this.ref.close(true);
-          this.showSuccess('Usuário criado com sucesso!');
+          const successMessage = this.isEditMode ? 'Usuário atualizado com sucesso!' : 'Usuário criado com sucesso!';
+          this.showSuccess(successMessage);
+          this.ref.close(true); // Fecha o modal indicando sucesso
         },
         error: (err) => {
-          const errMsg = err.error.error || 'Falha ao criar usuário.';
+          // A mensagem de erro também pode depender do modo
+          const baseMsg = this.isEditMode ? 'Erro ao atualizar usuário.' : 'Falha ao criar usuário.';
+          const errMsg = err.error.error || baseMsg;
           this.showError(errMsg);
+          // O 'finalize' já cuidou de desativar o 'isSaving'
         }
       });
-    }
   }
 
   closeDialog(): void {

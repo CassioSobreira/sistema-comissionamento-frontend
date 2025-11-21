@@ -1,1 +1,95 @@
-<p>entrada-forms works!</p>
+<form [formGroup]="entradaForm" (ngSubmit)="onSubmit()" class="p-4 dark:text-white">
+  
+  <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-2">
+      <label for="nome_entrada" class="font-semibold">Nome do Template</label>
+      <input id="nome_entrada" type="text" pInputText formControlName="nome_entrada" />
+    </div>
+  </div>
+
+  <hr class="border-gray-700 my-6" />
+
+  <div class="flex flex-col gap-4">
+    <h3 class="text-lg font-semibold">Campos do Formulário</h3>
+
+  <div formArrayName="campos">
+        
+    @for (campoGroup of campos.controls; track $index) {
+      <div [formGroupName]="$index" class="p-4 mb-3 border rounded-lg dark:text-white">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          
+          <div class="flex flex-col gap-2">
+            <label [for]="'label-' + $index">Label do Campo</label>
+            <input 
+              [id]="'label-' + $index" 
+              type="text" 
+              pInputText 
+              formControlName="label" 
+              placeholder="Ex: Nome do Cliente"
+              (blur)="gerarNameAutomaticamente($index)" 
+            />
+          </div>
+
+          <div class="flex flex-col gap-2">
+            <label [for]="'type-' + $index">Tipo de Campo</label>
+            <p-select [id]="'type-' + $index" [options]="tiposDeCampo" formControlName="type" />
+          </div>
+        </div>
+        
+        @if (campoGroup.get('type')?.value === 'select' || campoGroup.get('type')?.value === 'multiselect') {
+          <div class="mt-4 p-3 dark:text-white rounded">
+            <label [for]="'optionsUrl-' + $index">Fonte dos Dados da Lista</label>
+            <p-select [id]="'optionsUrl-' + $index" 
+                      [options]="fontesDeDados" 
+                      formControlName="optionsUrl" 
+                      placeholder="Selecione a fonte dos dados" 
+                      optionLabel="label" 
+                      optionValue="value" 
+                      class="w-full"
+                      (onChange)="onFonteDeDadosChange($any($event), campoGroup)">
+            </p-select>
+            
+            @if (campoGroup.get('optionsUrl')?.value === 'custom') {
+            <div class="mt-4">
+              <label class="block mb-1 text-sm text-gray-400">
+                Opções da Lista (digite uma opção por linha)
+              </label>
+              
+              <textarea 
+                pInputTextarea 
+                formControlName="customOptions" 
+                class="w-full"
+                [rows]="4"
+                placeholder="Opção 1&#10;Opção 2&#10;Opção 3">
+              </textarea>
+              
+              <small class="text-gray-500">
+                O sistema usará o texto digitado como valor.
+              </small>
+            </div>
+            }
+            <input type="hidden" formControlName="optionsValueField" />
+            <input type="hidden" formControlName="optionsLabelField" />
+          </div>
+        }
+
+        <div class="flex justify-end mt-3">
+          <p-button type="button" icon="pi pi-trash" severity="danger" [text]="true" (click)="removerCampo($index)" />
+        </div>
+      </div>
+    }
+  </div>
+    @if (campos.invalid && campos.hasError('labelsNaoUnicos') && campos.dirty) {
+      <div class="p-2 text-center bg-red-800 border border-red-600 rounded-md text-white font-semibold">
+        <i class="pi pi-exclamation-circle mr-2"></i>
+        Erro: Existem "Labels de Campo" duplicados. Cada label deve ser único.
+      </div>
+    }
+    <p-button type="button" label="Adicionar Campo" icon="pi pi-plus" severity="secondary" (click)="adicionarCampo()" />
+  </div>
+
+  <div class="flex justify-end gap-3 mt-6 border-t border-gray-700 pt-4">
+    <p-button type="button" label="Cancelar" severity="secondary" (click)="ref.close()" [text]="true" />
+    <p-button type="submit" [label]="isEditMode ? 'Salvar Alterações' : 'Criar Template'" icon="pi pi-check" [loading]="isSaving" [disabled]="entradaForm.invalid" />
+  </div>
+</form>

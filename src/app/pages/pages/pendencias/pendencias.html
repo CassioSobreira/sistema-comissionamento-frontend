@@ -1,0 +1,233 @@
+<menu-bar></menu-bar>
+
+<div class="text-white">
+  <h1 class="mt-4 text-2xl font-bold mb-6 text-center">Minhas Pendências</h1>
+
+  <div class="flex justify-end mb-4 pr-8">
+  <p-button
+    label="Recarregar"
+    icon="pi pi-refresh"
+    severity="contrast"
+    styleClass="w-full sm:w-auto mr-6"
+    (onClick)="recarregarPendencias()">
+  </p-button>
+  <p-button
+    label="Filtrar"
+    icon="pi pi-filter"
+    styleClass="w-full sm:w-auto "
+    (onClick)="toggleFiltro()">
+  </p-button>
+ 
+</div>
+
+<!-- BLOCO EXPANSÍVEL DE FILTRO -->
+<div
+  *ngIf="filtroAberto">
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 p-5">
+
+    <!-- NOME -->
+<div class="flex flex-col">
+  <label class="mb-1 font-semibold">Nome do Documento</label>
+  <input 
+  pInputText 
+  placeholder="Digite o nome do documento"
+  class="w-full"
+  [(ngModel)]="filtros.nomeDocumento"
+/>
+</div>
+
+<!-- MÓDULO -->
+<div class="flex flex-col">
+  <label class="mb-1 font-semibold">Módulo</label>
+
+  <p-autocomplete
+    [(ngModel)]="selectedModulo"
+    [suggestions]="filteredModulos"
+    (completeMethod)="searchModulo($event)"
+    [dropdown]="true"
+    optionLabel="nome_modulo"
+    placeholder="Selecione o módulo"
+    class="w-full"
+    inputStyleClass="w-full"
+    style="width: 100%">
+  </p-autocomplete>
+</div>
+
+<!-- USUÁRIO -->
+<div class="flex flex-col">
+  <label class="mb-1 font-semibold">Usuário Criador</label>
+  <input
+    pInputText
+    placeholder="Digite o nome do Usuário"
+    class="w-full"
+    [(ngModel)]="filtros.usuario"
+  />
+</div>
+
+<!-- DATA inicio -->
+<div class="flex flex-col">
+  <label class="mb-1 font-semibold">Data de Criação</label>
+
+  <p-datepicker
+    [(ngModel)]="filtros.dataInicio"
+    [showIcon]="true"
+    placeholder="Selecione a data de criação"
+    class="w-full"
+    inputStyleClass="w-full"
+    dateFormat="dd/mm/yy">
+  </p-datepicker>
+</div>
+
+<!-- DATA conclusão -->
+<div class="flex flex-col">
+  <label class="mb-1 font-semibold">Data de Conclusão</label>
+
+  <p-datepicker
+    [(ngModel)]="filtros.dataFim"
+    [showIcon]="true"
+    placeholder="Selecione a data de conclusão"
+    class="w-full"
+    inputStyleClass="w-full"
+    dateFormat="dd/mm/yy">
+  </p-datepicker>
+</div>
+
+<!-- PROTOCOLO -->
+<div class="flex flex-col">
+  <label class="mb-1 font-semibold">Num. Protocolo</label>
+
+  <p-auto-complete
+    [(ngModel)]="filtros.protocolo"
+    placeholder="Num. Protocolo"
+    class="w-full"
+    inputStyleClass="w-full">
+  </p-auto-complete>
+</div>
+
+
+
+  </div>
+
+  <div class="flex justify-end gap-3 p-5 pt-0">
+    <p-button label="Limpar" severity="secondary" (onClick)="limparFiltros()"></p-button>
+    <p-button label="Aplicar Filtros" icon="pi pi-check" (onClick)="aplicarFiltros()"></p-button>
+  </div>
+
+</div>
+
+
+  <p-tabs [(value)]="abaAtiva">
+    <p-tablist>
+      <p-tab [value]="0">Em Andamento</p-tab>
+      <p-tab [value]="1">Concluídas</p-tab>
+      <p-tab [value]="2">Rejeitadas</p-tab>
+    </p-tablist>
+
+    <p-tabpanels>
+
+      <!-- ===========================
+           ABA: EM ANDAMENTO
+      ============================ -->
+      <p-tabpanel [value]="0">
+
+        <div *ngIf="pendenciasEmAndamento.length; else vazioAndamento">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            <app-card-pendencia-component
+              *ngFor="let item of pendenciasEmAndamento | slice:firstAndamento:(firstAndamento + rowsAndamento)"
+              [data]="item"
+              (aprovar)="aprovar(item.idDocumento)"
+              (rejeitar)="rejeitar($event.idDocumento, $event.motivo)">
+            </app-card-pendencia-component>
+          </div>
+
+          <div class="card flex justify-center mt-6">
+            <p-paginator
+              [first]="firstAndamento"
+              [rows]="rowsAndamento"
+              [totalRecords]="pendenciasEmAndamento.length"
+              [rowsPerPageOptions]="[10, 20, 30]"
+              (onPageChange)="onPageChangeAndamento($event)">
+            </p-paginator>
+          </div>
+        </div>
+
+        <ng-template #vazioAndamento>
+          <div class="text-center text-gray-400 mt-12">
+            <i class="pi pi-inbox text-5xl mb-3"></i>
+            <p>Nenhuma pendência em andamento.</p>
+          </div>
+        </ng-template>
+
+      </p-tabpanel>
+
+      <!-- ===========================
+           ABA: CONCLUÍDAS
+      ============================ -->
+      <p-tabpanel [value]="1">
+
+        <div *ngIf="pendenciasConcluidas.length; else vazioConcluidas">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            <app-card-pendencia-component
+              *ngFor="let item of pendenciasConcluidas | slice:firstConcluidas:(firstConcluidas + rowsConcluidas)"
+              [data]="item">
+            </app-card-pendencia-component>
+          </div>
+
+          <div class="card flex justify-center mt-6">
+            <p-paginator
+              [first]="firstConcluidas"
+              [rows]="rowsConcluidas"
+              [totalRecords]="pendenciasConcluidas.length"
+              [rowsPerPageOptions]="[10, 20, 30]"
+              (onPageChange)="onPageChangeConcluidas($event)">
+            </p-paginator>
+          </div>
+        </div>
+
+        <ng-template #vazioConcluidas>
+          <div class="text-center text-gray-400 mt-12">
+            <i class="pi pi-check-circle text-5xl mb-3"></i>
+            <p>Nenhuma pendência concluída.</p>
+          </div>
+        </ng-template>
+
+      </p-tabpanel>
+
+       <!-- ===========================
+        ABA: REJEITADAS
+    ============================ -->
+    <p-tabpanel [value]="2">
+
+      <div *ngIf="pendenciasRejeitadas.length; else vazioRejeitadas">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+          <app-card-pendencia-component
+            *ngFor="let item of pendenciasRejeitadas | slice:firstRejeitadas:(firstRejeitadas + rowsRejeitadas)"
+            [data]="item">
+          </app-card-pendencia-component>
+        </div>
+
+        <div class="card flex justify-center mt-6">
+          <p-paginator
+            [first]="firstRejeitadas"
+            [rows]="rowsRejeitadas"
+            [totalRecords]="pendenciasRejeitadas.length"
+            [rowsPerPageOptions]="[10, 20, 30]"
+            (onPageChange)="onPageChangeRejeitadas($event)">
+          </p-paginator>
+        </div>
+      </div>
+
+      <ng-template #vazioRejeitadas>
+        <div class="text-center text-gray-400 mt-12">
+          <i class="pi pi-times-circle text-5xl mb-3"></i>
+          <p>Nenhuma pendência rejeitada.</p>
+        </div>
+      </ng-template>
+
+    </p-tabpanel>
+    </p-tabpanels>
+
+   
+  </p-tabs>
+</div>

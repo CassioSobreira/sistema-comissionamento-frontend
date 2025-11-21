@@ -56,3 +56,17 @@ app-root {
   border-bottom: 1px solid #3A404C;
   border-radius: 0px;
 }
+
+p-tabheader {
+  background-color: transparent !important;
+}
+
+.p-tabpanels,
+.p-tablist,
+.p-tabpanel,
+.p-paginator {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+
+

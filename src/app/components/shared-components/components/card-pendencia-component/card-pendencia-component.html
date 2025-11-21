@@ -1,0 +1,193 @@
+<p-card class="bg-gray-800 border border-gray-700 rounded-xl shadow-md w-full sm:w-64 md:w-96 overflow-hidden">
+  
+  <!-- Cabeçalho -->
+  <ng-template pTemplate="header">
+    <div class="p-4 border-b border-gray-700 text-white">
+
+      <!-- Linha 1: Nome + Módulo -->
+      <div class="flex justify-between items-center">
+        <div class="row">
+        <span class="text-sm text-gray-400 font-medium mr-1">Gerado por</span>
+        <h3 class="text-lg font-bold">{{ data.nomeCriador }}</h3>
+        </div>
+        <p-tag
+          [value]="getModuleLabel()">
+        </p-tag>
+      </div>
+
+      <!-- Linha 2: Status -->
+      <div class="flex items-center gap-2 mt-3 justify-between">
+        
+        <div>
+          <span class="text-sm">Progresso:</span>
+          <strong class="text-base text-white">
+            {{ data.aprovadoresConcluidos }} / {{ data.totalAprovadores }}
+          </strong>     
+        </div>
+        <div>
+        <p-tag
+          [value]="getStatusLabel()"
+          [severity]="getStatusSeverity()"
+          [icon]="getStatusIcon()">
+        </p-tag>
+          </div>
+      </div>
+
+    </div>
+  </ng-template>
+
+  <!-- Conteúdo -->
+  <div class="p-5 text-gray-300">
+
+    <div class="flex flex-col gap-1">
+      <span class="text-sm">Documento:</span>
+      <strong class="text-base text-white">{{ data.nomeDocumento }}</strong>
+    </div>
+    <div class="flex flex-col gap-1 mt-3">
+      <span class="text-sm">Num. Protocolo:</span>
+      <strong class="text-base text-white">{{ data.numeroProtocolo || '—' }}</strong>
+    </div>
+    <div class="flex flex-col gap-1 mt-3" *ngIf="data.aprovadoresConcluidos === data.totalAprovadores || data.status === 'rejeitado'">
+      <span class="text-sm">Data de conclusão:</span>
+      <strong class="text-base text-white">{{ data.dataFim | date: 'dd/MM/yyyy HH:mm' }}</strong>
+    </div>
+    <div class="flex flex-col gap-1 mt-3" *ngIf="data.aprovadoresConcluidos != data.totalAprovadores">
+      <span class="text-sm">Data de criação:</span>
+      <strong class="text-base text-white">{{ data.dataInicio| date: 'dd/MM/yyyy HH:mm' }}</strong>
+    </div>
+    <div class="mt-5 flex flex-col sm:flex-row justify-center gap-3">
+      <p-button
+        label="Baixar PDF"
+        icon="pi pi-download"
+        (click)="baixarDocumento()"
+        [loading]="isDownloading"
+        styleClass="w-full sm:w-auto">
+      </p-button>
+    </div>
+    
+
+  </div>
+
+  <!-- Rodapé -->
+  <ng-template pTemplate="footer" >
+    <div class="flex justify-center gap-4 border-t border-gray-700 pt-4 pb-2" *ngIf="data.usuarioRejeitou">
+      <div  class="flex justify-center mt-3">
+          <p-button
+              label="Ver motivo da rejeição"
+              icon="pi pi-eye"
+              severity="danger"
+              (click)="abrirMotivoDialog()"
+              >
+          </p-button>
+      </div>
+      </div>
+    <div class="flex justify-center gap-4 border-t border-gray-700 pt-4 pb-2" *ngIf="data.status === 'pendente'">
+       <!-- Botão VER MOTIVO (Só aparece se estiver rejeitada) -->
+      
+      <!-- Botão Rejeitar -->
+      <p-button
+        label="Rejeitar"
+        severity="danger"
+        icon ="pi pi-times"
+        [disabled]="isAprovadoPeloUsuario()"
+        (click)="showRejeitarDialog()"
+        class="w-full ">      
+      </p-button>
+
+      <!-- Botão Aprovar -->
+      <p-button
+        (click)="onAprovar()"
+        [disabled]="isAprovadoPeloUsuario()"
+        severity="success"
+        class="items-center gap-2"
+      >
+        <i *ngIf="isAprovadoPeloUsuario()" class="pi pi-check"></i>
+
+        {{ isAprovadoPeloUsuario() ? 'Aprovado' : 'Aprovar' }}
+      </p-button>
+
+      
+    </div>
+    
+  </ng-template>
+
+</p-card>
+<p-dialog 
+    header="Confirmar Rejeição"
+    [(visible)]="showRejeitarDialogVisible"
+    [modal]="true"
+    [closable]="true"
+    [style]="{ width: '450px' }">
+
+    <span class="p-text-secondary block mb-4">
+        Tem certeza que deseja rejeitar esta pendência?
+    </span>
+
+    <div class="flex flex-column gap-3 w-full">
+      <p-floatlabel variant="on" class="w-full">
+        <textarea 
+          pTextarea 
+          id="over_label"
+          [(ngModel)]="motivoRejeicao"
+          rows="5"
+          style="resize: none;"
+          class="w-full"
+        ></textarea>
+        <label for="on_label">Motivo da Rejeição</label>
+      </p-floatlabel>
+    </div>
+
+    <div class="flex justify-between gap-2 mt-4">
+        <p-button 
+            label="Cancelar" 
+            severity="secondary" 
+            (click)="cancelarRejeicao()">
+        </p-button>
+
+        <p-button 
+            label="Rejeitar"
+            severity="danger"
+            (click)="confirmarRejeicao()">
+        </p-button>
+    </div>
+</p-dialog>
+
+<p-dialog 
+    header="Motivo da Rejeição"
+    [(visible)]="showMotivoDialog"
+    [modal]="true"
+    [closable]="true"
+    [style]="{ width: '450px' }">
+
+    <div class="flex flex-col gap-3 w-full">
+
+        <!-- Linha 1 -->
+        <p class="text-lg">
+            <strong>Rejeitado por:</strong> {{ data.usuarioRejeitou }}
+        </p>
+
+        <!-- Linha 2 -->
+        <div class="flex flex-col w-full">
+            <p class="mb-1"><strong>Motivo:</strong></p>
+
+            <textarea 
+                pTextarea
+                class="p-inputtext w-full"
+                rows="6"
+                style="resize: none;"
+                [disabled]="true"
+                [ngModel]="data.motivoRejeicao">
+            </textarea>
+        </div>
+
+    </div>
+
+    <div class="flex justify-end mt-4">
+        <p-button 
+            label="Fechar"
+            severity="secondary"
+            (click)="showMotivoDialog = false">
+        </p-button>
+    </div>
+
+</p-dialog>
