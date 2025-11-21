@@ -15,13 +15,13 @@ import { ToolbarModule } from 'primeng/toolbar';
 // --- Nossas Importações ---
 import { AuthService, UserTokenPayload } from '../../../../../../services/auth.service';
 import { Subscription } from 'rxjs';
-import { ConfigUser } from '../../config-user/config-user'; 
+import { ConfigUser } from '../../config-user/config-user';
 
 interface MenuItem {
     label: string;
-    icon: string; 
+    icon: string;
     route: string;
-    perfisPermitidos?: string[]; 
+    perfisPermitidos?: string[];
 }
 
 @Component({
@@ -34,7 +34,7 @@ interface MenuItem {
         ButtonModule,
         DrawerModule,
         InputTextModule,
-        MenuModule, 
+        MenuModule,
         ToastModule,
         ToolbarModule,
         ConfigUser
@@ -42,20 +42,21 @@ interface MenuItem {
     providers: [MessageService]
 })
 export class MenuBar implements OnInit, OnDestroy {
-    
+
     // 4. Adicionar @ViewChild para "capturar" o modal do HTML
     // O nome 'configUserModal' deve ser o mesmo do #apelido no HTML
     @ViewChild('configUserModal') configUserModal!: ConfigUser;
 
     nomeUsuario: string = '';
     iniciaisUsuario: string = '';
-    
+
     // 5. Armazenar os dados completos do usuário
-    private currentUser: UserTokenPayload | null = null; 
-    
+    private currentUser: UserTokenPayload | null = null;
+
     private userSubscription?: Subscription;
 
     visible: boolean = false;
+    actionsVisible: boolean = false;
     paginaAtiva: string = 'home';
 
     readonly menuItems: MenuItem[] = [
@@ -68,7 +69,7 @@ export class MenuBar implements OnInit, OnDestroy {
     menuItemsVisiveis: MenuItem[] = [];
 
     private routerSubscription?: Subscription;
-    
+
     constructor(
         private messageService: MessageService,
         private router: Router,
@@ -93,7 +94,7 @@ export class MenuBar implements OnInit, OnDestroy {
 
     private atualizarDadosUsuario(user: UserTokenPayload | null) {
         this.currentUser = user; // 6. Guardar o usuário completo
-        
+
         if (user) {
             this.nomeUsuario = user.nome.split(' ')[0]; // Pega só o primeiro nome
             this.iniciaisUsuario = this.getIniciais(user.nome);
@@ -101,7 +102,7 @@ export class MenuBar implements OnInit, OnDestroy {
             this.nomeUsuario = '';
             this.iniciaisUsuario = '';
         }
-        
+
         // Filtra os itens de menu com base no novo estado do usuário
         this.filtrarMenuItems();
     }
@@ -121,10 +122,10 @@ export class MenuBar implements OnInit, OnDestroy {
             this.menuItemsVisiveis = [];
             return;
         }
-        this.menuItemsVisiveis = this.menuItems.filter(item => 
+        this.menuItemsVisiveis = this.menuItems.filter(item =>
             // Um item é visível se:
             // 1. Ele NÃO TEM uma lista de perfis definidos (é público para logados)
-            !item.perfisPermitidos || 
+            !item.perfisPermitidos ||
             // OU
             // 2. A lista de perfis permitidos INCLUI o perfil do usuário
             item.perfisPermitidos.includes(perfilUsuario)
@@ -150,7 +151,7 @@ export class MenuBar implements OnInit, OnDestroy {
     logout() {
         this.authService.logout();
     }
-    
+
     goToConfig() {
         this.paginaAtiva = 'configuracoes';
         this.configUserModal.abrirModal();
