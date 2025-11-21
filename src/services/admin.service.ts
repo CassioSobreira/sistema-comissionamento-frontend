@@ -39,7 +39,7 @@ export class AdminService {
   private usuariosApiUrl = `${environment.apiUrl}/usuarios`; // URL para o registro
   private perfisApiUrl = `${environment.apiUrl}/perfis`; 
   private modulosApiUrl = `${environment.apiUrl}/modulos`; 
-
+  private documentosApiUrl = `${environment.apiUrl}/documentos`;
 
   constructor(private http: HttpClient) { }
 
@@ -70,6 +70,10 @@ export class AdminService {
    */
   getUsuarios(): Observable<Usuario[]> {
     return this.http.get<Usuario[]>(`${this.adminApiUrl}/usuarios`);
+  }
+
+  getUsuariosParaSelecao(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.documentosApiUrl}/lista`);
   }
 
   getPerfis(): Observable<Perfil[]> {

@@ -97,7 +97,7 @@ export class DocumentoCreateComponent implements OnInit {
 
     forkJoin({
       template: this.entradasService.buscarEntradaPorId(this.idEntrada),
-      usuarios: this.adminService.getUsuarios() 
+      usuarios: this.adminService.getUsuariosParaSelecao() 
     }).subscribe({
       next: ({ template, usuarios }) => {
         this.templateInfo = template;
@@ -164,7 +164,7 @@ export class DocumentoCreateComponent implements OnInit {
       else {
         // Monta o objeto de chamadas para o forkJoin
         if (field.optionsUrl === '/admin/usuarios') {
-           chamadasAPI[field.name] = this.adminService.getUsuarios();
+           chamadasAPI[field.name] = this.adminService.getUsuariosParaSelecao();
         }
         else if (field.optionsUrl === '/colaboradores') {
            chamadasAPI[field.name] = this.colaboradorService.getColaboradores(); 

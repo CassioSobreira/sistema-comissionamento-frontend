@@ -6,6 +6,7 @@ import { RedefinirSenha } from '../pages/pages/redefinir-senha/redefinir-senha';
 import { ConfirmaSenha } from '../pages/pages/confirma-senha/confirma-senha';
 import { Colaboradores } from '../pages/pages/colaboradores/colaboradores';
 import { authGuard } from '../../guards/auth-guard';
+import { desktopGuard } from '../../guards/desktop-guard';
 import { AdminDashboard } from '../pages/pages/admin-dashboard/admin-dashboard';
 import { Info } from '../pages/pages/info-devs/info-devs';
 import { ConfigUser } from '../components/shared-components/components/config-user/config-user';
@@ -41,7 +42,7 @@ export const routes: Routes = [
     { 
         path: 'admin', 
         component: AdminDashboard, 
-        canActivate: [authGuard], // O usuário precisa estar logado para acessar
+        canActivate: [authGuard, desktopGuard], // O usuário precisa estar logado para acessar
         data:
         {
             perfisPermitidos: ['Administrador'] // Apenas usuários com perfil 'Administrador' podem acessar
@@ -53,7 +54,7 @@ export const routes: Routes = [
     {
         path: 'colaboradores', 
         component: Colaboradores,
-        canActivate: [authGuard], // O usuário precisa estar logado para acessar
+        canActivate: [authGuard, desktopGuard], // O usuário precisa estar logado para acessar
     },
     {
         path: 'info', 

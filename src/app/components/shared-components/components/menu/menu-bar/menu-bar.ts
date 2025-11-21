@@ -17,12 +17,14 @@ import { AuthService, UserTokenPayload } from '../../../../../../services/auth.s
 import { Subscription } from 'rxjs';
 import { ConfigUser } from '../../config-user/config-user';
 import { NotificacaoComponent } from "../../notificacao-component/notificacao-component"; 
+import { LayoutService } from '../../../../../../services/layout';
 
 interface MenuItem {
     label: string;
     icon: string; 
     route: string;
     perfisPermitidos?: string[]; 
+    desktopOnly?: boolean;
 }
 
 @Component({
@@ -63,8 +65,8 @@ export class MenuBar implements OnInit, OnDestroy {
     readonly menuItems: MenuItem[] = [
         { label: 'HOME', icon: 'pi-home', route: 'home' },
         { label: 'PENDÊNCIAS', icon: 'pi-comment', route: 'pendencias' },
-        {label: 'COLABORADORES', icon: 'pi-users', route: 'colaboradores'},
-        { label: 'PAINEL DE ADMINSTRAÇÃO', icon: 'pi-address-book', route: 'admin', perfisPermitidos: ['Administrador'] }
+        {label: 'COLABORADORES', icon: 'pi-users', route: 'colaboradores', desktopOnly: true },
+        { label: 'PAINEL DE ADMINSTRAÇÃO', icon: 'pi-address-book', route: 'admin', perfisPermitidos: ['Administrador'], desktopOnly: true },
     ];
 
     menuItemsVisiveis: MenuItem[] = [];
@@ -74,7 +76,8 @@ export class MenuBar implements OnInit, OnDestroy {
     constructor(
         private messageService: MessageService,
         private router: Router,
-        private authService: AuthService
+        private authService: AuthService,
+        private layoutService: LayoutService
     ) {}
 
     ngOnInit() {
@@ -118,24 +121,26 @@ export class MenuBar implements OnInit, OnDestroy {
 
     private filtrarMenuItems(): void {
         const perfilUsuario = this.authService.getPerfilUsuario();
+        const isMobile = this.layoutService.isMobile();
 
         if (!perfilUsuario) {
             this.menuItemsVisiveis = [];
             return;
         }
-        this.menuItemsVisiveis = this.menuItems.filter(item => 
-            // Um item é visível se:
-            // 1. Ele NÃO TEM uma lista de perfis definidos (é público para logados)
-            !item.perfisPermitidos || 
-            // OU
-            // 2. A lista de perfis permitidos INCLUI o perfil do usuário
-            item.perfisPermitidos.includes(perfilUsuario)
-        );
+        this.menuItemsVisiveis = this.menuItems.filter(item => {
+            if (isMobile && item.desktopOnly) {
+                return false;
+            }
+
+            const temPermissaoPerfil = !item.perfisPermitidos || item.perfisPermitidos.includes(perfilUsuario);
+            
+            return temPermissaoPerfil;
+        });
     }
 
     ngOnDestroy() {
         this.routerSubscription?.unsubscribe();
-        this.userSubscription?.unsubscribe(); // 7. Adicionado unsubscribe para user
+        this.userSubscription?.unsubscribe(); 
     }
 
     selecionarPagina(rota: string) {
