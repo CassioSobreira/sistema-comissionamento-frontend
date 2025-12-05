@@ -1,4 +1,3 @@
-// src/app/guards/desktop.guard.ts
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { LayoutService } from '../services/layout';

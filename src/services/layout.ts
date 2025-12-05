@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy, signal } from '@angular/core';
 import { fromEvent, Subject, takeUntil } from 'rxjs';
-
+//DETECTACAO DE MOBILE
 @Injectable({
   providedIn: 'root'
 })

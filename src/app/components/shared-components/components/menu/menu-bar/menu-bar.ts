@@ -65,8 +65,8 @@ export class MenuBar implements OnInit, OnDestroy {
     readonly menuItems: MenuItem[] = [
         { label: 'HOME', icon: 'pi-home', route: 'home' },
         { label: 'PENDÊNCIAS', icon: 'pi-comment', route: 'pendencias' },
-        {label: 'COLABORADORES', icon: 'pi-users', route: 'colaboradores', desktopOnly: true },
-        { label: 'PAINEL DE ADMINSTRAÇÃO', icon: 'pi-address-book', route: 'admin', perfisPermitidos: ['Administrador'], desktopOnly: true },
+        {label: 'COLABORADORES', icon: 'pi-users', route: 'colaboradores', desktopOnly: true }, // ATIVANDO DESKTOP ONLY
+        { label: 'PAINEL DE ADMINSTRAÇÃO', icon: 'pi-address-book', route: 'admin', perfisPermitidos: ['Administrador'], desktopOnly: true },// ATIVANDO DESKTOP ONLY
     ];
 
     menuItemsVisiveis: MenuItem[] = [];
