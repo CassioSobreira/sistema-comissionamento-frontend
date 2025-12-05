@@ -18,7 +18,7 @@ import { FloatLabel } from 'primeng/floatlabel';
 
 @Component({
   selector: 'app-card-pendencia-component',
-  imports: [FloatLabel,TextareaModule,DialogModule,ConfirmDialogModule, FormsModule, CardModule, ButtonModule, AvatarModule, TagModule, CommonModule, Toast],
+  imports: [FloatLabel,TextareaModule,DialogModule,ConfirmDialogModule, FormsModule, CardModule, ButtonModule, AvatarModule, TagModule, CommonModule],
   templateUrl: './card-pendencia-component.html',
   styleUrl: './card-pendencia-component.css'
 })
