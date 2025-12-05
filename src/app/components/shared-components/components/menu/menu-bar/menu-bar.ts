@@ -17,12 +17,14 @@ import { AuthService, UserTokenPayload } from '../../../../../../services/auth.s
 import { Subscription } from 'rxjs';
 import { ConfigUser } from '../../config-user/config-user';
 import { NotificacaoComponent } from "../../notificacao-component/notificacao-component"; 
+import { LayoutService } from '../../../../../../services/layout';
 
 interface MenuItem {
     label: string;
-    icon: string; 
+    icon: string;
     route: string;
     perfisPermitidos?: string[]; 
+    desktopOnly?: boolean;
 }
 
 @Component({
@@ -38,26 +40,26 @@ interface MenuItem {
     MenuModule,
     ToastModule,
     ToolbarModule,
-    ConfigUser,
-    NotificacaoComponent
+    ConfigUser
 ],
     providers: [MessageService]
 })
 export class MenuBar implements OnInit, OnDestroy {
-    
+
     // 4. Adicionar @ViewChild para "capturar" o modal do HTML
     // O nome 'configUserModal' deve ser o mesmo do #apelido no HTML
     @ViewChild('configUserModal') configUserModal!: ConfigUser;
 
     nomeUsuario: string = '';
     iniciaisUsuario: string = '';
-    
+
     // 5. Armazenar os dados completos do usuário
-    private currentUser: UserTokenPayload | null = null; 
-    
+    private currentUser: UserTokenPayload | null = null;
+
     private userSubscription?: Subscription;
 
     visible: boolean = false;
+    actionsVisible: boolean = false;
     paginaAtiva: string = 'home';
 
     readonly menuItems: MenuItem[] = [
@@ -66,16 +68,19 @@ export class MenuBar implements OnInit, OnDestroy {
         {label: 'COLABORADORES', icon: 'pi-users', route: 'colaboradores'},
         { label: 'PAINEL DE ADMINSTRAÇÃO', icon: 'pi-address-book', route: 'admin', perfisPermitidos: ['Administrador'] },
         { label: 'AGENDAMENTO', icon: 'pi-calendar-clock', route: 'agendamento' },
+        {label: 'COLABORADORES', icon: 'pi-users', route: 'colaboradores', desktopOnly: true },
+        { label: 'PAINEL DE ADMINSTRAÇÃO', icon: 'pi-address-book', route: 'admin', perfisPermitidos: ['Administrador'], desktopOnly: true },
     ];
 
     menuItemsVisiveis: MenuItem[] = [];
 
     private routerSubscription?: Subscription;
-    
+
     constructor(
         private messageService: MessageService,
         private router: Router,
-        private authService: AuthService
+        private authService: AuthService,
+        private layoutService: LayoutService
     ) {}
 
     ngOnInit() {
@@ -96,7 +101,7 @@ export class MenuBar implements OnInit, OnDestroy {
 
     private atualizarDadosUsuario(user: UserTokenPayload | null) {
         this.currentUser = user; // 6. Guardar o usuário completo
-        
+
         if (user) {
             this.nomeUsuario = user.nome.split(' ')[0]; // Pega só o primeiro nome
             this.iniciaisUsuario = this.getIniciais(user.nome);
@@ -104,7 +109,7 @@ export class MenuBar implements OnInit, OnDestroy {
             this.nomeUsuario = '';
             this.iniciaisUsuario = '';
         }
-        
+
         // Filtra os itens de menu com base no novo estado do usuário
         this.filtrarMenuItems();
     }
@@ -119,24 +124,26 @@ export class MenuBar implements OnInit, OnDestroy {
 
     private filtrarMenuItems(): void {
         const perfilUsuario = this.authService.getPerfilUsuario();
+        const isMobile = this.layoutService.isMobile();
 
         if (!perfilUsuario) {
             this.menuItemsVisiveis = [];
             return;
         }
-        this.menuItemsVisiveis = this.menuItems.filter(item => 
-            // Um item é visível se:
-            // 1. Ele NÃO TEM uma lista de perfis definidos (é público para logados)
-            !item.perfisPermitidos || 
-            // OU
-            // 2. A lista de perfis permitidos INCLUI o perfil do usuário
-            item.perfisPermitidos.includes(perfilUsuario)
-        );
+        this.menuItemsVisiveis = this.menuItems.filter(item => {
+            if (isMobile && item.desktopOnly) {
+                return false;
+            }
+
+            const temPermissaoPerfil = !item.perfisPermitidos || item.perfisPermitidos.includes(perfilUsuario);
+            
+            return temPermissaoPerfil;
+        });
     }
 
     ngOnDestroy() {
         this.routerSubscription?.unsubscribe();
-        this.userSubscription?.unsubscribe(); // 7. Adicionado unsubscribe para user
+        this.userSubscription?.unsubscribe(); 
     }
 
     selecionarPagina(rota: string) {
@@ -153,7 +160,7 @@ export class MenuBar implements OnInit, OnDestroy {
     logout() {
         this.authService.logout();
     }
-    
+
     goToConfig() {
         this.paginaAtiva = 'configuracoes';
         this.configUserModal.abrirModal();
