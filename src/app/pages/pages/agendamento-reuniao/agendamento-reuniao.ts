@@ -3,7 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-
+import { MenuBar } from '../../../components/shared-components/components/menu/menu-bar/menu-bar';
 // PrimeNG
 import { MultiSelectModule } from 'primeng/multiselect';
 import { DialogModule } from 'primeng/dialog';
@@ -27,7 +27,7 @@ import { AdminService, Usuario, Entrada } from '../../../../services/admin.servi
     DialogModule,
     ButtonModule,
     ProgressSpinnerModule,
-
+    MenuBar,
     DatePipe
   ],
   templateUrl: './agendamento-reuniao.html',
