@@ -64,7 +64,8 @@ export class MenuBar implements OnInit, OnDestroy {
         { label: 'HOME', icon: 'pi-home', route: 'home' },
         { label: 'PENDÊNCIAS', icon: 'pi-comment', route: 'pendencias' },
         {label: 'COLABORADORES', icon: 'pi-users', route: 'colaboradores'},
-        { label: 'PAINEL DE ADMINSTRAÇÃO', icon: 'pi-address-book', route: 'admin', perfisPermitidos: ['Administrador'] }
+        { label: 'PAINEL DE ADMINSTRAÇÃO', icon: 'pi-address-book', route: 'admin', perfisPermitidos: ['Administrador'] },
+        { label: 'AGENDAMENTO', icon: 'pi-calendar-clock', route: 'agendamento' },
     ];
 
     menuItemsVisiveis: MenuItem[] = [];
