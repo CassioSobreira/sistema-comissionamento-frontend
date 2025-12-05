@@ -14,9 +14,14 @@ import { Entradas } from '../pages/pages/entradas/entradas';
 import { DocumentoCreateComponent } from '../pages/pages/documento-create/documento-create';
 import { DocumentoCriadoComponent } from '../pages/pages/documento-criado/documento-criado';
 import { PendenciasPageComponent } from '../pages/pages/pendencias/pendencias';
+import { AgendamentoReuniao } from '../pages/pages/agendamento-reuniao/agendamento-reuniao';
 
 export const routes: Routes = [
     // { path: '', component: HomeComponent },
+    {
+        path:'agendamento',
+        component:AgendamentoReuniao,
+    },
     { path: '', component: LoginPageComponent},
     {
         path: 'pendencias', 
