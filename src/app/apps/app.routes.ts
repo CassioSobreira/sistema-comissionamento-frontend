@@ -47,7 +47,7 @@ export const routes: Routes = [
     { 
         path: 'admin', 
         component: AdminDashboard, 
-        canActivate: [authGuard, desktopGuard], // O usuário precisa estar logado para acessar, , o user so visualiza em desktp
+        canActivate: [authGuard, desktopGuard], // O usuário precisa estar logado para acessar essa rota
         data:
         {
             perfisPermitidos: ['Administrador'] // Apenas usuários com perfil 'Administrador' podem acessar
@@ -59,7 +59,7 @@ export const routes: Routes = [
     {
         path: 'colaboradores', 
         component: Colaboradores,
-        canActivate: [authGuard, desktopGuard], // O usuário precisa estar logado para acessa, o user so visualiza em desktp
+        canActivate: [authGuard, desktopGuard], // O usuário precisa estar logado para acessar essa rota
     },
     {
         path: 'info', 
