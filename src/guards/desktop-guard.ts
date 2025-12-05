@@ -3,6 +3,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { LayoutService } from '../services/layout';
 import { MessageService } from 'primeng/api'; 
 
+// Guard para permitir acesso apenas em desktop
 export const desktopGuard: CanActivateFn = (route, state) => {
   const layoutService = inject(LayoutService);
   const router = inject(Router);
