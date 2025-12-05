@@ -1,1 +1,1 @@
-<p-datepicker dateFormat="dd/mm/yy" [showIcon]="true" inputId="buttondisplay" [showOnFocus]="false" inputId="calendar-24h" [(ngModel)]="datetime24h" [showTime]="true" hourFormat="24" />
+<p-datepicker dateFormat="dd/mm/yy" [showIcon]="true" inputId="buttondisplay" [showOnFocus]="false" inputId="calendar-24h" (onSelect)="emitDate()" [(ngModel)]="datetime" [showTime]="true" hourFormat="24" />
