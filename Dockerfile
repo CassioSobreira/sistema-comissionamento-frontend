@@ -10,7 +10,7 @@ RUN npm install
 # Copia todo o código do Angular
 COPY . .
 
-# Gera o build de produção
+# Gera o build no modo development para pegar o localhost:3000 como api url
 RUN npm run build
 
 # ETAPA 2 — Servir com Nginx
