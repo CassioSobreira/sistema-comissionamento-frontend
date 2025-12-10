@@ -1,13 +1,13 @@
 const hostname = window.location.hostname;
 
 // se tiver "vercel.app" na URL → estamos no Vercel
-const isVercel = hostname.includes('vercel.app');
+const isLoacal = hostname.includes('localhost');
 
 export const environment = {
   production: false, // isso aqui não faz diferença pra API agora
-  apiUrl: isVercel
-    ? 'https://projeto-comissionamento-backend-pg.vercel.app/api' // API do Vercel
-    : 'http://localhost:3000/api' // API local (VM / máquina)
+  apiUrl: isLoacal
+    ? 'http://localhost:3000/api' // API LOCAL
+    : 'https://projeto-comissionamento-backend-pg.vercel.app/api'// API VERCEL (VM / máquina)
 };
 
 console.log('Hostname:', hostname);
