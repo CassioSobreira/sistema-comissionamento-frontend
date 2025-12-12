@@ -9,7 +9,7 @@ export const environment = {
     ? 'http://localhost:3000/api' // API LOCAL
     : isVercel
       ? 'https://projeto-comissionamento-backend-pg.vercel.app/api' // API VERCEL (Frontend)
-      : 'http://172.25.0.189:3000'// API VERCEL (VM / máquina)
+      : 'http://172.25.0.189:3000/api'// API VERCEL (VM / máquina)
 };
 
 console.log('Hostname:', hostname);
